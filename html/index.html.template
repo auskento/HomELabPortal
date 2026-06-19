@@ -1,0 +1,211 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+    <title>Media Server - Dashboard</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #000;
+            color: #fff;
+        }
+        
+        .header {
+            background-color: #1a1a1a;
+            padding: 15px 20px;
+            border-bottom: 2px solid #444;
+            text-align: center;
+            min-height: 140px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: auto;
+        }
+        
+        .menu-container {
+            width: 100%;
+        }
+        
+        .menu-table {
+            width: 100%;
+            border-collapse: collapse;
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        
+        .menu-item {
+            text-align: center;
+            flex: 0 1 auto;
+        }
+        
+        .menu-item a {
+            display: inline-block;
+            text-decoration: none;
+            transition: transform 0.3s;
+        }
+        
+        .menu-item a:hover {
+            transform: scale(1.1);
+        }
+        
+        .menu-item img {
+            max-width: 80px;
+            max-height: 60px;
+            border: none;
+            display: block;
+        }
+        
+        .menu-item .label {
+            font-size: 0.8em;
+            color: #999;
+            margin-top: 3px;
+            display: block;
+        }
+        
+        .content {
+            position: fixed;
+            top: auto;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #000;
+            border: none;
+            width: 100%;
+            height: calc(100% - 140px);
+        }
+        
+        .welcome-screen {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            padding: 40px 20px;
+            text-align: center;
+        }
+        
+        .welcome-screen h1 {
+            font-size: 2.5em;
+            margin-bottom: 20px;
+            color: #4a9eff;
+        }
+        
+        .welcome-screen p {
+            font-size: 1.1em;
+            color: #aaa;
+            margin-bottom: 10px;
+            max-width: 600px;
+        }
+        
+        .services-list {
+            margin-top: 40px;
+            text-align: left;
+            display: inline-block;
+        }
+        
+        .services-list h3 {
+            color: #4a9eff;
+            margin-bottom: 15px;
+        }
+        
+        .services-list ul {
+            list-style: none;
+        }
+        
+        .services-list li {
+            padding: 8px 0;
+            color: #aaa;
+            border-bottom: 1px solid #333;
+        }
+        
+        .services-list li:last-child {
+            border-bottom: none;
+        }
+        
+        .services-list a {
+            color: #4a9eff;
+            text-decoration: none;
+        }
+        
+        .services-list a:hover {
+            text-decoration: underline;
+        }
+        
+        .no-services {
+            color: #ff6b6b;
+            font-size: 1.2em;
+            margin-top: 20px;
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .header {
+                min-height: 100px;
+            }
+            
+            .content {
+                position: relative;
+                height: auto;
+                min-height: 100vh;
+            }
+            
+            .welcome-screen h1 {
+                font-size: 1.8em;
+            }
+            
+            .menu-item img {
+                max-width: 60px;
+                max-height: 45px;
+            }
+            
+            .menu-item .label {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="header">
+    <div class="menu-container">
+        <table class="menu-table">
+            <tr>
+                @@MENU_ITEMS@@
+            </tr>
+        </table>
+    </div>
+</div>
+
+<iframe name="content" class="content" src="about:blank" frameborder="0" scrolling="yes">
+    <!-- Fallback content if iframe fails -->
+    <div class="welcome-screen">
+        <h1>🎬 Media Server Dashboard</h1>
+        <p>Click a service above to access it</p>
+        <p>All services are protected with HTTPS and accessible through this reverse proxy</p>
+        <div class="services-list">
+            <h3>Enabled Services:</h3>
+            <ul>
+                @@ENABLED_SERVICES_LIST@@
+            </ul>
+        </div>
+    </div>
+</iframe>
+
+<noscript>
+    <div class="welcome-screen">
+        <h1>🎬 Media Server Dashboard</h1>
+        <p>JavaScript is required for this interface</p>
+    </div>
+</noscript>
+
+</body>
+</html>

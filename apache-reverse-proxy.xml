@@ -1,0 +1,280 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Container version="2">
+  <Name>Apache-Reverse-Proxy</Name>
+  <Repository>apache-reverse-proxy:latest</Repository>
+  <Registry>https://hub.docker.com/</Registry>
+  <Network>bridge</Network>
+  <MyIP/>
+  <Shell>bash</Shell>
+  <Privileged>false</Privileged>
+  <Support>https://github.com/yourusername/apache-reverse-proxy</Support>
+  <Project>https://httpd.apache.org/</Project>
+  <Category>Network:Web</Category>
+  <TemplateURL>https://raw.githubusercontent.com/yourusername/unraid-templates/main/apache-reverse-proxy.xml</TemplateURL>
+  <Icon>https://httpd.apache.org/icons/apache_pb.gif</Icon>
+  <ExtraParams/>
+  <PostArgs/>
+  <CloudSync>false</CloudSync>
+  <Description>
+    Apache Reverse Proxy with Let's Encrypt HTTPS, modular service proxying (14+ services), and optional Office 365 authentication.
+    
+    This container does NOT install any media applications. It proxies to other Docker containers or external services.
+    
+    Features:
+    - Automatic HTTPS with Let's Encrypt (auto-renewal)
+    - Modular service management (enable/disable via environment variables)
+    - 14+ pre-configured services (Sonarr, Radarr, Jellyfin, etc.)
+    - Optional Office 365/Azure AD authentication
+    - Custom HTML dashboard
+    - Load balancing support
+    - WebSocket support for real-time updates
+  </Description>
+  <Networking>
+    <Mode>bridge</Mode>
+    <Publish>
+      <Port>
+        <HostPort>80</HostPort>
+        <ContainerPort>80</ContainerPort>
+        <Protocol>tcp</Protocol>
+        <Description>HTTP (auto-redirects to HTTPS)</Description>
+        <Access>External</Access>
+      </Port>
+      <Port>
+        <HostPort>443</HostPort>
+        <ContainerPort>443</ContainerPort>
+        <Protocol>tcp</Protocol>
+        <Description>HTTPS (main port)</Description>
+        <Access>External</Access>
+      </Port>
+    </Publish>
+  </Networking>
+  <Data>
+    <Volume>
+      <HostDir>/mnt/user/appdata/apache-reverse-proxy/letsencrypt</HostDir>
+      <ContainerDir>/etc/letsencrypt</ContainerDir>
+      <Mode>rw</Mode>
+      <Description>SSL Certificates (Let's Encrypt)</Description>
+      <Access>rw</Access>
+      <Exclude/>
+      <IsFileShare>false</IsFileShare>
+    </Volume>
+    <Volume>
+      <HostDir>/mnt/user/appdata/apache-reverse-proxy/logs</HostDir>
+      <ContainerDir>/var/log/apache2</ContainerDir>
+      <Mode>rw</Mode>
+      <Description>Apache Logs</Description>
+      <Access>rw</Access>
+      <Exclude/>
+      <IsFileShare>false</IsFileShare>
+    </Volume>
+    <Volume>
+      <HostDir>/mnt/user/appdata/apache-reverse-proxy/html</HostDir>
+      <ContainerDir>/var/www/html</ContainerDir>
+      <Mode>rw</Mode>
+      <Description>Custom HTML/Dashboard (optional)</Description>
+      <Access>rw</Access>
+      <Exclude/>
+      <IsFileShare>false</IsFileShare>
+    </Volume>
+  </Data>
+  <Environment>
+    <Variable>
+      <Name>DOMAIN</Name>
+      <Value>yourdomain.com</Value>
+      <Mode/>
+      <Description>Your domain name (REQUIRED)</Description>
+      <Tooltip>The domain that will be used for the reverse proxy. Example: media.example.com</Tooltip>
+      <Type>Text</Type>
+      <Display>always</Display>
+      <Required>true</Required>
+    </Variable>
+    <Variable>
+      <Name>EMAIL</Name>
+      <Value>admin@example.com</Value>
+      <Mode/>
+      <Description>Email for Let's Encrypt (REQUIRED)</Description>
+      <Tooltip>Email address for SSL certificate notifications</Tooltip>
+      <Type>Text</Type>
+      <Display>always</Display>
+      <Required>true</Required>
+    </Variable>
+    <Variable>
+      <Name>ENABLE_SONARR</Name>
+      <Value>true</Value>
+      <Mode/>
+      <Description>Enable Sonarr (TV Shows)</Description>
+      <Tooltip>Proxy Sonarr at /sonarr</Tooltip>
+      <Type>Variable</Type>
+      <Display>always</Display>
+      <Required>false</Required>
+    </Variable>
+    <Variable>
+      <Name>ENABLE_RADARR</Name>
+      <Value>true</Value>
+      <Mode/>
+      <Description>Enable Radarr (Movies)</Description>
+      <Tooltip>Proxy Radarr at /radarr</Tooltip>
+      <Type>Variable</Type>
+      <Display>always</Display>
+      <Required>false</Required>
+    </Variable>
+    <Variable>
+      <Name>ENABLE_WHISPARR</Name>
+      <Value>false</Value>
+      <Mode/>
+      <Description>Enable Whisparr (Comics/Manga)</Description>
+      <Tooltip>Proxy Whisparr at /whisparr</Tooltip>
+      <Type>Variable</Type>
+      <Display>always</Display>
+      <Required>false</Required>
+    </Variable>
+    <Variable>
+      <Name>ENABLE_LIDARR</Name>
+      <Value>false</Value>
+      <Mode/>
+      <Description>Enable Lidarr (Music)</Description>
+      <Tooltip>Proxy Lidarr at /lidarr</Tooltip>
+      <Type>Variable</Type>
+      <Display>always</Display>
+      <Required>false</Required>
+    </Variable>
+    <Variable>
+      <Name>ENABLE_READARR</Name>
+      <Value>false</Value>
+      <Mode/>
+      <Description>Enable Readarr (Books)</Description>
+      <Tooltip>Proxy Readarr at /readarr</Tooltip>
+      <Type>Variable</Type>
+      <Display>always</Display>
+      <Required>false</Required>
+    </Variable>
+    <Variable>
+      <Name>ENABLE_PROWLARR</Name>
+      <Value>false</Value>
+      <Mode/>
+      <Description>Enable Prowlarr (Indexer Manager)</Description>
+      <Tooltip>Proxy Prowlarr at /prowlarr</Tooltip>
+      <Type>Variable</Type>
+      <Display>always</Display>
+      <Required>false</Required>
+    </Variable>
+    <Variable>
+      <Name>ENABLE_OVERSEERR</Name>
+      <Value>false</Value>
+      <Mode/>
+      <Description>Enable Overseerr (Request Manager)</Description>
+      <Tooltip>Proxy Overseerr at /overseerr</Tooltip>
+      <Type>Variable</Type>
+      <Display>always</Display>
+      <Required>false</Required>
+    </Variable>
+    <Variable>
+      <Name>ENABLE_JELLYFIN</Name>
+      <Value>false</Value>
+      <Mode/>
+      <Description>Enable Jellyfin (Media Streaming)</Description>
+      <Tooltip>Proxy Jellyfin at /jellyfin</Tooltip>
+      <Type>Variable</Type>
+      <Display>always</Display>
+      <Required>false</Required>
+    </Variable>
+    <Variable>
+      <Name>ENABLE_PLEX</Name>
+      <Value>false</Value>
+      <Mode/>
+      <Description>Enable Plex (Media Streaming)</Description>
+      <Tooltip>Proxy Plex at /plex</Tooltip>
+      <Type>Variable</Type>
+      <Display>always</Display>
+      <Required>false</Required>
+    </Variable>
+    <Variable>
+      <Name>ENABLE_TRANSMISSION</Name>
+      <Value>false</Value>
+      <Mode/>
+      <Description>Enable Transmission (Torrent Client)</Description>
+      <Tooltip>Proxy Transmission at /transmission</Tooltip>
+      <Type>Variable</Type>
+      <Display>always</Display>
+      <Required>false</Required>
+    </Variable>
+    <Variable>
+      <Name>ENABLE_QBITTORRENT</Name>
+      <Value>false</Value>
+      <Mode/>
+      <Description>Enable qBittorrent (Torrent Client)</Description>
+      <Tooltip>Proxy qBittorrent at /qbittorrent</Tooltip>
+      <Type>Variable</Type>
+      <Display>always</Display>
+      <Required>false</Required>
+    </Variable>
+    <Variable>
+      <Name>ENABLE_AUTH_OFFICE365</Name>
+      <Value>false</Value>
+      <Mode/>
+      <Description>Enable Office 365 Authentication</Description>
+      <Tooltip>Protect services with Office 365/Azure AD login</Tooltip>
+      <Type>Variable</Type>
+      <Display>always</Display>
+      <Required>false</Required>
+    </Variable>
+    <Variable>
+      <Name>OAUTH2_CLIENT_ID</Name>
+      <Value></Value>
+      <Mode/>
+      <Description>OAuth2 Client ID (for Office 365)</Description>
+      <Tooltip>From Azure AD app registration</Tooltip>
+      <Type>Text</Type>
+      <Display>if-var-non-empty=ENABLE_AUTH_OFFICE365</Display>
+      <Required>false</Required>
+    </Variable>
+    <Variable>
+      <Name>OAUTH2_CLIENT_SECRET</Name>
+      <Value></Value>
+      <Mode/>
+      <Description>OAuth2 Client Secret (for Office 365)</Description>
+      <Tooltip>From Azure AD app registration (keep secure!)</Tooltip>
+      <Type>Text</Type>
+      <Display>if-var-non-empty=ENABLE_AUTH_OFFICE365</Display>
+      <Required>false</Required>
+    </Variable>
+    <Variable>
+      <Name>OAUTH2_REDIRECT_URI</Name>
+      <Value>https://yourdomain.com/oauth2callback</Value>
+      <Mode/>
+      <Description>OAuth2 Redirect URI (for Office 365)</Description>
+      <Tooltip>Must match Azure AD app registration exactly</Tooltip>
+      <Type>Text</Type>
+      <Display>if-var-non-empty=ENABLE_AUTH_OFFICE365</Display>
+      <Required>false</Required>
+    </Variable>
+    <Variable>
+      <Name>OAUTH2_ALLOWED_DOMAINS</Name>
+      <Value>example.com</Value>
+      <Mode/>
+      <Description>Allowed Email Domains (for Office 365)</Description>
+      <Tooltip>Comma-separated list. Example: company.com,partner.com</Tooltip>
+      <Type>Text</Type>
+      <Display>if-var-non-empty=ENABLE_AUTH_OFFICE365</Display>
+      <Required>false</Required>
+    </Variable>
+    <Variable>
+      <Name>OAUTH2_CRYPTO_PASSPHRASE</Name>
+      <Value></Value>
+      <Mode/>
+      <Description>Crypto Passphrase (for Office 365)</Description>
+      <Tooltip>Random string for session encryption. Generate with: openssl rand -base64 24</Tooltip>
+      <Type>Text</Type>
+      <Display>if-var-non-empty=ENABLE_AUTH_OFFICE365</Display>
+      <Required>false</Required>
+    </Variable>
+  </Environment>
+  <Labels/>
+  <Config Name="DOMAIN" Target="DOMAIN" Default="yourdomain.com" Mode="" Description="Your domain name" Type="Text" Display="always" Required="true" Mask="false"/>
+  <Config Name="EMAIL" Target="EMAIL" Default="admin@example.com" Mode="" Description="Email for Let's Encrypt" Type="Text" Display="always" Required="true" Mask="false"/>
+  <Config Name="HTTP Port" Target="HostPort" Default="80" Mode="tcp" Description="HTTP port (auto-redirects to HTTPS)" Type="Port" Display="always" Required="false" Mask="false">80</Config>
+  <Config Name="HTTPS Port" Target="HostPort" Default="443" Mode="tcp" Description="HTTPS port" Type="Port" Display="always" Required="false" Mask="false">443</Config>
+  <Config Name="Certs Volume" Target="/etc/letsencrypt" Default="/mnt/user/appdata/apache-reverse-proxy/letsencrypt" Mode="rw" Description="SSL Certificates" Type="Path" Display="always" Required="true" Mask="false">/mnt/user/appdata/apache-reverse-proxy/letsencrypt</Config>
+  <Config Name="Logs Volume" Target="/var/log/apache2" Default="/mnt/user/appdata/apache-reverse-proxy/logs" Mode="rw" Description="Apache Logs" Type="Path" Display="always" Required="false" Mask="false">/mnt/user/appdata/apache-reverse-proxy/logs</Config>
+  <Config Name="HTML Volume" Target="/var/www/html" Default="/mnt/user/appdata/apache-reverse-proxy/html" Mode="rw" Description="Custom HTML (optional)" Type="Path" Display="always" Required="false" Mask="false">/mnt/user/appdata/apache-reverse-proxy/html</Config>
+</Container>
