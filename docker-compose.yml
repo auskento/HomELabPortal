@@ -31,10 +31,27 @@ services:
       ENABLE_SABNZBD: "false"
       ENABLE_DELUGE: "false"
       
+      # Service Backend URLs (specify where each service is located)
+      SONARR_URL: "http://sonarr:8989"
+      RADARR_URL: "http://radarr:7878"
+      WHISPARR_URL: "http://whisparr:6969"
+      LIDARR_URL: "http://lidarr:8686"
+      READARR_URL: "http://readarr:8787"
+      PROWLARR_URL: "http://prowlarr:9696"
+      OVERSEERR_URL: "http://overseerr:5055"
+      JELLYFIN_URL: "http://jellyfin:8096"
+      EMBY_URL: "http://emby:8096"
+      PLEX_URL: "http://plex:32400"
+      TAUTULLI_URL: "http://tautulli:8181"
+      TRANSMISSION_URL: "http://transmission:6969"
+      QBITTORRENT_URL: "http://qbittorrent:8080"
+      SABNZBD_URL: "http://sabnzbd:8080"
+      DELUGE_URL: "http://deluge:8112"
+      
       # Custom Backend (optional - for generic service)
       ENABLE_CUSTOM_BACKEND: "false"
       CUSTOM_BACKEND_PATH: /custom
-      CUSTOM_BACKEND_URL: http://your-service:8080
+      CUSTOM_BACKEND_URL: "http://your-service:8080"
       
       # Optional: Custom Icons (auto-downloaded and resized)
       # Leave empty to use colored placeholders
