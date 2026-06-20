@@ -41,6 +41,17 @@
     ProxyTimeout 300
     Timeout 300
     
+    # Static content serving
+    DocumentRoot /var/www/html
+    <Directory /var/www/html>
+        Require all granted
+    </Directory>
+    
+    # Serve icons directly (don't proxy)
+    <Location /icons>
+        ProxyPass !
+    </Location>
+    
     # ============================================
     # CONDITIONAL SERVICE INCLUDES
     # ============================================
