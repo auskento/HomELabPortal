@@ -1,6 +1,11 @@
 #!/bin/bash
 set -e
 
+# Ensure proper permissions on mounted volumes
+chmod -R 755 /etc/letsencrypt 2>/dev/null || true
+chmod -R 777 /var/log/apache2 2>/dev/null || true
+mkdir -p /etc/letsencrypt/live 2>/dev/null || true
+
 # Configuration
 DOMAIN="${DOMAIN:-example.com}"
 EMAIL="${EMAIL:-admin@example.com}"

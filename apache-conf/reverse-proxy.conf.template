@@ -50,6 +50,7 @@
     # See /etc/apache2/sites-available/services/*.conf
     
     @@INCLUDE_AUTH_OFFICE365@@
+    @@INCLUDE_SONARR@@
     @@INCLUDE_RADARR@@
     @@INCLUDE_WHISPARR@@
     @@INCLUDE_LIDARR@@
