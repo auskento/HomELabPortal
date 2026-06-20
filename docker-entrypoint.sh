@@ -8,6 +8,43 @@ mkdir -p /etc/letsencrypt/live 2>/dev/null || true
 chmod 777 /etc/letsencrypt/live 2>/dev/null || true
 chmod -R 777 /var/log/apache2 2>/dev/null || true
 
+# Write environment variables to config file for scripts to source
+cat > /etc/apache2/env.conf << 'ENVEOF'
+DOMAIN="${DOMAIN:-example.com}"
+EMAIL="${EMAIL:-admin@example.com}"
+ENABLE_SONARR="${ENABLE_SONARR:-false}"
+ENABLE_RADARR="${ENABLE_RADARR:-false}"
+ENABLE_WHISPARR="${ENABLE_WHISPARR:-false}"
+ENABLE_LIDARR="${ENABLE_LIDARR:-false}"
+ENABLE_READARR="${ENABLE_READARR:-false}"
+ENABLE_PROWLARR="${ENABLE_PROWLARR:-false}"
+ENABLE_OVERSEERR="${ENABLE_OVERSEERR:-false}"
+ENABLE_JELLYFIN="${ENABLE_JELLYFIN:-false}"
+ENABLE_EMBY="${ENABLE_EMBY:-false}"
+ENABLE_PLEX="${ENABLE_PLEX:-false}"
+ENABLE_TAUTULLI="${ENABLE_TAUTULLI:-false}"
+ENABLE_TRANSMISSION="${ENABLE_TRANSMISSION:-false}"
+ENABLE_QBITTORRENT="${ENABLE_QBITTORRENT:-false}"
+ENABLE_SABNZBD="${ENABLE_SABNZBD:-false}"
+ENABLE_DELUGE="${ENABLE_DELUGE:-false}"
+ENABLE_AUTH_OFFICE365="${ENABLE_AUTH_OFFICE365:-false}"
+SONARR_URL="${SONARR_URL:-}"
+RADARR_URL="${RADARR_URL:-}"
+WHISPARR_URL="${WHISPARR_URL:-}"
+LIDARR_URL="${LIDARR_URL:-}"
+READARR_URL="${READARR_URL:-}"
+PROWLARR_URL="${PROWLARR_URL:-}"
+OVERSEERR_URL="${OVERSEERR_URL:-}"
+JELLYFIN_URL="${JELLYFIN_URL:-}"
+EMBY_URL="${EMBY_URL:-}"
+PLEX_URL="${PLEX_URL:-}"
+TAUTULLI_URL="${TAUTULLI_URL:-}"
+TRANSMISSION_URL="${TRANSMISSION_URL:-}"
+QBITTORRENT_URL="${QBITTORRENT_URL:-}"
+SABNZBD_URL="${SABNZBD_URL:-}"
+DELUGE_URL="${DELUGE_URL:-}"
+ENVEOF
+
 # Configuration
 DOMAIN="${DOMAIN:-example.com}"
 EMAIL="${EMAIL:-admin@example.com}"

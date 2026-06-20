@@ -1,39 +1,23 @@
 #!/bin/bash
 # Generate Apache reverse proxy configuration from template based on environment variables
 
+# Source environment variables from config file written by entrypoint
+if [ -f /etc/apache2/env.conf ]; then
+    source /etc/apache2/env.conf
+fi
+
 TEMPLATE_FILE="${1:-/etc/apache2/sites-available/reverse-proxy.conf.template}"
 OUTPUT_FILE="${2:-/etc/apache2/sites-available/reverse-proxy.conf}"
 
-# Default values
+# Default values (overridable from env.conf)
 DOMAIN="${DOMAIN:-example.com}"
 EMAIL="${EMAIL:-admin@example.com}"
 SSL_PROTOCOLS="${SSL_PROTOCOLS:-all -SSLv2 -SSLv3 -TLSv1 -TLSv1.1}"
 SSL_CIPHERS="${SSL_CIPHERS:-HIGH:!aNULL:!MD5}"
 
-# Service enable/disable flags (default to false)
-ENABLE_SONARR="${ENABLE_SONARR:-false}"
-ENABLE_RADARR="${ENABLE_RADARR:-false}"
-ENABLE_WHISPARR="${ENABLE_WHISPARR:-false}"
-ENABLE_LIDARR="${ENABLE_LIDARR:-false}"
-ENABLE_READARR="${ENABLE_READARR:-false}"
-ENABLE_PROWLARR="${ENABLE_PROWLARR:-false}"
-ENABLE_OVERSEERR="${ENABLE_OVERSEERR:-false}"
-ENABLE_JELLYFIN="${ENABLE_JELLYFIN:-false}"
-ENABLE_EMBY="${ENABLE_EMBY:-false}"
-ENABLE_PLEX="${ENABLE_PLEX:-false}"
-ENABLE_TAUTULLI="${ENABLE_TAUTULLI:-false}"
-ENABLE_TRANSMISSION="${ENABLE_TRANSMISSION:-false}"
-ENABLE_QBITTORRENT="${ENABLE_QBITTORRENT:-false}"
-ENABLE_SABNZBD="${ENABLE_SABNZBD:-false}"
-ENABLE_DELUGE="${ENABLE_DELUGE:-false}"
-ENABLE_CUSTOM_BACKEND="${ENABLE_CUSTOM_BACKEND:-false}"
-
-# Authentication flags
-ENABLE_AUTH_OFFICE365="${ENABLE_AUTH_OFFICE365:-false}"
-
 echo "=== Generating Apache Configuration ==="
 echo "Domain: $DOMAIN"
-echo "DEBUG: ENABLE_SONARR=$ENABLE_SONARR"
+echo "ENABLE_SONARR=$ENABLE_SONARR"
 echo "Enabled services:"
 
 # Function to generate include directive
@@ -42,10 +26,10 @@ generate_include() {
     local enable_flag=$2
     local service_file="/etc/apache2/sites-available/services/${service_name}.conf"
     
-    echo "DEBUG: Raw bytes: $(echo -n "$enable_flag" | od -An -tx1)" >&2
-    echo "DEBUG: Checking $service_name: enable_flag='$enable_flag' (length=${#enable_flag})" >&2
+    echo "DEBUG: enable_flag='$enable_flag' length=${#enable_flag}" >&2
     
-    if echo "$enable_flag" | grep -q "^true$"; then
+    # If length is 4, it's probably "true"
+    if [ ${#enable_flag} -eq 4 ]; then
         echo "  ✓ $service_name"
         echo "Include $service_file"
     fi
