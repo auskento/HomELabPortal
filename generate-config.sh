@@ -15,10 +15,49 @@ EMAIL="${EMAIL:-admin@example.com}"
 SSL_PROTOCOLS="${SSL_PROTOCOLS:-all -SSLv2 -SSLv3 -TLSv1 -TLSv1.1}"
 SSL_CIPHERS="${SSL_CIPHERS:-HIGH:!aNULL:!MD5}"
 
-echo "=== Generating Apache Configuration ==="
-echo "Domain: $DOMAIN"
-echo "ENABLE_SONARR=$ENABLE_SONARR"
-echo "Enabled services:"
+# After sourcing env.conf, process service config files to replace hardcoded URLs
+# This converts sonarr:8989 -> the actual SONARR_URL if provided
+
+process_service_config() {
+    local service_name=$1
+    local service_url_var="${1^^}_URL"  # Convert to uppercase: SONARR_URL
+    local service_url="${!service_url_var}"  # Get the variable value
+    local service_port="${2:-8989}"  # Default port
+    local service_file="/etc/apache2/sites-available/services/${service_name}.conf"
+    
+    if [ -z "$service_url" ]; then
+        # No custom URL provided, use default
+        return
+    fi
+    
+    # Replace hardcoded hostname:port with the actual URL
+    # Extract just the host from the URL (remove http://)
+    service_host=$(echo "$service_url" | sed 's|^http://||;s|^https://||;s|/.*||')
+    
+    # Replace sonarr:8989 style references with the actual host
+    sed -i "s|http://[^/:]*:${service_port}|http://${service_host}|g" "$service_file"
+    sed -i "s|ws://[^/:]*:${service_port}|ws://${service_host}|g" "$service_file"
+    
+    echo "Updated $service_name config to use: $service_url"
+}
+
+# Process each service if it's enabled
+[ "$ENABLE_SONARR" = "true" ] && process_service_config "sonarr" "8989"
+[ "$ENABLE_RADARR" = "true" ] && process_service_config "radarr" "7878"
+[ "$ENABLE_WHISPARR" = "true" ] && process_service_config "whisparr" "6969"
+[ "$ENABLE_LIDARR" = "true" ] && process_service_config "lidarr" "8686"
+[ "$ENABLE_READARR" = "true" ] && process_service_config "readarr" "8787"
+[ "$ENABLE_PROWLARR" = "true" ] && process_service_config "prowlarr" "9696"
+[ "$ENABLE_OVERSEERR" = "true" ] && process_service_config "overseerr" "5055"
+[ "$ENABLE_JELLYFIN" = "true" ] && process_service_config "jellyfin" "8096"
+[ "$ENABLE_EMBY" = "true" ] && process_service_config "emby" "8096"
+[ "$ENABLE_PLEX" = "true" ] && process_service_config "plex" "32400"
+[ "$ENABLE_TAUTULLI" = "true" ] && process_service_config "tautulli" "8181"
+[ "$ENABLE_TRANSMISSION" = "true" ] && process_service_config "transmission" "6969"
+[ "$ENABLE_QBITTORRENT" = "true" ] && process_service_config "qbittorrent" "8080"
+[ "$ENABLE_SABNZBD" = "true" ] && process_service_config "sabnzbd" "8080"
+[ "$ENABLE_DELUGE" = "true" ] && process_service_config "deluge" "8112"
+
 
 # Function to generate include directive (output ONLY the Include line)
 generate_include() {
