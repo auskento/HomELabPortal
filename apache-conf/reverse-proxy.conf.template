@@ -41,9 +41,10 @@
     ProxyTimeout 300
     Timeout 300
     
-    # Landing page redirect
+    # Landing page - load in content frame (internal rewrite, no redirect)
     RewriteEngine On
-    RewriteRule ^/$ @@LANDING_PAGE@@ [R=302,L]
+    RewriteCond %{REQUEST_URI} ^/$
+    RewriteRule ^/$ @@LANDING_PAGE@@ [L]
     
     # Static content serving
     DocumentRoot /var/www/html
