@@ -51,6 +51,14 @@ cat /etc/apache2/env.conf
 echo "=================================="
 echo ""
 
+echo ""
+echo "=== Setting Global ServerName ==="
+# Set global ServerName to suppress the warning
+if ! grep -q "^ServerName" /etc/apache2/apache2.conf; then
+    echo "ServerName $DOMAIN" >> /etc/apache2/apache2.conf
+    echo "Added ServerName: $DOMAIN"
+fi
+
 # Configuration
 DOMAIN="${DOMAIN:-example.com}"
 EMAIL="${EMAIL:-admin@example.com}"

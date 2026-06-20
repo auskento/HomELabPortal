@@ -48,10 +48,15 @@
     
     # Static content serving
     DocumentRoot /var/www/html
+    DirectoryIndex index.html
     
     # Alias for icons (serve directly, don't proxy)
     Alias /icons /var/www/html/icons
     <Directory /var/www/html/icons>
+        Require all granted
+    </Directory>
+    
+    <Directory /var/www/html>
         Require all granted
     </Directory>
     
