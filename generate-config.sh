@@ -41,9 +41,6 @@ generate_auth_include() {
     if [ "$enable_flag" = "true" ]; then
         echo "  ✓ Office 365 Authentication"
         echo "Include $auth_file"
-    else
-        echo "  - Office 365 Authentication (disabled)"
-        echo ""
     fi
 }
 
