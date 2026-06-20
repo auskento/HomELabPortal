@@ -208,4 +208,13 @@ apache2ctl configtest || {
 }
 
 echo "=== Starting Apache ==="
+
+# Debug logging - save generated files
+DEBUG_DIR="/var/log/apache-reverse-proxy-debug/$(date +%Y%m%d-%H%M%S)"
+mkdir -p "$DEBUG_DIR"
+cp /etc/apache2/env.conf "$DEBUG_DIR/" 2>/dev/null || true
+cp /etc/apache2/sites-available/reverse-proxy.conf "$DEBUG_DIR/" 2>/dev/null || true
+cp /etc/apache2/sites-enabled/reverse-proxy.conf "$DEBUG_DIR/" 2>/dev/null || true
+echo "Debug files saved to: $DEBUG_DIR"
+
 exec "$@"

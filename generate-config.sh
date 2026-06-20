@@ -20,14 +20,13 @@ echo "Domain: $DOMAIN"
 echo "ENABLE_SONARR=$ENABLE_SONARR"
 echo "Enabled services:"
 
-# Function to generate include directive
+# Function to generate include directive (output ONLY the Include line)
 generate_include() {
     local service_name=$1
     local enable_flag=$2
     local service_file="/etc/apache2/sites-available/services/${service_name}.conf"
     
     if [ "$enable_flag" = "true" ]; then
-        echo "  ✓ $service_name"
         echo "Include $service_file"
     fi
 }
