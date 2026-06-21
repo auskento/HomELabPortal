@@ -41,6 +41,11 @@
     ProxyTimeout 300
     Timeout 300
     
+    # Request limit settings (needed for Plex and other large requests)
+    LimitRequestFieldSize 32768
+    LimitRequestFields 100
+    LimitRequestLine 32768
+    
     # Static content serving
     DocumentRoot /var/www/html
     DirectoryIndex index.html

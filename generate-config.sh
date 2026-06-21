@@ -68,6 +68,12 @@ process_service_config() {
 generate_include() {
     local service_name=$1
     local enable_flag=$2
+    
+    # Skip Emby and Plex - they use subdomain VirtualHosts instead
+    if [ "$service_name" = "emby" ] || [ "$service_name" = "plex" ]; then
+        return
+    fi
+    
     local service_file="/etc/apache2/sites-available/services/${service_name}.conf"
     
     if [ "$enable_flag" = "true" ]; then

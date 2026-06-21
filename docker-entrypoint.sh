@@ -37,7 +37,9 @@ PROWLARR_URL="${PROWLARR_URL:-}"
 OVERSEERR_URL="${OVERSEERR_URL:-}"
 JELLYFIN_URL="${JELLYFIN_URL:-}"
 EMBY_URL="${EMBY_URL:-}"
+EMBY_DOMAIN="${EMBY_DOMAIN:-}"
 PLEX_URL="${PLEX_URL:-}"
+PLEX_DOMAIN="${PLEX_DOMAIN:-}"
 TAUTULLI_URL="${TAUTULLI_URL:-}"
 TRANSMISSION_URL="${TRANSMISSION_URL:-}"
 QBITTORRENT_URL="${QBITTORRENT_URL:-}"
@@ -185,6 +187,104 @@ if [ ! -f "/etc/letsencrypt/live/$DOMAIN/fullchain.pem" ]; then
 else
     echo ""
     echo "Certificate found for $DOMAIN"
+fi
+
+# Handle Emby subdomain if enabled
+if [ "${ENABLE_EMBY}" = "true" ]; then
+    # Use provided EMBY_DOMAIN or skip
+    if [ -z "$EMBY_DOMAIN" ]; then
+        echo "WARNING: ENABLE_EMBY=true but EMBY_DOMAIN not set. Skipping Emby subdomain setup."
+    else
+        echo ""
+        echo "=== Emby Subdomain Setup ==="
+        echo "Emby domain: $EMBY_DOMAIN"
+        
+        if [ ! -f "/etc/letsencrypt/live/$EMBY_DOMAIN/fullchain.pem" ]; then
+            echo "Requesting certificate for $EMBY_DOMAIN..."
+            certbot certonly \
+                --standalone \
+                --preferred-challenges http \
+                --email "$EMAIL" \
+                --agree-tos \
+                --no-eff-email \
+                --non-interactive \
+                -d "$EMBY_DOMAIN" \
+                || {
+                    echo "Certbot failed for Emby. Generating self-signed certificate..."
+                    mkdir -p "/etc/letsencrypt/live/$EMBY_DOMAIN"
+                    openssl req -x509 -nodes -days 365 \
+                        -newkey rsa:2048 \
+                        -keyout "/etc/letsencrypt/live/$EMBY_DOMAIN/privkey.pem" \
+                        -out "/etc/letsencrypt/live/$EMBY_DOMAIN/fullchain.pem" \
+                        -subj "/C=AU/ST=Victoria/L=Melbourne/O=Org/CN=$EMBY_DOMAIN" \
+                        2>/dev/null || true
+                }
+        else
+            echo "Certificate found for $EMBY_DOMAIN"
+        fi
+        
+        # Generate Emby VirtualHost with proper variable substitution
+        EMBY_HOST=$(echo "$EMBY_URL" | sed 's|^http://||;s|:.*||')
+        EMBY_PORT=$(echo "$EMBY_URL" | sed 's|^.*:||')
+        [ "$EMBY_PORT" = "$EMBY_URL" ] && EMBY_PORT="8096"
+        
+        EMBY_CONFIG=$(/usr/local/bin/generate-emby-virtualhost.sh "$EMBY_DOMAIN")
+        EMBY_CONFIG="${EMBY_CONFIG//@@EMBY_DOMAIN@@/$EMBY_DOMAIN}"
+        EMBY_CONFIG="${EMBY_CONFIG//@@EMBY_HOST@@/$EMBY_HOST}"
+        EMBY_CONFIG="${EMBY_CONFIG//@@EMBY_PORT@@/$EMBY_PORT}"
+        echo "$EMBY_CONFIG" > /etc/apache2/sites-available/emby-subdomain.conf
+        a2ensite emby-subdomain.conf 2>/dev/null || true
+        echo "Emby VirtualHost created"
+    fi
+fi
+
+# Handle Plex subdomain if enabled
+if [ "${ENABLE_PLEX}" = "true" ]; then
+    # Use provided PLEX_DOMAIN or skip
+    if [ -z "$PLEX_DOMAIN" ]; then
+        echo "WARNING: ENABLE_PLEX=true but PLEX_DOMAIN not set. Skipping Plex subdomain setup."
+    else
+        echo ""
+        echo "=== Plex Subdomain Setup ==="
+        echo "Plex domain: $PLEX_DOMAIN"
+        
+        if [ ! -f "/etc/letsencrypt/live/$PLEX_DOMAIN/fullchain.pem" ]; then
+            echo "Requesting certificate for $PLEX_DOMAIN..."
+            certbot certonly \
+                --standalone \
+                --preferred-challenges http \
+                --email "$EMAIL" \
+                --agree-tos \
+                --no-eff-email \
+                --non-interactive \
+                -d "$PLEX_DOMAIN" \
+                || {
+                    echo "Certbot failed for Plex. Generating self-signed certificate..."
+                    mkdir -p "/etc/letsencrypt/live/$PLEX_DOMAIN"
+                    openssl req -x509 -nodes -days 365 \
+                        -newkey rsa:2048 \
+                        -keyout "/etc/letsencrypt/live/$PLEX_DOMAIN/privkey.pem" \
+                        -out "/etc/letsencrypt/live/$PLEX_DOMAIN/fullchain.pem" \
+                        -subj "/C=AU/ST=Victoria/L=Melbourne/O=Org/CN=$PLEX_DOMAIN" \
+                        2>/dev/null || true
+                }
+        else
+            echo "Certificate found for $PLEX_DOMAIN"
+        fi
+        
+        # Generate Plex VirtualHost with proper variable substitution
+        PLEX_HOST=$(echo "$PLEX_URL" | sed 's|^http://||;s|:.*||')
+        PLEX_PORT=$(echo "$PLEX_URL" | sed 's|^.*:||')
+        [ "$PLEX_PORT" = "$PLEX_URL" ] && PLEX_PORT="32400"
+        
+        PLEX_CONFIG=$(/usr/local/bin/generate-plex-virtualhost.sh "$PLEX_DOMAIN")
+        PLEX_CONFIG="${PLEX_CONFIG//@@PLEX_DOMAIN@@/$PLEX_DOMAIN}"
+        PLEX_CONFIG="${PLEX_CONFIG//@@PLEX_HOST@@/$PLEX_HOST}"
+        PLEX_CONFIG="${PLEX_CONFIG//@@PLEX_PORT@@/$PLEX_PORT}"
+        echo "$PLEX_CONFIG" > /etc/apache2/sites-available/plex-subdomain.conf
+        a2ensite plex-subdomain.conf 2>/dev/null || true
+        echo "Plex VirtualHost created"
+    fi
 fi
 
 # Update Apache configuration with actual domain
