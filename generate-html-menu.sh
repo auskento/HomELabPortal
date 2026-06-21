@@ -58,8 +58,6 @@ declare -A CATEGORY_LABEL=(
 # Generate menu items HTML in category order (for simple menu)
 generate_menu_items() {
     local menu_html=""
-    local current_category=""
-    local first=true
     
     for service_key in "${SERVICE_ORDER[@]}"; do
         # Check if service is enabled
@@ -77,33 +75,20 @@ generate_menu_items() {
         # Handle subdomain services (Emby, Plex)
         if [ "$href" = "SUBDOMAIN" ]; then
             if [ "$service_key" = "EMBY" ]; then
-                [ -z "$EMBY_DOMAIN" ] && continue
+                if [ -z "$EMBY_DOMAIN" ]; then
+                    continue
+                fi
                 href="https://$EMBY_DOMAIN/"
             elif [ "$service_key" = "PLEX" ]; then
-                [ -z "$PLEX_DOMAIN" ] && continue
+                if [ -z "$PLEX_DOMAIN" ]; then
+                    continue
+                fi
                 href="https://$PLEX_DOMAIN/"
             fi
         fi
         
-        # Add category header if changed
-        if [ "$category" != "$current_category" ]; then
-            if [ "$first" != "true" ]; then
-                menu_html+="</td></tr><tr><td colspan='99'></td></tr><tr><td>"
-            else
-                menu_html+="<td>"
-                first=false
-            fi
-            current_category="$category"
-        else
-            menu_html+="<td>"
-        fi
-        
-        # Add menu item
-        menu_html+="<a href='$href' target='content' title='$service_name'>"
-        menu_html+="<img src='$icon_path' alt='$service_name' />"
-        menu_html+="<span class='label'>$service_name</span>"
-        menu_html+="</a>"
-        menu_html+="</td>"
+        # Add menu item - NO label span!
+        menu_html+="<td class='menu-item'><a href='$href' target='content' title='$service_name'><img src='$icon_path' alt='$service_name' /></a></td>"
     done
     
     echo "$menu_html"
@@ -240,6 +225,8 @@ generate_react_dashboard() {
     echo "$html_content" > "$DASHBOARD_OUTPUT"
     
     echo "✓ React dashboard generated: $DASHBOARD_OUTPUT"
+    echo "Debug: Service count in dashboard array:"
+    echo "$services_array" | grep -o "{ cat:" | wc -l
 }
 
 # Main generation function
