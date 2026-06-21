@@ -83,9 +83,6 @@ echo ""
 echo "Generating dashboard menu based on enabled services..."
 /usr/local/bin/generate-html-menu.sh
 
-# Copy support.js for React dashboard
-cp /usr/local/bin/support.js /var/www/html/support.js 2>/dev/null || true
-
 # Enable reverse proxy site
 a2ensite reverse-proxy.conf 2>/dev/null || true
 
