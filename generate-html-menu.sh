@@ -1,8 +1,8 @@
 #!/bin/bash
 
-# Generate BOTH HTML Dashboards Based on Enabled Services
-# - index.html: Simple icon menu with date/time
-# - dashboard.html: React-based dashboard with categories
+# Generate HTML Menu Based on Enabled Services
+# Uses index.html.template with dynamic service icons
+# Organized in same categories as React dashboard
 
 SIMPLE_TEMPLATE="/var/www/html/index.html.template"
 DASHBOARD_TEMPLATE="/var/www/html/index.html.dashboard"
@@ -10,53 +10,54 @@ SIMPLE_OUTPUT="/var/www/html/index.html"
 DASHBOARD_OUTPUT="/var/www/html/dashboard.html"
 
 # Define all available services with metadata (simple menu)
+# Format: SERVICE_KEY="Category|Name|Icon|Href"
 declare -A SERVICES=(
-    [SONARR]="Sonarr|/icons/sonarr.png|/sonarr/calendar"
-    [RADARR]="Radarr|/icons/radarr.png|/radarr/"
-    [WHISPARR]="Whisparr|/icons/whisparr.png|/whisparr/"
-    [LIDARR]="Lidarr|/icons/lidarr.png|/lidarr/"
-    [READARR]="Readarr|/icons/readarr.png|/readarr/"
-    [JELLYFIN]="Jellyfin|/icons/jellyfin.png|/jellyfin/"
-    [EMBY]="Emby|/icons/emby.png|/emby/"
-    [PLEX]="Plex|/icons/plex.png|https://app.plex.tv"
-    [OVERSEERR]="Overseerr|/icons/overseerr.png|/overseerr/"
-    [TAUTULLI]="Tautulli|/icons/tautulli.png|/tautulli/"
-    [SABNZBD]="SABnzbd|/icons/sabnzbd.png|/sabnzbd/"
-    [QBITTORRENT]="qBittorrent|/icons/qbittorrent.png|/qbittorrent/"
-    [TRANSMISSION]="Transmission|/icons/transmission.png|/transmission/"
-    [DELUGE]="Deluge|/icons/deluge.png|/deluge/"
-    [PROWLARR]="Prowlarr|/icons/prowlarr.png|/prowlarr/"
+    # MEDIA category
+    [SONARR]="MEDIA|Sonarr|/icons/sonarr.png|/sonarr/calendar"
+    [RADARR]="MEDIA|Radarr|/icons/radarr.png|/radarr/"
+    [WHISPARR]="MEDIA|Whisparr|/icons/whisparr.png|/whisparr/"
+    [LIDARR]="MEDIA|Lidarr|/icons/lidarr.png|/lidarr/"
+    [READARR]="MEDIA|Readarr|/icons/readarr.png|/readarr/"
+    [JELLYFIN]="MEDIA|Jellyfin|/icons/jellyfin.png|/jellyfin/"
+    [EMBY]="MEDIA|Emby|/icons/emby.png|SUBDOMAIN"
+    [PLEX]="MEDIA|Plex|/icons/plex.png|SUBDOMAIN"
+    [OVERSEERR]="MEDIA|Overseerr|/icons/overseerr.png|/overseerr/"
+    
+    # DOWNLOADS category
+    [TAUTULLI]="DOWNLOADS|Tautulli|/icons/tautulli.png|/tautulli/"
+    [SABNZBD]="DOWNLOADS|SABnzbd|/icons/sabnzbd.png|/sabnzbd/"
+    [QBITTORRENT]="DOWNLOADS|qBittorrent|/icons/qbittorrent.png|/qbittorrent/"
+    [TRANSMISSION]="DOWNLOADS|Transmission|/icons/transmission.png|/transmission/"
+    [DELUGE]="DOWNLOADS|Deluge|/icons/deluge.png|/deluge/"
+    
+    # INFRA category
+    [PROWLARR]="INFRA|Prowlarr|/icons/prowlarr.png|/prowlarr/"
 )
 
-# Define services with categories for React dashboard
-declare -A SERVICES_DASHBOARD=(
-    [SONARR]="MEDIA|Sonarr|TV shows|/icons/sonarr.png|/sonarr/calendar|#3aa0e0"
-    [RADARR]="MEDIA|Radarr|Movies|/icons/radarr.png|/radarr/|#febc2e"
-    [WHISPARR]="MEDIA|Whisparr|Adult content|/icons/whisparr.png|/whisparr/|#ef7e30"
-    [LIDARR]="MEDIA|Lidarr|Music|/icons/lidarr.png|/lidarr/|#2ecd6f"
-    [READARR]="MEDIA|Readarr|Books|/icons/readarr.png|/readarr/|#d48d4c"
-    [JELLYFIN]="MEDIA|Jellyfin|Streaming|/icons/jellyfin.png|/jellyfin/|#00a4dc"
-    [EMBY]="MEDIA|Emby|Streaming|/icons/emby.png|/emby/|#9146FF"
-    [PLEX]="MEDIA|Plex|Streaming|/icons/plex.png|https://app.plex.tv|#e5a00d"
-    [OVERSEERR]="MEDIA|Overseerr|Requests|/icons/overseerr.png|/overseerr/|#00a4dc"
-    [TAUTULLI]="DOWNLOADS|Tautulli|Analytics|/icons/tautulli.png|/tautulli/|#4a9eff"
-    [SABNZBD]="DOWNLOADS|SABnzbd|Usenet downloads|/icons/sabnzbd.png|/sabnzbd/|#f5c20f"
-    [QBITTORRENT]="DOWNLOADS|qBittorrent|Torrent client|/icons/qbittorrent.png|/qbittorrent/|#3683b6"
-    [TRANSMISSION]="DOWNLOADS|Transmission|Torrents|/icons/transmission.png|/transmission/|#343434"
-    [DELUGE]="DOWNLOADS|Deluge|Torrent client|/icons/deluge.png|/deluge/|#3aa3e0"
-    [PROWLARR]="INFRA|Prowlarr|Indexer manager|/icons/prowlarr.png|/prowlarr/|#e8810e"
+# Service display order (same as dashboard)
+declare -a SERVICE_ORDER=(
+    # MEDIA
+    "SONARR" "RADARR" "WHISPARR" "LIDARR" "READARR" "JELLYFIN" "EMBY" "PLEX" "OVERSEERR"
+    # DOWNLOADS
+    "TAUTULLI" "SABNZBD" "QBITTORRENT" "TRANSMISSION" "DELUGE"
+    # INFRA
+    "PROWLARR"
 )
 
-# Convert service key to lowercase path
-service_to_path() {
-    echo "$1" | tr '[:upper:]' '[:lower:]'
-}
+# Category labels
+declare -A CATEGORY_LABEL=(
+    [MEDIA]="MEDIA"
+    [DOWNLOADS]="DOWNLOADS"
+    [INFRA]="INDEXERS & INFRA"
+)
 
-# Generate menu items HTML (for simple menu)
+# Generate menu items HTML in category order (for simple menu)
 generate_menu_items() {
     local menu_html=""
+    local current_category=""
+    local first=true
     
-    for service_key in "${!SERVICES[@]}"; do
+    for service_key in "${SERVICE_ORDER[@]}"; do
         # Check if service is enabled
         local enable_var="ENABLE_${service_key}"
         local is_enabled="${!enable_var}"
@@ -67,10 +68,33 @@ generate_menu_items() {
         fi
         
         # Parse service metadata
-        IFS='|' read -r service_name icon_path href <<< "${SERVICES[$service_key]}"
+        IFS='|' read -r category service_name icon_path href <<< "${SERVICES[$service_key]}"
+        
+        # Handle subdomain services (Emby, Plex)
+        if [ "$href" = "SUBDOMAIN" ]; then
+            if [ "$service_key" = "EMBY" ]; then
+                [ -z "$EMBY_DOMAIN" ] && continue
+                href="https://$EMBY_DOMAIN/"
+            elif [ "$service_key" = "PLEX" ]; then
+                [ -z "$PLEX_DOMAIN" ] && continue
+                href="https://$PLEX_DOMAIN/"
+            fi
+        fi
+        
+        # Add category header if changed
+        if [ "$category" != "$current_category" ]; then
+            if [ "$first" != "true" ]; then
+                menu_html+="</td></tr><tr><td colspan='99'></td></tr><tr><td>"
+            else
+                menu_html+="<td>"
+                first=false
+            fi
+            current_category="$category"
+        else
+            menu_html+="<td>"
+        fi
         
         # Add menu item
-        menu_html+="<td class='menu-item'>"
         menu_html+="<a href='$href' target='content' title='$service_name'>"
         menu_html+="<img src='$icon_path' alt='$service_name' />"
         menu_html+="<span class='label'>$service_name</span>"
@@ -85,7 +109,7 @@ generate_menu_items() {
 generate_services_list() {
     local list_html=""
     
-    for service_key in "${!SERVICES[@]}"; do
+    for service_key in "${SERVICE_ORDER[@]}"; do
         # Check if service is enabled
         local enable_var="ENABLE_${service_key}"
         local is_enabled="${!enable_var}"
@@ -96,7 +120,18 @@ generate_services_list() {
         fi
         
         # Parse service metadata
-        IFS='|' read -r service_name icon_path href <<< "${SERVICES[$service_key]}"
+        IFS='|' read -r category service_name icon_path href <<< "${SERVICES[$service_key]}"
+        
+        # Handle subdomain services
+        if [ "$href" = "SUBDOMAIN" ]; then
+            if [ "$service_key" = "EMBY" ]; then
+                [ -z "$EMBY_DOMAIN" ] && continue
+                href="https://$EMBY_DOMAIN/"
+            elif [ "$service_key" = "PLEX" ]; then
+                [ -z "$PLEX_DOMAIN" ] && continue
+                href="https://$PLEX_DOMAIN/"
+            fi
+        fi
         
         # Add list item
         list_html+="<li><a href='$href' target='content'>$service_name</a></li>"
@@ -110,12 +145,12 @@ generate_services_list() {
     echo "$list_html"
 }
 
-# Generate services array for React dashboard
+# Generate services array for React dashboard (with categories)
 generate_services_array() {
     local array=""
     local first=true
     
-    for service_key in "${!SERVICES_DASHBOARD[@]}"; do
+    for service_key in "${SERVICE_ORDER[@]}"; do
         # Check if service is enabled
         local enable_var="ENABLE_${service_key}"
         local is_enabled="${!enable_var}"
@@ -125,9 +160,20 @@ generate_services_array() {
             continue
         fi
         
-        # Parse service metadata
-        IFS='|' read -r category name desc icon href accent <<< "${SERVICES_DASHBOARD[$service_key]}"
-        local id=$(service_to_path "$service_key")
+        # Parse service metadata (format: category|name|desc|icon|href|accent)
+        IFS='|' read -r category name desc icon href accent <<< "${SERVICES[$service_key]}"
+        local id=$(echo "$service_key" | tr '[:upper:]' '[:lower:]')
+        
+        # Handle subdomain services
+        if [ "$href" = "SUBDOMAIN" ]; then
+            if [ "$service_key" = "EMBY" ]; then
+                [ -z "$EMBY_DOMAIN" ] && continue
+                href="https://$EMBY_DOMAIN/"
+            elif [ "$service_key" = "PLEX" ]; then
+                [ -z "$PLEX_DOMAIN" ] && continue
+                href="https://$PLEX_DOMAIN/"
+            fi
+        fi
         
         # Determine if popup (external link)
         local popup="false"
@@ -140,8 +186,8 @@ generate_services_array() {
             array+=",$newline"
         fi
         
-        # Add service object
-        array+="{ cat: '$category', id: '$id', name: '$name', desc: '$desc', icon: '$icon', href: '$href', accent: '$accent', popup: $popup }"
+        # Add service object (using minimal info for now)
+        array+="{ cat: '$category', id: '$id', name: '$name', desc: '$desc', icon: '$icon', href: '$href', accent: '#3aa0e0', popup: $popup }"
     done
     
     echo "$array"
@@ -194,12 +240,12 @@ generate_react_dashboard() {
 
 # Main generation function
 generate_html() {
-    echo "Generating both dashboards..."
+    echo "Generating both dashboards in synchronized order..."
     echo ""
     
     # Count enabled services
     local count=0
-    for service_key in "${!SERVICES[@]}"; do
+    for service_key in "${SERVICE_ORDER[@]}"; do
         local enable_var="ENABLE_${service_key}"
         if [ "${!enable_var}" = "true" ]; then
             ((count++))
@@ -213,13 +259,15 @@ generate_html() {
     echo ""
     echo "✓ Both dashboards generated with $count enabled service(s)"
     echo ""
-    echo "Available dashboards:"
-    echo "  - Simple menu (default):  http://transfers.limosani.au/ → /var/www/html/index.html"
-    echo "  - React dashboard:        http://transfers.limosani.au/dashboard.html"
+    echo "Service order matches:"
+    echo "  1. MEDIA services"
+    echo "  2. DOWNLOADS services"  
+    echo "  3. INDEXERS & INFRA services"
 }
 
 # Run generation
 generate_html
+
 
 
 

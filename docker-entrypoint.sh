@@ -225,7 +225,7 @@ if [ "${ENABLE_EMBY}" = "true" ]; then
         
         # Generate Emby VirtualHost with proper variable substitution
         EMBY_HOST=$(echo "$EMBY_URL" | sed 's|^http://||;s|:.*||')
-        EMBY_PORT=$(echo "$EMBY_URL" | sed 's|^.*:||')
+        EMBY_PORT=$(echo "$EMBY_URL" | sed -E 's|^http://[^:]+:([0-9]+)/?.*|\1|')
         [ "$EMBY_PORT" = "$EMBY_URL" ] && EMBY_PORT="8096"
         
         EMBY_CONFIG=$(/usr/local/bin/generate-emby-virtualhost.sh "$EMBY_DOMAIN")
@@ -274,7 +274,7 @@ if [ "${ENABLE_PLEX}" = "true" ]; then
         
         # Generate Plex VirtualHost with proper variable substitution
         PLEX_HOST=$(echo "$PLEX_URL" | sed 's|^http://||;s|:.*||')
-        PLEX_PORT=$(echo "$PLEX_URL" | sed 's|^.*:||')
+        PLEX_PORT=$(echo "$PLEX_URL" | sed -E 's|^http://[^:]+:([0-9]+)/?.*|\1|')
         [ "$PLEX_PORT" = "$PLEX_URL" ] && PLEX_PORT="32400"
         
         PLEX_CONFIG=$(/usr/local/bin/generate-plex-virtualhost.sh "$PLEX_DOMAIN")
