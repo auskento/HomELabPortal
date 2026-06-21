@@ -9,28 +9,28 @@ DASHBOARD_TEMPLATE="/var/www/html/index.html.dashboard"
 SIMPLE_OUTPUT="/var/www/html/index.html"
 DASHBOARD_OUTPUT="/var/www/html/dashboard.html"
 
-# Define all available services with metadata (simple menu)
-# Format: SERVICE_KEY="Category|Name|Icon|Href"
+# Define all available services with metadata
+# Format: SERVICE_KEY="Category|Name|Description|Icon|Href|Accent"
 declare -A SERVICES=(
     # DOWNLOADERS category
-    [SABNZBD]="DOWNLOADERS|SABnzbd|/icons/sabnzbd.png|/sabnzbd/"
-    [DELUGE]="DOWNLOADERS|Deluge|/icons/deluge.png|/deluge/"
-    [TRANSMISSION]="DOWNLOADERS|Transmission|/icons/transmission.png|/transmission/"
-    [QBITTORRENT]="DOWNLOADERS|qBittorrent|/icons/qbittorrent.png|/qbittorrent/"
+    [SABNZBD]="DOWNLOADERS|SABnzbd|Usenet downloads|/icons/sabnzbd.png|/sabnzbd/|#f5c20f"
+    [DELUGE]="DOWNLOADERS|Deluge|Torrent client|/icons/deluge.png|/deluge/|#3aa3e0"
+    [TRANSMISSION]="DOWNLOADERS|Transmission|Torrents|/icons/transmission.png|/transmission/|#343434"
+    [QBITTORRENT]="DOWNLOADERS|qBittorrent|Torrent client|/icons/qbittorrent.png|/qbittorrent/|#3683b6"
     
     # INDEXERS category
-    [RADARR]="INDEXERS|Radarr|/icons/radarr.png|/radarr/"
-    [SONARR]="INDEXERS|Sonarr|/icons/sonarr.png|/sonarr/calendar"
-    [WHISPARR]="INDEXERS|Whisparr|/icons/whisparr.png|/whisparr/"
-    [PROWLARR]="INDEXERS|Prowlarr|/icons/prowlarr.png|/prowlarr/"
-    [OVERSEERR]="INDEXERS|Overseerr|/icons/overseerr.png|/overseerr/"
-    [LIDARR]="INDEXERS|Lidarr|/icons/lidarr.png|/lidarr/"
+    [RADARR]="INDEXERS|Radarr|Movies|/icons/radarr.png|/radarr/|#febc2e"
+    [SONARR]="INDEXERS|Sonarr|TV shows|/icons/sonarr.png|/sonarr/calendar|#3aa0e0"
+    [WHISPARR]="INDEXERS|Whisparr|Adult content|/icons/whisparr.png|/whisparr/|#ef7e30"
+    [PROWLARR]="INDEXERS|Prowlarr|Indexer manager|/icons/prowlarr.png|/prowlarr/|#e8810e"
+    [OVERSEERR]="INDEXERS|Overseerr|Requests|/icons/overseerr.png|/overseerr/|#00a4dc"
+    [LIDARR]="INDEXERS|Lidarr|Music|/icons/lidarr.png|/lidarr/|#2ecd6f"
     
     # MEDIA SERVERS category
-    [EMBY]="MEDIA|Emby|/icons/emby.png|SUBDOMAIN"
-    [PLEX]="MEDIA|Plex|/icons/plex.png|SUBDOMAIN"
-    [JELLYFIN]="MEDIA|Jellyfin|/icons/jellyfin.png|/jellyfin/"
-    [TAUTULLI]="MEDIA|Tautulli|/icons/tautulli.png|/tautulli/"
+    [EMBY]="MEDIA|Emby|Streaming|/icons/emby.png|SUBDOMAIN|#9146FF"
+    [PLEX]="MEDIA|Plex|Streaming|/icons/plex.png|SUBDOMAIN|#e5a00d"
+    [JELLYFIN]="MEDIA|Jellyfin|Streaming|/icons/jellyfin.png|/jellyfin/|#00a4dc"
+    [TAUTULLI]="MEDIA|Tautulli|Analytics|/icons/tautulli.png|/tautulli/|#4a9eff"
 )
 
 # Service display order (same order for both menus)
@@ -67,7 +67,7 @@ generate_menu_items() {
         fi
         
         # Parse service metadata
-        IFS='|' read -r category service_name icon_path href <<< "${SERVICES[$service_key]}"
+        IFS='|' read -r category service_name service_desc icon_path href accent <<< "${SERVICES[$service_key]}"
         
         # Handle subdomain services (Emby, Plex)
         if [ "$href" = "SUBDOMAIN" ]; then
@@ -119,7 +119,7 @@ generate_services_list() {
         fi
         
         # Parse service metadata
-        IFS='|' read -r category service_name icon_path href <<< "${SERVICES[$service_key]}"
+        IFS='|' read -r category service_name service_desc icon_path href accent <<< "${SERVICES[$service_key]}"
         
         # Handle subdomain services
         if [ "$href" = "SUBDOMAIN" ]; then
@@ -185,8 +185,8 @@ generate_services_array() {
             array+=",$newline"
         fi
         
-        # Add service object (using minimal info for now)
-        array+="{ cat: '$category', id: '$id', name: '$name', desc: '$desc', icon: '$icon', href: '$href', accent: '#3aa0e0', popup: $popup }"
+        # Add service object with correct accent color
+        array+="{ cat: '$category', id: '$id', name: '$name', desc: '$desc', icon: '$icon', href: '$href', accent: '$accent', popup: $popup }"
     done
     
     echo "$array"
