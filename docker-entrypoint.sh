@@ -88,6 +88,14 @@ echo "Generating dashboard menu based on enabled services..."
 # Enable reverse proxy site
 a2ensite reverse-proxy.conf 2>/dev/null || true
 
+# Enable required Apache modules for OAuth2
+a2enmod auth_openidc 2>/dev/null || true
+a2enmod proxy 2>/dev/null || true
+a2enmod proxy_http 2>/dev/null || true
+a2enmod headers 2>/dev/null || true
+a2enmod rewrite 2>/dev/null || true
+a2enmod ssl 2>/dev/null || true
+
 # Office 365 / Azure AD Authentication Setup
 if [ "${ENABLE_AUTH_OFFICE365}" = "true" ]; then
     echo "=== Setting up Office 365 Authentication ==="
@@ -126,6 +134,11 @@ if [ "${ENABLE_AUTH_OFFICE365}" = "true" ]; then
     echo "  Allowed Domains: $OAUTH2_ALLOWED_DOMAINS"
 else
     echo "Office 365 Authentication is disabled (ENABLE_AUTH_OFFICE365=false)"
+    # Disable OAuth2 configs if they were previously enabled
+    a2disconf oauth2-office365 2>/dev/null || true
+    a2disconf auth-office365-protect 2>/dev/null || true
+    rm -f /etc/apache2/conf-enabled/oauth2-office365.conf
+    rm -f /etc/apache2/conf-enabled/auth-office365-protect.conf
 fi
 
 # Function to wait for certificate
