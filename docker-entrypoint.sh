@@ -89,7 +89,7 @@ echo "Generating dashboard menu based on enabled services..."
 a2ensite reverse-proxy.conf 2>/dev/null || true
 
 # Enable required Apache modules for OAuth2
-a2enmod auth_openidc 2>/dev/null || true
+a2enmod auth_oidc 2>/dev/null || true
 a2enmod proxy 2>/dev/null || true
 a2enmod proxy_http 2>/dev/null || true
 a2enmod headers 2>/dev/null || true
