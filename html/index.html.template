@@ -15,22 +15,53 @@
             font-family: Arial, sans-serif;
             background-color: #000;
             color: #fff;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
         }
         
         .header {
             background-color: #1a1a1a;
             padding: 15px 20px;
             border-bottom: 2px solid #444;
-            text-align: center;
-            min-height: 140px;
             display: flex;
             align-items: center;
-            justify-content: center;
+            justify-content: space-between;
             overflow: auto;
+            min-height: 150px;
+            gap: 30px;
+        }
+        
+        .datetime-box {
+            flex-shrink: 0;
+            background-color: rgba(74, 158, 255, 0.1);
+            border: 1px solid rgba(74, 158, 255, 0.3);
+            border-radius: 12px;
+            padding: 20px 25px;
+            text-align: center;
+            min-width: 140px;
+        }
+        
+        .datetime-box .time {
+            font-size: 32px;
+            font-weight: bold;
+            font-variant-numeric: tabular-nums;
+            color: #4a9eff;
+            margin-bottom: 5px;
+            font-family: 'Courier New', monospace;
+        }
+        
+        .datetime-box .date {
+            font-size: 12px;
+            color: #888;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
         
         .menu-container {
-            width: 100%;
+            flex: 1;
+            display: flex;
+            justify-content: center;
         }
         
         .menu-table {
@@ -39,7 +70,7 @@
             display: flex;
             justify-content: center;
             flex-wrap: wrap;
-            gap: 10px;
+            gap: 15px;
         }
         
         .menu-item {
@@ -54,21 +85,18 @@
         }
         
         .menu-item a:hover {
-            transform: scale(1.1);
+            transform: scale(1.15);
         }
         
         .menu-item img {
-            max-width: 80px;
-            max-height: 60px;
+            max-width: 120px;
+            max-height: 100px;
             border: none;
             display: block;
         }
         
         .menu-item .label {
-            font-size: 0.8em;
-            color: #999;
-            margin-top: 3px;
-            display: block;
+            display: none;
         }
         
         .content {
@@ -80,7 +108,7 @@
             background-color: #000;
             border: none;
             width: 100%;
-            height: calc(100% - 140px);
+            height: calc(100% - 150px);
         }
         
         .welcome-screen {
@@ -148,14 +176,29 @@
         
         /* Responsive */
         @media (max-width: 768px) {
+            body {
+                flex-direction: column;
+            }
+            
             .header {
-                min-height: 100px;
+                min-height: 120px;
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .datetime-box {
+                min-width: auto;
+                padding: 15px 20px;
+            }
+            
+            .datetime-box .time {
+                font-size: 24px;
             }
             
             .content {
                 position: relative;
                 height: auto;
-                min-height: 100vh;
+                min-height: calc(100vh - 120px);
             }
             
             .welcome-screen h1 {
@@ -163,12 +206,8 @@
             }
             
             .menu-item img {
-                max-width: 60px;
-                max-height: 45px;
-            }
-            
-            .menu-item .label {
-                display: none;
+                max-width: 80px;
+                max-height: 70px;
             }
         }
     </style>
@@ -176,6 +215,10 @@
 <body>
 
 <div class="header">
+    <div class="datetime-box">
+        <div class="time" id="currentTime">--:--</div>
+        <div class="date" id="currentDate">Loading...</div>
+    </div>
     <div class="menu-container">
         <table class="menu-table">
             <tr>
@@ -207,5 +250,26 @@
     </div>
 </noscript>
 
+<script>
+    function updateDateTime() {
+        const now = new Date();
+        
+        // Format time as HH:MM
+        const hours = String(now.getHours()).padStart(2, '0');
+        const minutes = String(now.getMinutes()).padStart(2, '0');
+        document.getElementById('currentTime').textContent = `${hours}:${minutes}`;
+        
+        // Format date
+        const options = { weekday: 'short', month: 'short', day: 'numeric' };
+        const dateStr = now.toLocaleDateString('en-US', options);
+        document.getElementById('currentDate').textContent = dateStr;
+    }
+    
+    // Update immediately
+    updateDateTime();
+    
+    // Update every second
+    setInterval(updateDateTime, 1000);
+</script>
 </body>
 </html>
