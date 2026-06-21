@@ -58,6 +58,24 @@
             letter-spacing: 0.5px;
         }
         
+        .datetime-box .style-switcher {
+            margin-top: 12px;
+            padding-top: 12px;
+            border-top: 1px solid rgba(74, 158, 255, 0.2);
+            font-size: 11px;
+        }
+        
+        .datetime-box .style-switcher a {
+            color: #4a9eff;
+            text-decoration: none;
+            transition: all 0.2s;
+        }
+        
+        .datetime-box .style-switcher a:hover {
+            color: #6bb3ff;
+            text-decoration: underline;
+        }
+        
         .menu-container {
             flex: 1;
             display: flex;
@@ -218,6 +236,9 @@
     <div class="datetime-box">
         <div class="time" id="currentTime">--:--</div>
         <div class="date" id="currentDate">Loading...</div>
+        <div class="style-switcher">
+            <a href="/dashboard.html">Modern UI →</a>
+        </div>
     </div>
     <div class="menu-container">
         <table class="menu-table">

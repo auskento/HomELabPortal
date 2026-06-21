@@ -41,6 +41,9 @@
     ProxyTimeout 300
     Timeout 300
     
+    # Set STYLE environment variable for rewrite rules
+    SetEnv STYLE @@STYLE@@
+    
     # Request limit settings (needed for Plex and other large requests)
     LimitRequestFieldSize 32768
     LimitRequestFields 100
@@ -48,7 +51,15 @@
     
     # Static content serving
     DocumentRoot /var/www/html
-    DirectoryIndex index.html
+    DirectoryIndex index.html dashboard.html
+    
+    # Rewrite rules for STYLE preference
+    RewriteEngine On
+    # If STYLE is modern and requesting root, serve dashboard.html
+    RewriteCond %{REQUEST_URI} ^/$ [OR]
+    RewriteCond %{REQUEST_URI} ^$
+    RewriteCond %{ENV:STYLE} modern
+    RewriteRule ^.*$ /dashboard.html [L]
     
     # Alias for icons (serve directly, don't proxy)
     Alias /icons /var/www/html/icons

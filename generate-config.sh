@@ -98,7 +98,6 @@ SONARR_INCLUDE=$(generate_include "sonarr" "$ENABLE_SONARR")
 RADARR_INCLUDE=$(generate_include "radarr" "$ENABLE_RADARR")
 WHISPARR_INCLUDE=$(generate_include "whisparr" "$ENABLE_WHISPARR")
 LIDARR_INCLUDE=$(generate_include "lidarr" "$ENABLE_LIDARR")
-READARR_INCLUDE=$(generate_include "readarr" "$ENABLE_READARR")
 PROWLARR_INCLUDE=$(generate_include "prowlarr" "$ENABLE_PROWLARR")
 OVERSEERR_INCLUDE=$(generate_include "overseerr" "$ENABLE_OVERSEERR")
 JELLYFIN_INCLUDE=$(generate_include "jellyfin" "$ENABLE_JELLYFIN")
@@ -160,6 +159,7 @@ CONFIG=$(cat "$TEMPLATE_FILE")
 
 # Replace placeholders
 CONFIG="${CONFIG//@@DOMAIN@@/$DOMAIN}"
+CONFIG="${CONFIG//@@STYLE@@/$STYLE}"
 CONFIG="${CONFIG//@@SSL_PROTOCOLS@@/$SSL_PROTOCOLS}"
 CONFIG="${CONFIG//@@SSL_CIPHERS@@/$SSL_CIPHERS}"
 

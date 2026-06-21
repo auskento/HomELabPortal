@@ -12,43 +12,42 @@ DASHBOARD_OUTPUT="/var/www/html/dashboard.html"
 # Define all available services with metadata (simple menu)
 # Format: SERVICE_KEY="Category|Name|Icon|Href"
 declare -A SERVICES=(
-    # MEDIA category
-    [SONARR]="MEDIA|Sonarr|/icons/sonarr.png|/sonarr/calendar"
-    [RADARR]="MEDIA|Radarr|/icons/radarr.png|/radarr/"
-    [WHISPARR]="MEDIA|Whisparr|/icons/whisparr.png|/whisparr/"
-    [LIDARR]="MEDIA|Lidarr|/icons/lidarr.png|/lidarr/"
-    [READARR]="MEDIA|Readarr|/icons/readarr.png|/readarr/"
-    [JELLYFIN]="MEDIA|Jellyfin|/icons/jellyfin.png|/jellyfin/"
+    # DOWNLOADERS category
+    [SABNZBD]="DOWNLOADERS|SABnzbd|/icons/sabnzbd.png|/sabnzbd/"
+    [DELUGE]="DOWNLOADERS|Deluge|/icons/deluge.png|/deluge/"
+    [TRANSMISSION]="DOWNLOADERS|Transmission|/icons/transmission.png|/transmission/"
+    [QBITTORRENT]="DOWNLOADERS|qBittorrent|/icons/qbittorrent.png|/qbittorrent/"
+    
+    # INDEXERS category
+    [RADARR]="INDEXERS|Radarr|/icons/radarr.png|/radarr/"
+    [SONARR]="INDEXERS|Sonarr|/icons/sonarr.png|/sonarr/calendar"
+    [WHISPARR]="INDEXERS|Whisparr|/icons/whisparr.png|/whisparr/"
+    [PROWLARR]="INDEXERS|Prowlarr|/icons/prowlarr.png|/prowlarr/"
+    [OVERSEERR]="INDEXERS|Overseerr|/icons/overseerr.png|/overseerr/"
+    [LIDARR]="INDEXERS|Lidarr|/icons/lidarr.png|/lidarr/"
+    
+    # MEDIA SERVERS category
     [EMBY]="MEDIA|Emby|/icons/emby.png|SUBDOMAIN"
     [PLEX]="MEDIA|Plex|/icons/plex.png|SUBDOMAIN"
-    [OVERSEERR]="MEDIA|Overseerr|/icons/overseerr.png|/overseerr/"
-    
-    # DOWNLOADS category
-    [TAUTULLI]="DOWNLOADS|Tautulli|/icons/tautulli.png|/tautulli/"
-    [SABNZBD]="DOWNLOADS|SABnzbd|/icons/sabnzbd.png|/sabnzbd/"
-    [QBITTORRENT]="DOWNLOADS|qBittorrent|/icons/qbittorrent.png|/qbittorrent/"
-    [TRANSMISSION]="DOWNLOADS|Transmission|/icons/transmission.png|/transmission/"
-    [DELUGE]="DOWNLOADS|Deluge|/icons/deluge.png|/deluge/"
-    
-    # INFRA category
-    [PROWLARR]="INFRA|Prowlarr|/icons/prowlarr.png|/prowlarr/"
+    [JELLYFIN]="MEDIA|Jellyfin|/icons/jellyfin.png|/jellyfin/"
+    [TAUTULLI]="MEDIA|Tautulli|/icons/tautulli.png|/tautulli/"
 )
 
-# Service display order (same as dashboard)
+# Service display order (same order for both menus)
 declare -a SERVICE_ORDER=(
-    # MEDIA
-    "SONARR" "RADARR" "WHISPARR" "LIDARR" "READARR" "JELLYFIN" "EMBY" "PLEX" "OVERSEERR"
-    # DOWNLOADS
-    "TAUTULLI" "SABNZBD" "QBITTORRENT" "TRANSMISSION" "DELUGE"
-    # INFRA
-    "PROWLARR"
+    # DOWNLOADERS
+    "SABNZBD" "DELUGE" "TRANSMISSION" "QBITTORRENT"
+    # INDEXERS
+    "RADARR" "SONARR" "WHISPARR" "PROWLARR" "OVERSEERR" "LIDARR"
+    # MEDIA SERVERS
+    "EMBY" "PLEX" "JELLYFIN" "TAUTULLI"
 )
 
 # Category labels
 declare -A CATEGORY_LABEL=(
-    [MEDIA]="MEDIA"
-    [DOWNLOADS]="DOWNLOADS"
-    [INFRA]="INDEXERS & INFRA"
+    [DOWNLOADERS]="DOWNLOADERS"
+    [INDEXERS]="INDEXERS"
+    [MEDIA]="MEDIA SERVERS"
 )
 
 # Generate menu items HTML in category order (for simple menu)
