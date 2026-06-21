@@ -16,22 +16,23 @@ DASHBOARD_OUTPUT="/var/www/html/dashboard.html"
 
 # Define all available services with metadata
 # Format: SERVICE_KEY="Category|Name|Description|Icon|Href|Accent"
+# Categories MUST be: DOWNLOADS, INFRA, MEDIA (to match dashboard)
 declare -A SERVICES=(
-    # DOWNLOADERS category
-    [SABNZBD]="DOWNLOADERS|SABnzbd|Usenet downloads|/icons/sabnzbd.png|/sabnzbd/|#f5c20f"
-    [DELUGE]="DOWNLOADERS|Deluge|Torrent client|/icons/deluge.png|/deluge/|#3aa3e0"
-    [TRANSMISSION]="DOWNLOADERS|Transmission|Torrents|/icons/transmission.png|/transmission/|#343434"
-    [QBITTORRENT]="DOWNLOADERS|qBittorrent|Torrent client|/icons/qbittorrent.png|/qbittorrent/|#3683b6"
+    # DOWNLOADS category
+    [SABNZBD]="DOWNLOADS|SABnzbd|Usenet downloads|/icons/sabnzbd.png|/sabnzbd/|#f5c20f"
+    [DELUGE]="DOWNLOADS|Deluge|Torrent client|/icons/deluge.png|/deluge/|#3aa3e0"
+    [TRANSMISSION]="DOWNLOADS|Transmission|Torrents|/icons/transmission.png|/transmission/|#343434"
+    [QBITTORRENT]="DOWNLOADS|qBittorrent|Torrent client|/icons/qbittorrent.png|/qbittorrent/|#3683b6"
     
-    # INDEXERS category
-    [RADARR]="INDEXERS|Radarr|Movies|/icons/radarr.png|/radarr/|#febc2e"
-    [SONARR]="INDEXERS|Sonarr|TV shows|/icons/sonarr.png|/sonarr/calendar|#3aa0e0"
-    [WHISPARR]="INDEXERS|Whisparr|Adult content|/icons/whisparr.png|/whisparr/|#ef7e30"
-    [PROWLARR]="INDEXERS|Prowlarr|Indexer manager|/icons/prowlarr.png|/prowlarr/|#e8810e"
-    [OVERSEERR]="INDEXERS|Overseerr|Requests|/icons/overseerr.png|/overseerr/|#00a4dc"
-    [LIDARR]="INDEXERS|Lidarr|Music|/icons/lidarr.png|/lidarr/|#2ecd6f"
+    # INFRA category (Indexers & Infrastructure)
+    [RADARR]="INFRA|Radarr|Movies|/icons/radarr.png|/radarr/|#febc2e"
+    [SONARR]="INFRA|Sonarr|TV shows|/icons/sonarr.png|/sonarr/calendar|#3aa0e0"
+    [WHISPARR]="INFRA|Whisparr|Adult content|/icons/whisparr.png|/whisparr/|#ef7e30"
+    [PROWLARR]="INFRA|Prowlarr|Indexer manager|/icons/prowlarr.png|/prowlarr/|#e8810e"
+    [OVERSEERR]="INFRA|Overseerr|Requests|/icons/overseerr.png|/overseerr/|#00a4dc"
+    [LIDARR]="INFRA|Lidarr|Music|/icons/lidarr.png|/lidarr/|#2ecd6f"
     
-    # MEDIA SERVERS category
+    # MEDIA category
     [EMBY]="MEDIA|Emby|Streaming|/icons/emby.png|SUBDOMAIN|#9146FF"
     [PLEX]="MEDIA|Plex|Streaming|/icons/plex.png|SUBDOMAIN|#e5a00d"
     [JELLYFIN]="MEDIA|Jellyfin|Streaming|/icons/jellyfin.png|/jellyfin/|#00a4dc"

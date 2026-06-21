@@ -30,15 +30,15 @@ process_service_config() {
         return
     fi
     
-    # Extract host with port for ProxyPass URLs
-    service_host_with_port=$(echo "$service_url" | sed 's|^http://||;s|^https://||;s|/.*||')
+    # Extract host:port AND path (e.g., "192.168.9.13:8080/sabnzbd" from "http://192.168.9.13:8080/sabnzbd")
+    service_host_with_port=$(echo "$service_url" | sed 's|^http://||;s|^https://||')
     
-    # Extract host WITHOUT port for cookie domain
+    # Extract host WITHOUT port (e.g., "192.168.9.13" from "http://192.168.9.13:8080/sabnzbd")
     service_host_only=$(echo "$service_url" | sed 's|^http://||;s|^https://||;s|/.*||;s|:.*||')
     
-    # Replace ProxyPass URLs (keep the port)
-    sed -i "s|http://[^/]*:${service_port}|http://${service_host_with_port}|g" "$service_file"
-    sed -i "s|ws://[^/]*:${service_port}|ws://${service_host_with_port}|g" "$service_file"
+    # Replace ProxyPass URLs (keep the full host:port/path)
+    sed -i "s|http://[^/]*:${service_port}[^/]*|http://${service_host_with_port}|g" "$service_file"
+    sed -i "s|ws://[^/]*:${service_port}[^/]*|ws://${service_host_with_port}|g" "$service_file"
     
     # Replace cookie domain ONLY if the line contains ProxyPassReverseCookieDomain
     sed -i "s|\(ProxyPassReverseCookieDomain\) $service_name |\1 $service_host_only |g" "$service_file"
