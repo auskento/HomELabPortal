@@ -90,25 +90,20 @@ a2ensite reverse-proxy.conf 2>/dev/null || true
 
 # Enable required Apache modules for OAuth2
 echo "Enabling Apache modules..."
-a2enmod auth_oidc 2>/dev/null || true
+a2enmod auth_openidc 2>/dev/null || true
 a2enmod proxy 2>/dev/null || true
 a2enmod proxy_http 2>/dev/null || true
 a2enmod headers 2>/dev/null || true
 a2enmod rewrite 2>/dev/null || true
 a2enmod ssl 2>/dev/null || true
+a2enmod session 2>/dev/null || true
+a2enmod session_crypto 2>/dev/null || true
 
-# Check if auth_oidc module file exists
-if [ -f /usr/lib/apache2/modules/mod_auth_oidc.so ]; then
-    echo "✓ auth_oidc module file found"
-    # Explicitly ensure it's loaded
-    if ! grep -q "LoadModule auth_oidc_module" /etc/apache2/mods-enabled/*.load 2>/dev/null; then
-        echo "LoadModule auth_oidc_module /usr/lib/apache2/modules/mod_auth_oidc.so" >> /etc/apache2/mods-enabled/auth_oidc.load 2>/dev/null || true
-        echo "✓ Added explicit LoadModule directive"
-    fi
+# Check if auth_openidc module file exists
+if [ -f /usr/lib/apache2/modules/mod_auth_openidc.so ]; then
+    echo "✓ auth_openidc module file found and enabled"
 else
-    echo "✗ WARNING: auth_oidc module file NOT found at /usr/lib/apache2/modules/mod_auth_oidc.so"
-    echo "  Available modules:"
-    ls /usr/lib/apache2/modules/ | grep -i oidc || echo "  (none found)"
+    echo "✗ WARNING: auth_openidc module file NOT found"
 fi
 
 # Office 365 / Azure AD Authentication Setup
