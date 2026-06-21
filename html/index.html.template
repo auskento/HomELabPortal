@@ -1,7 +1,7 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
 <html>
 <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <title>Media Server - Dashboard</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <style>
@@ -241,7 +241,7 @@
         <div class="time" id="currentTime">--:--</div>
         <div class="date" id="currentDate">Loading...</div>
         <div class="style-switcher">
-            <a href="/dashboard.html">Modern UI →</a>
+            <a href="/dashboard.html">Modern UI &rarr;</a>
         </div>
     </div>
     <div class="menu-container">
