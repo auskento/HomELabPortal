@@ -224,9 +224,11 @@ if [ "${ENABLE_EMBY}" = "true" ]; then
         fi
         
         # Generate Emby VirtualHost with proper variable substitution
-        EMBY_HOST=$(echo "$EMBY_URL" | sed 's|^http://||;s|:.*||')
-        EMBY_PORT=$(echo "$EMBY_URL" | sed -E 's|^http://[^:]+:([0-9]+)/?.*|\1|')
-        [ "$EMBY_PORT" = "$EMBY_URL" ] && EMBY_PORT="8096"
+        EMBY_HOST=$(echo "$EMBY_URL" | sed 's|^https*://||;s|/.*||;s|:.*||')
+        EMBY_PORT=$(echo "$EMBY_URL" | grep -oP ':\K[0-9]+' | head -1)
+        [ -z "$EMBY_PORT" ] && EMBY_PORT="8096"
+        
+        echo "DEBUG Emby: URL=$EMBY_URL, HOST=$EMBY_HOST, PORT=$EMBY_PORT, DOMAIN=$EMBY_DOMAIN"
         
         EMBY_CONFIG=$(/usr/local/bin/generate-emby-virtualhost.sh "$EMBY_DOMAIN")
         EMBY_CONFIG="${EMBY_CONFIG//@@EMBY_DOMAIN@@/$EMBY_DOMAIN}"
@@ -234,7 +236,7 @@ if [ "${ENABLE_EMBY}" = "true" ]; then
         EMBY_CONFIG="${EMBY_CONFIG//@@EMBY_PORT@@/$EMBY_PORT}"
         echo "$EMBY_CONFIG" > /etc/apache2/sites-available/emby-subdomain.conf
         a2ensite emby-subdomain.conf 2>/dev/null || true
-        echo "Emby VirtualHost created"
+        echo "Emby VirtualHost created with: $EMBY_HOST:$EMBY_PORT"
     fi
 fi
 
@@ -273,9 +275,11 @@ if [ "${ENABLE_PLEX}" = "true" ]; then
         fi
         
         # Generate Plex VirtualHost with proper variable substitution
-        PLEX_HOST=$(echo "$PLEX_URL" | sed 's|^http://||;s|:.*||')
-        PLEX_PORT=$(echo "$PLEX_URL" | sed -E 's|^http://[^:]+:([0-9]+)/?.*|\1|')
-        [ "$PLEX_PORT" = "$PLEX_URL" ] && PLEX_PORT="32400"
+        PLEX_HOST=$(echo "$PLEX_URL" | sed 's|^https*://||;s|/.*||;s|:.*||')
+        PLEX_PORT=$(echo "$PLEX_URL" | grep -oP ':\K[0-9]+' | head -1)
+        [ -z "$PLEX_PORT" ] && PLEX_PORT="32400"
+        
+        echo "DEBUG Plex: URL=$PLEX_URL, HOST=$PLEX_HOST, PORT=$PLEX_PORT, DOMAIN=$PLEX_DOMAIN"
         
         PLEX_CONFIG=$(/usr/local/bin/generate-plex-virtualhost.sh "$PLEX_DOMAIN")
         PLEX_CONFIG="${PLEX_CONFIG//@@PLEX_DOMAIN@@/$PLEX_DOMAIN}"
@@ -283,6 +287,7 @@ if [ "${ENABLE_PLEX}" = "true" ]; then
         PLEX_CONFIG="${PLEX_CONFIG//@@PLEX_PORT@@/$PLEX_PORT}"
         echo "$PLEX_CONFIG" > /etc/apache2/sites-available/plex-subdomain.conf
         a2ensite plex-subdomain.conf 2>/dev/null || true
+        echo "Plex VirtualHost created with: $PLEX_HOST:$PLEX_PORT"
         echo "Plex VirtualHost created"
     fi
 fi
