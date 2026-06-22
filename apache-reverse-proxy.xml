@@ -14,7 +14,8 @@
   <Icon>https://raw.githubusercontent.com/auskento/apache-reverse-proxy/main/apache-reverse-proxy-150.png</Icon>
   <PostArgs/>
   <CloudSync>false</CloudSync>
-  <Description>Apache Reverse Proxy with Let's Encrypt HTTPS and modular service proxying.</Description>
+  <Description>Apache Reverse Proxy with Let's Encrypt HTTPS, modular service proxying, and optional Office 365 OAuth2 authentication. Configure custom icons for each service via Advanced View.</Description>
+  <Overview>Apache Reverse Proxy for Media Services&#13;&#13;This container provides:&#13;- Automatic HTTPS with Let's Encrypt SSL certificates&#13;- Reverse proxy for up to 14 different services&#13;- Web dashboard with service icons and navigation&#13;- Optional Office 365/Azure AD authentication&#13;- Custom service icons via icon URLs&#13;&#13;Quick Start:&#13;1. Set Domain and Email (required for Let's Encrypt)&#13;2. Enable services by toggling each service switch&#13;3. Configure backend URLs for each enabled service&#13;4. (Optional) Enable Advanced View to set custom icons&#13;5. Container will auto-generate dashboard with enabled services&#13;&#13;Supported Services:&#13;SABnzbd, Deluge, Transmission, qBittorrent, Radarr, Sonarr, Whisparr, Prowlarr, Seerr, Lidarr, Emby, Plex, Jellyfin, Tautulli&#13;&#13;Icon Customization (Advanced View):&#13;Leave icon URLs blank to use bundled icons, or provide custom icon sources for each service.&#13;&#13;Authentication (Optional):&#13;Enable Office 365 OAuth2 to require login for all proxied services using Azure AD credentials.&#13;&#13;Documentation:&#13;https://github.com/auskento/apache-reverse-proxy</Overview>
   <Networking>
     <Mode>bridge</Mode>
     <Publish>
@@ -279,6 +280,10 @@
       <Value/>
     </Variable>
     <Variable>
+      <Name>OIDC_PROVIDER_METADATA_URL</Name>
+      <Value/>
+    </Variable>
+    <Variable>
       <Name>SSL_PROTOCOLS</Name>
       <Value>all -SSLv2 -SSLv3 -TLSv1 -TLSv1.1</Value>
     </Variable>
@@ -287,89 +292,90 @@
   <Labels/>
   
   <!-- FORM CONFIGURATION - These appear in Unraid UI -->
-  <Config Name="DOMAIN" Target="DOMAIN" Default="yourdomain.com" Mode="" Description="Domain Name (REQUIRED - e.g., example.com)" Type="Text" Display="always" Required="true" Mask="false"/>
-  <Config Name="EMAIL" Target="EMAIL" Default="admin@example.com" Mode="" Description="Email for Let's Encrypt (REQUIRED)" Type="Text" Display="always" Required="true" Mask="false"/>
-  <Config Name="Timezone" Target="TZ" Default="Australia/Melbourne" Mode="" Description="Timezone" Type="Text" Display="always" Required="false" Mask="false"/>
+  <Config Name="DOMAIN" Target="DOMAIN" Default="yourdomain.com" Mode="" Description="Domain Name (REQUIRED - e.g., example.com)" Type="Variable" Display="always" Required="true" Mask="false"/>
+  <Config Name="EMAIL" Target="EMAIL" Default="admin@example.com" Mode="" Description="Email for Let's Encrypt (REQUIRED)" Type="Variable" Display="always" Required="true" Mask="false"/>
+  <Config Name="Timezone" Target="TZ" Default="Australia/Melbourne" Mode="" Description="Timezone" Type="Variable" Display="always" Required="false" Mask="false"/>
   
   <!-- SABNZBD -->
   <Config Name="[1/14] Enable SABnzbd" Target="ENABLE_SABNZBD" Default="false" Mode="" Description="SABnzbd - Usenet Client" Type="Variable" Display="always" Required="false" Mask="false"/>
-  <Config Name="SABnzbd URL" Target="SABNZBD_URL" Default="http://sabnzbd:8080" Mode="" Description="Backend URL" Type="Text" Display="always" Required="false" Mask="false"/>
-  <Config Name="SABnzbd Icon URL" Target="ICON_URL_SABNZBD" Default="" Mode="" Description="Icon URL (leave blank for auto-generated)" Type="Text" Display="advanced" Required="false" Mask="false"/>
+  <Config Name="SABnzbd URL" Target="SABNZBD_URL" Default="http://sabnzbd:8080" Mode="" Description="Backend URL" Type="Variable" Display="always" Required="false" Mask="false"/>
+  <Config Name="SABnzbd Icon URL" Target="ICON_URL_SABNZBD" Default="" Mode="" Description="Icon URL (leave blank for auto-generated)" Type="Variable" Display="advanced" Required="false" Mask="false"/>
 
   <!-- DELUGE -->
   <Config Name="[2/14] Enable Deluge" Target="ENABLE_DELUGE" Default="false" Mode="" Description="Deluge - Torrent Client" Type="Variable" Display="always" Required="false" Mask="false"/>
-  <Config Name="Deluge URL" Target="DELUGE_URL" Default="http://deluge:8112" Mode="" Description="Backend URL" Type="Text" Display="always" Required="false" Mask="false"/>
-  <Config Name="Deluge Icon URL" Target="ICON_URL_DELUGE" Default="" Mode="" Description="Icon URL (leave blank for auto-generated)" Type="Text" Display="advanced" Required="false" Mask="false"/>
+  <Config Name="Deluge URL" Target="DELUGE_URL" Default="http://deluge:8112" Mode="" Description="Backend URL" Type="Variable" Display="always" Required="false" Mask="false"/>
+  <Config Name="Deluge Icon URL" Target="ICON_URL_DELUGE" Default="" Mode="" Description="Icon URL (leave blank for auto-generated)" Type="Variable" Display="advanced" Required="false" Mask="false"/>
 
   <!-- TRANSMISSION -->
   <Config Name="[3/14] Enable Transmission" Target="ENABLE_TRANSMISSION" Default="false" Mode="" Description="Transmission - Torrent Client" Type="Variable" Display="always" Required="false" Mask="false"/>
-  <Config Name="Transmission URL" Target="TRANSMISSION_URL" Default="http://transmission:6969" Mode="" Description="Backend URL" Type="Text" Display="always" Required="false" Mask="false"/>
-  <Config Name="Transmission Icon URL" Target="ICON_URL_TRANSMISSION" Default="" Mode="" Description="Icon URL (leave blank for auto-generated)" Type="Text" Display="advanced" Required="false" Mask="false"/>
+  <Config Name="Transmission URL" Target="TRANSMISSION_URL" Default="http://transmission:6969" Mode="" Description="Backend URL" Type="Variable" Display="always" Required="false" Mask="false"/>
+  <Config Name="Transmission Icon URL" Target="ICON_URL_TRANSMISSION" Default="" Mode="" Description="Icon URL (leave blank for auto-generated)" Type="Variable" Display="advanced" Required="false" Mask="false"/>
 
   <!-- QBITTORRENT -->
   <Config Name="[4/14] Enable qBittorrent" Target="ENABLE_QBITTORRENT" Default="false" Mode="" Description="qBittorrent - Torrent Client" Type="Variable" Display="always" Required="false" Mask="false"/>
-  <Config Name="qBittorrent URL" Target="QBITTORRENT_URL" Default="http://qbittorrent:8080" Mode="" Description="Backend URL" Type="Text" Display="always" Required="false" Mask="false"/>
-  <Config Name="qBittorrent Icon URL" Target="ICON_URL_QBITTORRENT" Default="" Mode="" Description="Icon URL (leave blank for auto-generated)" Type="Text" Display="advanced" Required="false" Mask="false"/>
+  <Config Name="qBittorrent URL" Target="QBITTORRENT_URL" Default="http://qbittorrent:8080" Mode="" Description="Backend URL" Type="Variable" Display="always" Required="false" Mask="false"/>
+  <Config Name="qBittorrent Icon URL" Target="ICON_URL_QBITTORRENT" Default="" Mode="" Description="Icon URL (leave blank for auto-generated)" Type="Variable" Display="advanced" Required="false" Mask="false"/>
 
   <!-- RADARR -->
   <Config Name="[5/14] Enable Radarr" Target="ENABLE_RADARR" Default="false" Mode="" Description="Radarr - Movie Automation" Type="Variable" Display="always" Required="false" Mask="false"/>
-  <Config Name="Radarr URL" Target="RADARR_URL" Default="http://radarr:7878" Mode="" Description="Backend URL" Type="Text" Display="always" Required="false" Mask="false"/>
-  <Config Name="Radarr Icon URL" Target="ICON_URL_RADARR" Default="" Mode="" Description="Icon URL (leave blank for auto-generated)" Type="Text" Display="advanced" Required="false" Mask="false"/>
+  <Config Name="Radarr URL" Target="RADARR_URL" Default="http://radarr:7878" Mode="" Description="Backend URL" Type="Variable" Display="always" Required="false" Mask="false"/>
+  <Config Name="Radarr Icon URL" Target="ICON_URL_RADARR" Default="" Mode="" Description="Icon URL (leave blank for auto-generated)" Type="Variable" Display="advanced" Required="false" Mask="false"/>
 
   <!-- SONARR -->
   <Config Name="[6/14] Enable Sonarr" Target="ENABLE_SONARR" Default="false" Mode="" Description="Sonarr - TV Show Automation" Type="Variable" Display="always" Required="false" Mask="false"/>
-  <Config Name="Sonarr URL" Target="SONARR_URL" Default="http://sonarr:8989" Mode="" Description="Backend URL" Type="Text" Display="always" Required="false" Mask="false"/>
-  <Config Name="Sonarr Icon URL" Target="ICON_URL_SONARR" Default="" Mode="" Description="Icon URL (leave blank for auto-generated)" Type="Text" Display="advanced" Required="false" Mask="false"/>
+  <Config Name="Sonarr URL" Target="SONARR_URL" Default="http://sonarr:8989" Mode="" Description="Backend URL" Type="Variable" Display="always" Required="false" Mask="false"/>
+  <Config Name="Sonarr Icon URL" Target="ICON_URL_SONARR" Default="" Mode="" Description="Icon URL (leave blank for auto-generated)" Type="Variable" Display="advanced" Required="false" Mask="false"/>
 
   <!-- WHISPARR -->
   <Config Name="[7/14] Enable Whisparr" Target="ENABLE_WHISPARR" Default="false" Mode="" Description="Whisparr - Adult Content" Type="Variable" Display="always" Required="false" Mask="false"/>
-  <Config Name="Whisparr URL" Target="WHISPARR_URL" Default="http://whisparr:6969" Mode="" Description="Backend URL" Type="Text" Display="always" Required="false" Mask="false"/>
-  <Config Name="Whisparr Icon URL" Target="ICON_URL_WHISPARR" Default="" Mode="" Description="Icon URL (leave blank for auto-generated)" Type="Text" Display="advanced" Required="false" Mask="false"/>
+  <Config Name="Whisparr URL" Target="WHISPARR_URL" Default="http://whisparr:6969" Mode="" Description="Backend URL" Type="Variable" Display="always" Required="false" Mask="false"/>
+  <Config Name="Whisparr Icon URL" Target="ICON_URL_WHISPARR" Default="" Mode="" Description="Icon URL (leave blank for auto-generated)" Type="Variable" Display="advanced" Required="false" Mask="false"/>
 
   <!-- PROWLARR -->
   <Config Name="[8/14] Enable Prowlarr" Target="ENABLE_PROWLARR" Default="false" Mode="" Description="Prowlarr - Indexer Manager" Type="Variable" Display="always" Required="false" Mask="false"/>
-  <Config Name="Prowlarr URL" Target="PROWLARR_URL" Default="http://prowlarr:9696" Mode="" Description="Backend URL" Type="Text" Display="always" Required="false" Mask="false"/>
-  <Config Name="Prowlarr Icon URL" Target="ICON_URL_PROWLARR" Default="" Mode="" Description="Icon URL (leave blank for auto-generated)" Type="Text" Display="advanced" Required="false" Mask="false"/>
+  <Config Name="Prowlarr URL" Target="PROWLARR_URL" Default="http://prowlarr:9696" Mode="" Description="Backend URL" Type="Variable" Display="always" Required="false" Mask="false"/>
+  <Config Name="Prowlarr Icon URL" Target="ICON_URL_PROWLARR" Default="" Mode="" Description="Icon URL (leave blank for auto-generated)" Type="Variable" Display="advanced" Required="false" Mask="false"/>
 
   <!-- SEERR -->
   <Config Name="[9/14] Enable Seerr" Target="ENABLE_SEERR" Default="false" Mode="" Description="Seerr - Request Manager" Type="Variable" Display="always" Required="false" Mask="false"/>
-  <Config Name="Seerr URL" Target="SEERR_URL" Default="http://seerr:5055" Mode="" Description="Backend URL" Type="Text" Display="always" Required="false" Mask="false"/>
-  <Config Name="Seerr Icon URL" Target="ICON_URL_SEERR" Default="" Mode="" Description="Icon URL (leave blank for auto-generated)" Type="Text" Display="advanced" Required="false" Mask="false"/>
+  <Config Name="Seerr URL" Target="SEERR_URL" Default="http://seerr:5055" Mode="" Description="Backend URL" Type="Variable" Display="always" Required="false" Mask="false"/>
+  <Config Name="Seerr Icon URL" Target="ICON_URL_SEERR" Default="" Mode="" Description="Icon URL (leave blank for auto-generated)" Type="Variable" Display="advanced" Required="false" Mask="false"/>
 
   <!-- LIDARR -->
   <Config Name="[10/14] Enable Lidarr" Target="ENABLE_LIDARR" Default="false" Mode="" Description="Lidarr - Music Automation" Type="Variable" Display="always" Required="false" Mask="false"/>
-  <Config Name="Lidarr URL" Target="LIDARR_URL" Default="http://lidarr:8686" Mode="" Description="Backend URL" Type="Text" Display="always" Required="false" Mask="false"/>
-  <Config Name="Lidarr Icon URL" Target="ICON_URL_LIDARR" Default="" Mode="" Description="Icon URL (leave blank for auto-generated)" Type="Text" Display="advanced" Required="false" Mask="false"/>
+  <Config Name="Lidarr URL" Target="LIDARR_URL" Default="http://lidarr:8686" Mode="" Description="Backend URL" Type="Variable" Display="always" Required="false" Mask="false"/>
+  <Config Name="Lidarr Icon URL" Target="ICON_URL_LIDARR" Default="" Mode="" Description="Icon URL (leave blank for auto-generated)" Type="Variable" Display="advanced" Required="false" Mask="false"/>
 
   <!-- EMBY -->
   <Config Name="[11/14] Enable Emby" Target="ENABLE_EMBY" Default="false" Mode="" Description="Emby - Media Streaming" Type="Variable" Display="always" Required="false" Mask="false"/>
-  <Config Name="Emby URL" Target="EMBY_URL" Default="http://emby:8096" Mode="" Description="Backend URL" Type="Text" Display="always" Required="false" Mask="false"/>
-  <Config Name="Emby Icon URL" Target="ICON_URL_EMBY" Default="" Mode="" Description="Icon URL (leave blank for auto-generated)" Type="Text" Display="advanced" Required="false" Mask="false"/>
-  <Config Name="Emby Subdomain" Target="EMBY_DOMAIN" Default="" Mode="" Description="Subdomain for dedicated VirtualHost (e.g., emby_domain.yourdomain.com) - optional" Type="Text" Display="always" Required="false" Mask="false"/>
+  <Config Name="Emby URL" Target="EMBY_URL" Default="http://emby:8096" Mode="" Description="Backend URL" Type="Variable" Display="always" Required="false" Mask="false"/>
+  <Config Name="Emby Icon URL" Target="ICON_URL_EMBY" Default="" Mode="" Description="Icon URL (leave blank for auto-generated)" Type="Variable" Display="advanced" Required="false" Mask="false"/>
+  <Config Name="Emby Subdomain" Target="EMBY_DOMAIN" Default="" Mode="" Description="Subdomain for dedicated VirtualHost (e.g., emby_domain.yourdomain.com) - optional" Type="Variable" Display="always" Required="false" Mask="false"/>
 
   <!-- PLEX -->
   <Config Name="[12/14] Enable Plex" Target="ENABLE_PLEX" Default="false" Mode="" Description="Plex - Media Streaming" Type="Variable" Display="always" Required="false" Mask="false"/>
-  <Config Name="Plex URL" Target="PLEX_URL" Default="http://plex:32400" Mode="" Description="Backend URL" Type="Text" Display="always" Required="false" Mask="false"/>
-  <Config Name="Plex Icon URL" Target="ICON_URL_PLEX" Default="" Mode="" Description="Icon URL (leave blank for auto-generated)" Type="Text" Display="advanced" Required="false" Mask="false"/>
-  <Config Name="Plex Subdomain" Target="PLEX_DOMAIN" Default="" Mode="" Description="Subdomain for dedicated VirtualHost (e.g., plex_domain.yourdomain.com) - optional" Type="Text" Display="always" Required="false" Mask="false"/>
+  <Config Name="Plex URL" Target="PLEX_URL" Default="http://plex:32400" Mode="" Description="Backend URL" Type="Variable" Display="always" Required="false" Mask="false"/>
+  <Config Name="Plex Icon URL" Target="ICON_URL_PLEX" Default="" Mode="" Description="Icon URL (leave blank for auto-generated)" Type="Variable" Display="advanced" Required="false" Mask="false"/>
+  <Config Name="Plex Subdomain" Target="PLEX_DOMAIN" Default="" Mode="" Description="Subdomain for dedicated VirtualHost (e.g., plex_domain.yourdomain.com) - optional" Type="Variable" Display="always" Required="false" Mask="false"/>
 
   <!-- JELLYFIN -->
   <Config Name="[13/14] Enable Jellyfin" Target="ENABLE_JELLYFIN" Default="false" Mode="" Description="Jellyfin - Media Streaming" Type="Variable" Display="always" Required="false" Mask="false"/>
-  <Config Name="Jellyfin URL" Target="JELLYFIN_URL" Default="http://jellyfin:8096" Mode="" Description="Backend URL" Type="Text" Display="always" Required="false" Mask="false"/>
-  <Config Name="Jellyfin Icon URL" Target="ICON_URL_JELLYFIN" Default="" Mode="" Description="Icon URL (leave blank for auto-generated)" Type="Text" Display="advanced" Required="false" Mask="false"/>
+  <Config Name="Jellyfin URL" Target="JELLYFIN_URL" Default="http://jellyfin:8096" Mode="" Description="Backend URL" Type="Variable" Display="always" Required="false" Mask="false"/>
+  <Config Name="Jellyfin Icon URL" Target="ICON_URL_JELLYFIN" Default="" Mode="" Description="Icon URL (leave blank for auto-generated)" Type="Variable" Display="advanced" Required="false" Mask="false"/>
 
   <!-- TAUTULLI -->
   <Config Name="[14/14] Enable Tautulli" Target="ENABLE_TAUTULLI" Default="false" Mode="" Description="Tautulli - Analytics" Type="Variable" Display="always" Required="false" Mask="false"/>
-  <Config Name="Tautulli URL" Target="TAUTULLI_URL" Default="http://tautulli:8181" Mode="" Description="Backend URL" Type="Text" Display="always" Required="false" Mask="false"/>
-  <Config Name="Tautulli Icon URL" Target="ICON_URL_TAUTULLI" Default="" Mode="" Description="Icon URL (leave blank for auto-generated)" Type="Text" Display="advanced" Required="false" Mask="false"/>
+  <Config Name="Tautulli URL" Target="TAUTULLI_URL" Default="http://tautulli:8181" Mode="" Description="Backend URL" Type="Variable" Display="always" Required="false" Mask="false"/>
+  <Config Name="Tautulli Icon URL" Target="ICON_URL_TAUTULLI" Default="" Mode="" Description="Icon URL (leave blank for auto-generated)" Type="Variable" Display="advanced" Required="false" Mask="false"/>
 
   <!-- OFFICE 365 AUTH -->
   <Config Name="Enable Office 365 Auth" Target="ENABLE_AUTH_OFFICE365" Default="false" Mode="" Description="Office 365/Azure AD Authentication" Type="Variable" Display="always" Required="false" Mask="false"/>
-  <Config Name="OAuth2 Client ID" Target="OAUTH2_CLIENT_ID" Default="" Mode="" Description="Azure AD Client ID" Type="Text" Display="always" Required="false" Mask="false"/>
-  <Config Name="OAuth2 Client Secret" Target="OAUTH2_CLIENT_SECRET" Default="" Mode="" Description="Azure AD Client Secret" Type="Text" Display="always" Required="false" Mask="true"/>
-  <Config Name="OAuth2 Redirect URI" Target="OAUTH2_REDIRECT_URI" Default="https://yourdomain.com/oauth2callback" Mode="" Description="Callback URL" Type="Text" Display="always" Required="false" Mask="false"/>
-  <Config Name="OAuth2 Allowed Domains" Target="OAUTH2_ALLOWED_DOMAINS" Default="example.com" Mode="" Description="Allowed Domains (comma-separated)" Type="Text" Display="always" Required="false" Mask="false"/>
-  <Config Name="OAuth2 Crypto Passphrase" Target="OAUTH2_CRYPTO_PASSPHRASE" Default="" Mode="" Description="Session Encryption Passphrase" Type="Text" Display="always" Required="false" Mask="true"/>
+  <Config Name="OAuth2 Client ID" Target="OAUTH2_CLIENT_ID" Default="" Mode="" Description="Azure AD Client ID" Type="Variable" Display="always" Required="false" Mask="false"/>
+  <Config Name="OAuth2 Client Secret" Target="OAUTH2_CLIENT_SECRET" Default="" Mode="" Description="Azure AD Client Secret" Type="Variable" Display="always" Required="false" Mask="true"/>
+  <Config Name="OAuth2 Redirect URI" Target="OAUTH2_REDIRECT_URI" Default="https://yourdomain.com/oauth2callback" Mode="" Description="Callback URL" Type="Variable" Display="always" Required="false" Mask="false"/>
+  <Config Name="OAuth2 Allowed Domains" Target="OAUTH2_ALLOWED_DOMAINS" Default="example.com" Mode="" Description="Allowed Domains (comma-separated)" Type="Variable" Display="always" Required="false" Mask="false"/>
+  <Config Name="OAuth2 Crypto Passphrase" Target="OAUTH2_CRYPTO_PASSPHRASE" Default="" Mode="" Description="Session Encryption Passphrase" Type="Variable" Display="always" Required="false" Mask="true"/>
+  <Config Name="OIDC Provider Metadata URL" Target="OIDC_PROVIDER_METADATA_URL" Default="" Mode="" Description="Azure AD OIDC metadata URL (e.g., https://login.microsoftonline.com/{tenant-id}/v2.0/.well-known/openid-configuration)" Type="Variable" Display="always" Required="false" Mask="false"/>
   
   <!-- PORTS -->
   <Config Name="HTTP Port" Target="HostPort" Default="80" Mode="tcp" Description="HTTP Port" Type="Port" Display="always" Required="false" Mask="false">80</Config>
