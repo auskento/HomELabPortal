@@ -72,6 +72,10 @@ services:
       ICON_URL_SABNZBD: ""
       ICON_URL_DELUGE: ""
       
+      # Optional: Basic Authentication
+      ENABLE_BASIC_AUTH: "false"
+      BASIC_AUTH_CREDENTIALS: ""
+
       # Optional: Office 365 / Azure AD Authentication
       ENABLE_AUTH_OFFICE365: "false"
       OAUTH2_CLIENT_ID: ""

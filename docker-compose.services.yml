@@ -50,6 +50,9 @@ services:
       ENABLE_SABNZBD: "false"
       ENABLE_DELUGE: "false"
       
+      ENABLE_BASIC_AUTH: "false"
+      BASIC_AUTH_CREDENTIALS: ""
+
       ENABLE_AUTH_OFFICE365: "false"
       SSL_PROTOCOLS: "all -SSLv2 -SSLv3 -TLSv1 -TLSv1.1"
       SSL_CIPHERS: "HIGH:!aNULL:!MD5"
