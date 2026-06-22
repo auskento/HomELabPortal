@@ -121,24 +121,26 @@ class Component extends DCLogic {
     raw.forEach(app => {
       health[app.id] = 'checking';
       
-      // Timeout after 5 seconds
+      // Skip external/popup services (they're always "online")
+      if (app.popup) {
+        this.setState({ serviceHealth: { ...this.state.serviceHealth, [app.id]: 'online' } });
+        return;
+      }
+      
+      // Timeout after 10 seconds
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 5000);
+      const timeoutId = setTimeout(() => controller.abort(), 10000);
       
       fetch(app.href, { 
-        method: 'HEAD',
-        mode: 'cors',
-        credentials: 'same-origin',
+        method: 'GET',
         signal: controller.signal 
       })
         .then(() => {
           clearTimeout(timeoutId);
-          health[app.id] = 'online';
           this.setState({ serviceHealth: { ...this.state.serviceHealth, [app.id]: 'online' } });
         })
         .catch(() => {
           clearTimeout(timeoutId);
-          health[app.id] = 'offline';
           this.setState({ serviceHealth: { ...this.state.serviceHealth, [app.id]: 'offline' } });
         });
     });

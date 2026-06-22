@@ -23,9 +23,9 @@
 
     <div style="width:1px;height:20px;background:rgba(255,255,255,.1)"></div>
 
-    <div style="text-align:center;font-size:11px;color:#5d6575">
-      <span style="display:block;width:8px;height:8px;border-radius:50%;background:#2ecd6f;margin:0 auto 6px;box-shadow:0 0 8px #2ecd6f;animation:floatGlow 2.6s ease-in-out infinite"></span>
-      Online
+    <div id="health-status" style="text-align:center;font-size:11px;color:#5d6575">
+      <span id="health-dot" style="display:block;width:8px;height:8px;border-radius:50%;background:#2ecd6f;margin:0 auto 6px;box-shadow:0 0 8px #2ecd6f;animation:floatGlow 2.6s ease-in-out infinite"></span>
+      <span id="health-text">Checking...</span>
     </div>
 
   </aside>
@@ -130,6 +130,64 @@
     
     nav.appendChild(btn);
   });
+  
+  // Service health check
+  function checkServices() {
+    const health = {};
+    let checkCount = 0;
+    
+    SERVICES.forEach(app => {
+      // Skip external/popup services
+      if (app.popup) {
+        health[app.id] = 'online';
+        checkCount++;
+        if (checkCount === SERVICES.length) {
+          updateHealthDisplay(health);
+        }
+        return;
+      }
+      
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 10000);
+      
+      fetch(app.href, { method: 'GET', signal: controller.signal })
+        .then(() => {
+          clearTimeout(timeoutId);
+          health[app.id] = 'online';
+        })
+        .catch(() => {
+          clearTimeout(timeoutId);
+          health[app.id] = 'offline';
+        })
+        .finally(() => {
+          checkCount++;
+          if (checkCount === SERVICES.length) {
+            updateHealthDisplay(health);
+          }
+        });
+    });
+  }
+  
+  function updateHealthDisplay(health) {
+    const offlineCount = Object.values(health).filter(s => s === 'offline').length;
+    const onlineCount = SERVICES.length - offlineCount;
+    const healthText = document.getElementById('health-text');
+    const healthDot = document.getElementById('health-dot');
+    
+    if (offlineCount === 0) {
+      healthText.textContent = 'Online';
+      healthDot.style.background = '#2ecd6f';
+      healthDot.style.boxShadow = '0 0 8px #2ecd6f';
+    } else {
+      healthText.textContent = `${offlineCount} offline`;
+      healthDot.style.background = '#ff6b6b';
+      healthDot.style.boxShadow = '0 0 8px #ff6b6b';
+    }
+  }
+  
+  // Check services on load and every 30 seconds
+  checkServices();
+  setInterval(checkServices, 30000);
 </script>
 </body>
 </html>

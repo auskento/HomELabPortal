@@ -255,6 +255,10 @@
             </tr>
         </table>
     </div>
+    <div id="health-status" style="padding:15px 20px;border-top:1px solid #ddd;text-align:center;font-size:12px;color:#666;background:#f9f9f9">
+        <span id="health-dot" style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#4caf50;margin-right:6px;box-shadow:0 0 8px #4caf50"></span>
+        <span id="health-text">Checking services...</span>
+    </div>
 </div>
 
 <iframe name="content" class="content" src="about:blank" frameborder="0" scrolling="yes">
@@ -299,6 +303,61 @@
     
     // Update every second
     setInterval(updateDateTime, 1000);
+    
+    // Service health check
+    function checkServices() {
+        const serviceLinks = Array.from(document.querySelectorAll('.menu-table a')).map(a => ({
+            href: a.getAttribute('href'),
+            text: a.textContent
+        })).filter(s => s.href && s.href.startsWith('/'));
+        
+        if (serviceLinks.length === 0) return;
+        
+        const health = {};
+        let checkCount = 0;
+        
+        serviceLinks.forEach(service => {
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 10000);
+            
+            fetch(service.href, { method: 'GET', signal: controller.signal })
+                .then(() => {
+                    clearTimeout(timeoutId);
+                    health[service.href] = 'online';
+                })
+                .catch(() => {
+                    clearTimeout(timeoutId);
+                    health[service.href] = 'offline';
+                })
+                .finally(() => {
+                    checkCount++;
+                    if (checkCount === serviceLinks.length) {
+                        updateHealthDisplay(health, serviceLinks);
+                    }
+                });
+        });
+    }
+    
+    function updateHealthDisplay(health, services) {
+        const offlineCount = Object.values(health).filter(s => s === 'offline').length;
+        const onlineCount = services.length - offlineCount;
+        const healthText = document.getElementById('health-text');
+        const healthDot = document.getElementById('health-dot');
+        
+        if (offlineCount === 0) {
+            healthText.textContent = `All ${services.length} services online`;
+            healthDot.style.background = '#4caf50';
+            healthDot.style.boxShadow = '0 0 8px #4caf50';
+        } else {
+            healthText.textContent = `${offlineCount} service${offlineCount > 1 ? 's' : ''} offline`;
+            healthDot.style.background = '#ff6b6b';
+            healthDot.style.boxShadow = '0 0 8px #ff6b6b';
+        }
+    }
+    
+    // Check services on load and every 30 seconds
+    checkServices();
+    setInterval(checkServices, 30000);
 </script>
 </body>
 </html>
