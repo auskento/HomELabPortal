@@ -67,8 +67,7 @@ process_service_config() {
 [ "$ENABLE_TRANSMISSION" = "true" ] && process_service_config "transmission" "6969"
 [ "$ENABLE_QBITTORRENT" = "true" ] && process_service_config "qbittorrent" "8080"
 [ "$ENABLE_SABNZBD" = "true" ] && process_service_config "sabnzbd" "8080"
-# Deluge proxies to root, not a subpath - skip custom URL processing
-# [ "$ENABLE_DELUGE" = "true" ] && process_service_config "deluge" "8112"
+[ "$ENABLE_DELUGE" = "true" ] && process_service_config "deluge" "8112"
 
 
 # Function to generate include directive (output ONLY the Include line)
