@@ -31,7 +31,7 @@
   </aside>
 
   <main style="flex:1;min-width:0;position:relative">
-    <iframe id="content-frame" name="Main" title="App" sandbox="allow-same-origin allow-scripts allow-forms allow-popups allow-presentation" style="position:absolute;inset:0;width:100%;height:100%;border:0;background:#0b0d11"></iframe>
+    <iframe id="content-frame" name="Main" title="App" sandbox="allow-scripts allow-forms allow-popups" style="position:absolute;inset:0;width:100%;height:100%;border:0;background:#0b0d11"></iframe>
 
     <div id="welcome-screen" style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:40px;background:radial-gradient(900px 600px at 50% 30%,rgba(58,160,224,.08),transparent 60%),#0b0d11">
       <div style="width:64px;height:64px;border-radius:18px;background:linear-gradient(135deg,#3aa0e0,#2ecd6f);display:flex;align-items:center;justify-content:center;box-shadow:0 10px 40px rgba(58,160,224,.35);margin-bottom:26px">
