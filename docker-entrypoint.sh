@@ -50,8 +50,10 @@ DELUGE_URL="${DELUGE_URL:-}"
 ENVEOF
 
 echo ""
-echo "=== Environment Configuration ===" 
+echo "=== Environment Configuration ==="
 cat /etc/apache2/env.conf
+echo "DEBUG: Checking ENABLE_BASIC_AUTH in env.conf:"
+grep "ENABLE_BASIC_AUTH" /etc/apache2/env.conf || echo "DEBUG: ENABLE_BASIC_AUTH not found in env.conf!"
 echo "=================================="
 echo ""
 
