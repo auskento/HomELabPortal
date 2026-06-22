@@ -184,7 +184,9 @@
       <Value/>
     </Variable>
     <Variable>
-      <Name>ENABLE_PLEX</Name>
+      <Name>EMBY_DOMAIN</Name>
+      <Value/>
+    </Variable>
       <Value>false</Value>
     </Variable>
     <Variable>
@@ -196,7 +198,9 @@
       <Value/>
     </Variable>
     <Variable>
-      <Name>ENABLE_TAUTULLI</Name>
+      <Name>PLEX_DOMAIN</Name>
+      <Value/>
+    </Variable>
       <Value>false</Value>
     </Variable>
     <Variable>
@@ -346,11 +350,13 @@
   <Config Name="[11/14] Enable Emby" Target="ENABLE_EMBY" Default="false" Mode="" Description="Emby - Media Streaming" Type="Variable" Display="always" Required="false" Mask="false"/>
   <Config Name="Emby URL" Target="EMBY_URL" Default="http://emby:8096" Mode="" Description="Backend URL" Type="Text" Display="always" Required="false" Mask="false"/>
   <Config Name="Emby Icon URL" Target="ICON_URL_EMBY" Default="" Mode="" Description="Icon URL (leave blank for auto-generated)" Type="Text" Display="advanced" Required="false" Mask="false"/>
+  <Config Name="Emby Subdomain" Target="EMBY_DOMAIN" Default="" Mode="" Description="Subdomain for dedicated VirtualHost (e.g., emby.yourdomain.com) - optional" Type="Text" Display="always" Required="false" Mask="false"/>
   
   <!-- PLEX -->
   <Config Name="[12/14] Enable Plex" Target="ENABLE_PLEX" Default="false" Mode="" Description="Plex - Media Streaming" Type="Variable" Display="always" Required="false" Mask="false"/>
   <Config Name="Plex URL" Target="PLEX_URL" Default="http://plex:32400" Mode="" Description="Backend URL" Type="Text" Display="always" Required="false" Mask="false"/>
   <Config Name="Plex Icon URL" Target="ICON_URL_PLEX" Default="" Mode="" Description="Icon URL (leave blank for auto-generated)" Type="Text" Display="advanced" Required="false" Mask="false"/>
+  <Config Name="Plex Subdomain" Target="PLEX_DOMAIN" Default="" Mode="" Description="Subdomain for dedicated VirtualHost (e.g., plex.yourdomain.com) - optional" Type="Text" Display="always" Required="false" Mask="false"/>
   
   <!-- JELLYFIN -->
   <Config Name="[13/14] Enable Jellyfin" Target="ENABLE_JELLYFIN" Default="false" Mode="" Description="Jellyfin - Media Streaming" Type="Variable" Display="always" Required="false" Mask="false"/>
