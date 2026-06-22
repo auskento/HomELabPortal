@@ -50,8 +50,10 @@ DELUGE_URL="${DELUGE_URL:-}"
 ENVEOF
 
 echo ""
-echo "=== Environment Configuration ===" 
+echo "=== Environment Configuration ==="
 cat /etc/apache2/env.conf
+echo "DEBUG: Checking ENABLE_BASIC_AUTH in env.conf:"
+grep "ENABLE_BASIC_AUTH" /etc/apache2/env.conf || echo "DEBUG: ENABLE_BASIC_AUTH not found in env.conf!"
 echo "=================================="
 echo ""
 
@@ -160,7 +162,14 @@ else
 fi
 
 # Basic Authentication Setup
-if [ "${ENABLE_BASIC_AUTH}" = "true" ]; then
+echo "DEBUG: ENABLE_BASIC_AUTH='${ENABLE_BASIC_AUTH}' (type: $([ -z "${ENABLE_BASIC_AUTH}" ] && echo 'empty' || echo 'set'))"
+echo "DEBUG: BASIC_AUTH_CREDENTIALS='${BASIC_AUTH_CREDENTIALS}' (length: ${#BASIC_AUTH_CREDENTIALS})"
+
+# Normalize the value (handle uppercase, with/without quotes, etc.)
+ENABLE_BASIC_AUTH=$(echo "${ENABLE_BASIC_AUTH}" | tr '[:upper:]' '[:lower:]' | sed "s/'//g" | sed 's/"//g' | xargs)
+echo "DEBUG: ENABLE_BASIC_AUTH normalized to '${ENABLE_BASIC_AUTH}'"
+
+if [ "${ENABLE_BASIC_AUTH}" = "true" ] || [ "${ENABLE_BASIC_AUTH}" = "1" ]; then
     echo "=== Setting up Basic Authentication ==="
 
     # Validate required parameters
@@ -204,7 +213,8 @@ if [ "${ENABLE_BASIC_AUTH}" = "true" ]; then
 
     echo "Basic Authentication configured with credentials from BASIC_AUTH_CREDENTIALS"
 else
-    echo "Basic Authentication is disabled (ENABLE_BASIC_AUTH=false)"
+    echo "DEBUG: Basic Authentication check failed. ENABLE_BASIC_AUTH='${ENABLE_BASIC_AUTH}' is not equal to 'true'"
+    echo "Basic Authentication is disabled (ENABLE_BASIC_AUTH=false or not 'true')"
     # Disable basic auth if it was previously enabled
     rm -f /etc/apache2/conf-enabled/auth-basic.conf
     rm -f /etc/apache2/.htpasswd
