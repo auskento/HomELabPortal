@@ -14,6 +14,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     vim \
     net-tools \
     imagemagick \
+    file \
     tzdata \
     libapache2-mod-auth-openidc \
     && rm -rf /var/lib/apt/lists/*
