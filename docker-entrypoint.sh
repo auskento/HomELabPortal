@@ -165,7 +165,11 @@ fi
 echo "DEBUG: ENABLE_BASIC_AUTH='${ENABLE_BASIC_AUTH}' (type: $([ -z "${ENABLE_BASIC_AUTH}" ] && echo 'empty' || echo 'set'))"
 echo "DEBUG: BASIC_AUTH_CREDENTIALS='${BASIC_AUTH_CREDENTIALS}' (length: ${#BASIC_AUTH_CREDENTIALS})"
 
-if [ "${ENABLE_BASIC_AUTH}" = "true" ]; then
+# Normalize the value (handle uppercase, with/without quotes, etc.)
+ENABLE_BASIC_AUTH=$(echo "${ENABLE_BASIC_AUTH}" | tr '[:upper:]' '[:lower:]' | sed "s/'//g" | sed 's/"//g' | xargs)
+echo "DEBUG: ENABLE_BASIC_AUTH normalized to '${ENABLE_BASIC_AUTH}'"
+
+if [ "${ENABLE_BASIC_AUTH}" = "true" ] || [ "${ENABLE_BASIC_AUTH}" = "1" ]; then
     echo "=== Setting up Basic Authentication ==="
 
     # Validate required parameters
