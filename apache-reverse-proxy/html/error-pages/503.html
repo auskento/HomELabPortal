@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>503 Service Unavailable</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #333;
+        }
+        
+        .container {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+            padding: 60px 40px;
+            text-align: center;
+            max-width: 600px;
+        }
+        
+        .error-code {
+            font-size: 5em;
+            font-weight: bold;
+            color: #fa709a;
+            line-height: 1;
+            margin-bottom: 10px;
+        }
+        
+        h1 {
+            font-size: 1.8em;
+            margin-bottom: 20px;
+            color: #333;
+        }
+        
+        p {
+            font-size: 1.1em;
+            line-height: 1.6;
+            color: #666;
+            margin: 15px 0;
+        }
+        
+        .maintenance-icon {
+            font-size: 4em;
+            margin: 20px 0;
+        }
+        
+        .info-box {
+            background: #fef2f2;
+            border-left: 4px solid #fa709a;
+            padding: 20px;
+            margin: 30px 0;
+            border-radius: 5px;
+            text-align: left;
+        }
+        
+        .action-buttons {
+            margin-top: 30px;
+        }
+        
+        a {
+            display: inline-block;
+            margin: 10px 5px;
+            padding: 12px 30px;
+            background: #fa709a;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            transition: background 0.3s;
+        }
+        
+        a:hover {
+            background: #d9527e;
+        }
+        
+        .countdown {
+            font-size: 0.9em;
+            color: #999;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="error-code">503</div>
+        <h1>Service Unavailable</h1>
+        <div class="maintenance-icon">🔧</div>
+        <p>The service is temporarily unavailable. This could be due to maintenance or all backend servers being offline.</p>
+        
+        <div class="info-box">
+            <strong>Why this happens:</strong>
+            <p style="margin-top: 10px;">Either the server is undergoing scheduled maintenance, or all backend instances are currently unreachable. Our team is working to resolve this.</p>
+        </div>
+        
+        <div class="info-box">
+            <strong>What you can do:</strong>
+            <ul style="text-align: left; margin-top: 10px;">
+                <li>Wait a few moments and refresh the page</li>
+                <li>Check our status page for updates</li>
+                <li>Contact support for more information</li>
+            </ul>
+        </div>
+        
+        <div class="action-buttons">
+            <a href="javascript:location.reload()">Retry</a>
+            <a href="/">Go Home</a>
+        </div>
+        
+        <div class="countdown">
+            Page will auto-refresh in 30 seconds
+        </div>
+    </div>
+    
+    <script>
+        setTimeout(function() {
+            location.reload();
+        }, 30000);
+    </script>
+</body>
+</html>

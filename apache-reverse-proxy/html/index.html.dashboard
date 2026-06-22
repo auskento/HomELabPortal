@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Media Server Dashboard</title>
+<script crossorigin src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/react.production.min.js"></script>
+<script crossorigin src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/react-dom.production.min.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  *{box-sizing:border-box}
+  html,body{margin:0;height:100%}
+  body{background:#08090c;overflow:hidden}
+  ::-webkit-scrollbar{width:9px}
+  ::-webkit-scrollbar-thumb{background:rgba(255,255,255,.09);border-radius:9px}
+  ::-webkit-scrollbar-thumb:hover{background:rgba(255,255,255,.16)}
+  @keyframes floatGlow{0%,100%{opacity:.55}50%{opacity:.95}}
+</style>
+</helmet>
+
+<div style="display:flex;height:100vh;width:100vw;font-family:'Inter',system-ui,sans-serif;color:#e9ecf2;background:radial-gradient(1200px 700px at 18% -10%,rgba(58,160,224,.10),transparent 60%),radial-gradient(900px 600px at 100% 110%,rgba(46,205,111,.07),transparent 55%),#08090c;overflow:hidden">
+
+  <aside style="width:320px;flex:none;height:100%;display:flex;flex-direction:column;background:linear-gradient(180deg,rgba(20,23,30,.72),rgba(12,14,19,.72));backdrop-filter:blur(18px);border-right:1px solid rgba(255,255,255,.07)">
+
+    <div style="padding:26px 26px 20px 26px;border-bottom:1px solid rgba(255,255,255,.06)">
+      <div style="display:flex;align-items:center;gap:11px;margin-bottom:22px">
+        <div style="width:34px;height:34px;border-radius:9px;background:linear-gradient(135deg,#3aa0e0,#2ecd6f);display:flex;align-items:center;justify-content:center;box-shadow:0 4px 16px rgba(58,160,224,.4)">
+          <div style="width:13px;height:13px;border:2.5px solid #08090c;border-radius:4px"></div>
+        </div>
+        <div style="font-family:'Space Grotesk',sans-serif;font-weight:600;letter-spacing:.14em;font-size:13px;color:#cdd3dd">MEDIA&nbsp;SERVER</div>
+      </div>
+      <div style="font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:25px;line-height:1.15;letter-spacing:-.01em;color:#f4f6fa">{{ greeting }}</div>
+      <div style="display:flex;align-items:baseline;gap:10px;margin-top:7px">
+        <div style="font-family:'Space Grotesk',sans-serif;font-weight:500;font-size:15px;color:#8b93a3;font-variant-numeric:tabular-nums">{{ clock }}</div>
+        <div style="font-size:13px;color:#5d6575">{{ today }}</div>
+      </div>
+    </div>
+
+    <nav style="flex:1;overflow-y:auto;overflow-x:hidden;padding:8px 16px 22px 16px">
+      <sc-for list="{{ groups }}" as="group">
+        <div style="margin-top:18px">
+          <div style="display:flex;align-items:center;gap:9px;padding:0 10px 9px 10px">
+            <span style="font-size:11px;font-weight:600;letter-spacing:.16em;color:#6b7385">{{ group.label }}</span>
+            <span style="flex:1;height:1px;background:rgba(255,255,255,.06)"></span>
+            <span style="font-size:11px;color:#4b5263;font-variant-numeric:tabular-nums">{{ group.count }}</span>
+          </div>
+          <sc-for list="{{ group.items }}" as="app">
+            <button onClick="{{ app.open }}" style="{{ app.style }}" style-hover="{{ app.hoverStyle }}">
+              <span style="width:46px;height:46px;flex:none;border-radius:12px;background:rgba(255,255,255,.05);display:flex;align-items:center;justify-content:center;overflow:hidden;box-shadow:inset 0 0 0 1px rgba(255,255,255,.06)">
+                {{ app.iconEl }}
+              </span>
+              <span style="flex:1;min-width:0;text-align:left">
+                <span style="display:block;font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:15px;color:#eef1f6">{{ app.name }}</span>
+                <span style="display:block;font-size:12.5px;color:#828b9c;margin-top:1px">{{ app.desc }}</span>
+              </span>
+              <span style="{{ app.dotStyle }}"></span>
+            </button>
+          </sc-for>
+        </div>
+      </sc-for>
+    </nav>
+
+    <div style="padding:14px 26px;border-top:1px solid rgba(255,255,255,.06);display:flex;flex-direction:column;gap:12px">
+      <div style="display:flex;flex-direction:column;gap:8px">
+        <div style="display:flex;align-items:center;gap:8px">
+          <span style="width:7px;height:7px;border-radius:50%;background:{{ healthColor }};box-shadow:0 0 8px {{ healthColor }};animation:floatGlow 2.6s ease-in-out infinite"></span>
+          <span style="font-size:12px;color:#6b7385">{{ healthStatus }}</span>
+        </div>
+        <sc-if expr="{{ offlineList }}">
+          <span style="font-size:11px;color:#ff9999;padding-left:15px">{{ offlineList }}</span>
+        </sc-if>
+      </div>
+      <a href="/" style="font-size:11px;color:#4a9eff;text-decoration:none;text-align:center;padding:8px 0;border-top:1px solid rgba(255,255,255,.06);transition:color 0.2s">← Classic Menu</a>
+    </div>
+  </aside>
+
+  <main style="flex:1;min-width:0;position:relative">
+    <iframe name="Main" ref="{{ frameRef }}" title="App" style="position:absolute;inset:0;width:100%;height:100%;border:0;background:#0b0d11"></iframe>
+
+    <sc-if value="{{ showWelcome }}" hint-placeholder-val="{{ true }}">
+      <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:40px;background:radial-gradient(900px 600px at 50% 30%,rgba(58,160,224,.08),transparent 60%),#0b0d11">
+        <div style="width:64px;height:64px;border-radius:18px;background:linear-gradient(135deg,#3aa0e0,#2ecd6f);display:flex;align-items:center;justify-content:center;box-shadow:0 10px 40px rgba(58,160,224,.35);margin-bottom:26px">
+          <div style="width:22px;height:22px;border:3px solid #0b0d11;border-radius:6px"></div>
+        </div>
+        <div style="font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:27px;color:#f4f6fa;letter-spacing:-.01em">Welcome back</div>
+        <div style="font-size:15px;color:#828b9c;margin-top:10px;max-width:380px;line-height:1.55">Pick a service from the sidebar to open it here. Your library, downloads and indexers — all in one place.</div>
+      </div>
+    </sc-if>
+  </main>
+</div>
+</x-dc>
+
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state = { now: new Date(), activeId: null, showWelcome: true, serviceHealth: {} };
+
+  componentDidMount() {
+    this._t = setInterval(() => this.setState({ now: new Date() }), 1000);
+    this.checkServices();
+    this._healthCheck = setInterval(() => this.checkServices(), 30000); // Check every 30 seconds
+  }
+  
+  componentWillUnmount() { 
+    clearInterval(this._t);
+    clearInterval(this._healthCheck);
+  }
+
+  checkServices() {
+    // Get services from renderVals
+    const raw = [
+      @@SERVICES_ARRAY@@
+    ];
+    
+    const health = {};
+    raw.forEach(app => {
+      health[app.id] = 'checking';
+      
+      // Timeout after 5 seconds
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 5000);
+      
+      fetch(app.href, { 
+        method: 'HEAD',
+        mode: 'cors',
+        credentials: 'same-origin',
+        signal: controller.signal 
+      })
+        .then(() => {
+          clearTimeout(timeoutId);
+          health[app.id] = 'online';
+          this.setState({ serviceHealth: { ...this.state.serviceHealth, [app.id]: 'online' } });
+        })
+        .catch(() => {
+          clearTimeout(timeoutId);
+          health[app.id] = 'offline';
+          this.setState({ serviceHealth: { ...this.state.serviceHealth, [app.id]: 'offline' } });
+        });
+    });
+  }
+
+  navigate(app) {
+    if (app.popup) {
+      window.open(app.href, app.name, 'resizable=no,status=no,location=no,toolbar=no,menubar=no,scrollbars=no');
+      return;
+    }
+    this.setState({ activeId: app.id, showWelcome: false });
+    if (this._frame) this._frame.src = app.href;
+  }
+
+  renderVals() {
+    const now = this.state.now;
+    const h = now.getHours();
+    const greeting = h < 5 ? 'Burning the midnight oil' : h < 12 ? 'Good morning' : h < 18 ? 'Good afternoon' : 'Good evening';
+    const clock = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    const today = now.toLocaleDateString([], { weekday: 'long', month: 'short', day: 'numeric' });
+
+    // @@SERVICES_ARRAY@@ - Will be replaced with dynamically generated services
+    const raw = [
+      @@SERVICES_ARRAY@@
+    ];
+
+    const labels = { MEDIA: 'MEDIA', DOWNLOADS: 'DOWNLOADS', INFRA: 'INDEXERS & INFRA' };
+    const order = ['MEDIA', 'DOWNLOADS', 'INFRA'];
+
+    const mk = (app) => {
+      const active = this.state.activeId === app.id;
+      return {
+        ...app,
+        open: () => this.navigate(app),
+        iconEl: React.createElement('img', { src: app.icon, alt: app.name, style: { width: 34, height: 34, objectFit: 'contain' } }),
+        style: `display:flex;align-items:center;gap:14px;width:100%;text-align:left;cursor:pointer;border:0;border-radius:14px;padding:11px 12px;margin-top:6px;font-family:inherit;transition:background .16s,box-shadow .16s,transform .12s;background:${active ? 'rgba(255,255,255,.08)' : 'transparent'};box-shadow:${active ? `inset 0 0 0 1px ${app.accent}55, 0 6px 22px -8px ${app.accent}66` : 'inset 0 0 0 1px transparent'}`,
+        hoverStyle: `background:rgba(255,255,255,.06);box-shadow:inset 0 0 0 1px ${app.accent}40;transform:translateX(2px)`,
+        dotStyle: `width:8px;height:8px;flex:none;border-radius:50%;background:${app.accent};box-shadow:0 0 9px ${app.accent};opacity:${active ? 1 : .65}`,
+      };
+    };
+
+    const groups = order.map((cat) => {
+      const items = raw.filter((a) => a.cat === cat).map(mk);
+      return { label: labels[cat], count: items.length, items };
+    }).filter(g => g.items.length > 0);
+    
+    // Calculate health status
+    const health = this.state.serviceHealth;
+    const onlineCount = raw.filter(app => health[app.id] === 'online').length;
+    const offlineServices = raw.filter(app => health[app.id] === 'offline').map(app => app.name);
+    const offlineCount = offlineServices.length;
+    const totalCount = raw.length;
+    
+    let healthStatus = 'All services online';
+    let healthColor = '#2ecd6f';
+    let offlineList = '';
+    if (offlineCount > 0) {
+      healthStatus = `${offlineCount} service${offlineCount > 1 ? 's' : ''} offline`;
+      offlineList = offlineServices.join(', ');
+      healthColor = '#ff6b6b';
+    } else if (onlineCount < totalCount) {
+      healthStatus = 'Checking services...';
+      healthColor = '#ffa500';
+    }
+
+    return {
+      greeting, clock, today, groups,
+      showWelcome: this.state.showWelcome,
+      frameRef: (el) => { this._frame = el; },
+      healthStatus,
+      healthColor,
+      offlineList,
+    };
+  }
+}
+</script>
+
+<script src="support.js"></script>
+</body>
+</html>

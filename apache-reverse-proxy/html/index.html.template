@@ -1,0 +1,300 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>Media Server - Dashboard</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #000;
+            color: #fff;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
+        
+        .header {
+            background-color: #1a1a1a;
+            padding: 15px 20px;
+            border-bottom: 2px solid #444;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            overflow: auto;
+            min-height: 150px;
+            gap: 30px;
+        }
+        
+        .datetime-box {
+            flex-shrink: 0;
+            background-color: rgba(74, 158, 255, 0.1);
+            border: 1px solid rgba(74, 158, 255, 0.3);
+            border-radius: 12px;
+            padding: 20px 25px;
+            text-align: center;
+            min-width: 140px;
+        }
+        
+        .datetime-box .time {
+            font-size: 32px;
+            font-weight: bold;
+            font-variant-numeric: tabular-nums;
+            color: #4a9eff;
+            margin-bottom: 5px;
+            font-family: 'Courier New', monospace;
+        }
+        
+        .datetime-box .date {
+            font-size: 12px;
+            color: #888;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .datetime-box .style-switcher {
+            margin-top: 12px;
+            padding-top: 12px;
+            border-top: 1px solid rgba(74, 158, 255, 0.2);
+            font-size: 11px;
+        }
+        
+        .datetime-box .style-switcher a {
+            color: #4a9eff;
+            text-decoration: none;
+            transition: all 0.2s;
+        }
+        
+        .datetime-box .style-switcher a:hover {
+            color: #6bb3ff;
+            text-decoration: underline;
+        }
+        
+        .menu-container {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+        }
+        
+        .menu-table {
+            width: 100%;
+            border-collapse: collapse;
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        
+        .menu-item {
+            text-align: center;
+            flex: 0 1 auto;
+        }
+        
+        .menu-item a {
+            display: inline-block;
+            text-decoration: none;
+            transition: transform 0.3s;
+        }
+        
+        .menu-item a:hover {
+            transform: scale(1.15);
+        }
+        
+        .menu-item img {
+            max-width: 120px;
+            max-height: 100px;
+            border: none;
+            display: block;
+        }
+        
+        .menu-item .label {
+            display: none !important;
+            visibility: hidden !important;
+            height: 0 !important;
+            margin: 0 !important;
+            padding: 0 !important;
+        }
+        
+        .content {
+            position: fixed;
+            top: auto;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #000;
+            border: none;
+            width: 100%;
+            height: calc(100% - 150px);
+        }
+        
+        .welcome-screen {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            padding: 40px 20px;
+            text-align: center;
+        }
+        
+        .welcome-screen h1 {
+            font-size: 2.5em;
+            margin-bottom: 20px;
+            color: #4a9eff;
+        }
+        
+        .welcome-screen p {
+            font-size: 1.1em;
+            color: #aaa;
+            margin-bottom: 10px;
+            max-width: 600px;
+        }
+        
+        .services-list {
+            margin-top: 40px;
+            text-align: left;
+            display: inline-block;
+        }
+        
+        .services-list h3 {
+            color: #4a9eff;
+            margin-bottom: 15px;
+        }
+        
+        .services-list ul {
+            list-style: none;
+        }
+        
+        .services-list li {
+            padding: 8px 0;
+            color: #aaa;
+            border-bottom: 1px solid #333;
+        }
+        
+        .services-list li:last-child {
+            border-bottom: none;
+        }
+        
+        .services-list a {
+            color: #4a9eff;
+            text-decoration: none;
+        }
+        
+        .services-list a:hover {
+            text-decoration: underline;
+        }
+        
+        .no-services {
+            color: #ff6b6b;
+            font-size: 1.2em;
+            margin-top: 20px;
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            body {
+                flex-direction: column;
+            }
+            
+            .header {
+                min-height: 120px;
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .datetime-box {
+                min-width: auto;
+                padding: 15px 20px;
+            }
+            
+            .datetime-box .time {
+                font-size: 24px;
+            }
+            
+            .content {
+                position: relative;
+                height: auto;
+                min-height: calc(100vh - 120px);
+            }
+            
+            .welcome-screen h1 {
+                font-size: 1.8em;
+            }
+            
+            .menu-item img {
+                max-width: 80px;
+                max-height: 70px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="header">
+    <div class="datetime-box">
+        <div class="time" id="currentTime">--:--</div>
+        <div class="date" id="currentDate">Loading...</div>
+        <div class="style-switcher">
+            <a href="/dashboard.html">Modern UI &rarr;</a>
+        </div>
+    </div>
+    <div class="menu-container">
+        <table class="menu-table">
+            <tr>
+                @@MENU_ITEMS@@
+            </tr>
+        </table>
+    </div>
+</div>
+
+<iframe name="content" class="content" src="about:blank" frameborder="0" scrolling="yes">
+    <!-- Fallback content if iframe fails -->
+    <div class="welcome-screen">
+        <h1>🎬 Media Server Dashboard</h1>
+        <p>Click a service above to access it</p>
+        <p>All services are protected with HTTPS and accessible through this reverse proxy</p>
+        <div class="services-list">
+            <h3>Enabled Services:</h3>
+            <ul>
+                @@ENABLED_SERVICES_LIST@@
+            </ul>
+        </div>
+    </div>
+</iframe>
+
+<noscript>
+    <div class="welcome-screen">
+        <h1>🎬 Media Server Dashboard</h1>
+        <p>JavaScript is required for this interface</p>
+    </div>
+</noscript>
+
+<script>
+    function updateDateTime() {
+        const now = new Date();
+        
+        // Format time as HH:MM
+        const hours = String(now.getHours()).padStart(2, '0');
+        const minutes = String(now.getMinutes()).padStart(2, '0');
+        document.getElementById('currentTime').textContent = `${hours}:${minutes}`;
+        
+        // Format date
+        const options = { weekday: 'short', month: 'short', day: 'numeric' };
+        const dateStr = now.toLocaleDateString('en-US', options);
+        document.getElementById('currentDate').textContent = dateStr;
+    }
+    
+    // Update immediately
+    updateDateTime();
+    
+    // Update every second
+    setInterval(updateDateTime, 1000);
+</script>
+</body>
+</html>

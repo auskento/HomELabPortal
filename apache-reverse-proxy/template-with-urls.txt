@@ -1,0 +1,43 @@
+ADD THESE SERVICE URL VARIABLES TO TEMPLATE:
+
+<!-- SERVICE URLS - One for each service -->
+<Variable>
+  <Name>SONARR_URL</Name>
+  <Value>http://sonarr:8989</Value>
+  <Mode/>
+  <Description>Sonarr Backend URL</Description>
+  <Tooltip>Example: http://192.168.1.100:8989 or http://sonarr-container:8989</Tooltip>
+  <Type>Text</Type>
+  <Display>always</Display>
+  <Required>false</Required>
+</Variable>
+
+<Variable>
+  <Name>RADARR_URL</Name>
+  <Value>http://radarr:7878</Value>
+  <Mode/>
+  <Description>Radarr Backend URL</Description>
+  <Tooltip>Example: http://192.168.1.100:7878 or http://radarr-container:7878</Tooltip>
+  <Type>Text</Type>
+  <Display>always</Display>
+  <Required>false</Required>
+</Variable>
+
+<Variable>
+  <Name>WHISPARR_URL</Name>
+  <Value>http://whisparr:6969</Value>
+  <Mode/>
+  <Description>Whisparr Backend URL</Description>
+  <Tooltip>Example: http://192.168.1.100:6969 or http://whisparr-container:6969</Tooltip>
+  <Type>Text</Type>
+  <Display>always</Display>
+  <Required>false</Required>
+</Variable>
+
+[... and so on for all 15 services]
+
+Also add corresponding Config tags:
+<Config Name="Sonarr URL" Target="SONARR_URL" Default="http://sonarr:8989" Mode="" Description="Sonarr Backend URL" Type="Text" Display="always" Required="false" Mask="false"/>
+<Config Name="Radarr URL" Target="RADARR_URL" Default="http://radarr:7878" Mode="" Description="Radarr Backend URL" Type="Text" Display="always" Required="false" Mask="false"/>
+... etc
+

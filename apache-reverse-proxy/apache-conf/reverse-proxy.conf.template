@@ -1,0 +1,116 @@
+<VirtualHost *:80>
+    ServerName @@DOMAIN@@
+    ServerAlias www.@@DOMAIN@@
+    
+    # Redirect HTTP to HTTPS
+    RewriteEngine On
+    RewriteCond %{HTTPS} off
+    RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+    
+    # Let's Encrypt ACME challenge
+    DocumentRoot /var/www/letsencrypt
+    <Directory /var/www/letsencrypt>
+        Require all granted
+    </Directory>
+</VirtualHost>
+
+<VirtualHost *:443>
+    ServerName @@DOMAIN@@
+    ServerAlias www.@@DOMAIN@@
+    
+    # SSL Configuration
+    SSLEngine on
+    SSLCertificateFile /etc/letsencrypt/live/@@DOMAIN@@/fullchain.pem
+    SSLCertificateKeyFile /etc/letsencrypt/live/@@DOMAIN@@/privkey.pem
+    SSLProtocol @@SSL_PROTOCOLS@@
+    SSLCipherSuite @@SSL_CIPHERS@@
+    SSLHonorCipherOrder on
+    
+    # Security Headers
+    Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains"
+    Header always set X-Content-Type-Options "nosniff"
+    Header always set X-Frame-Options "SAMEORIGIN"
+    Header always set X-XSS-Protection "1; mode=block"
+    
+    # Enable Proxy
+    ProxyRequests Off
+    ProxyPreserveHost On
+    ProxyVia Off
+    
+    # Default timeout settings
+    ProxyTimeout 300
+    Timeout 300
+    
+    # Set STYLE environment variable for rewrite rules
+    SetEnv STYLE @@STYLE@@
+    
+    # Request limit settings (needed for Plex and other large requests)
+    LimitRequestFieldSize 32768
+    LimitRequestFields 100
+    LimitRequestLine 32768
+    
+    # Static content serving
+    DocumentRoot /var/www/html
+    DirectoryIndex index.html dashboard.html
+    
+    # Rewrite rules for STYLE preference
+    RewriteEngine On
+    # If STYLE is modern and requesting root, serve dashboard.html
+    RewriteCond %{REQUEST_URI} ^/$ [OR]
+    RewriteCond %{REQUEST_URI} ^$
+    RewriteCond %{ENV:STYLE} modern
+    RewriteRule ^.*$ /dashboard.html [L]
+    
+    # Alias for icons (serve directly, don't proxy)
+    Alias /icons /var/www/html/icons
+    <Directory /var/www/html/icons>
+        Require all granted
+    </Directory>
+    
+    <Directory /var/www/html>
+        Require all granted
+    </Directory>
+    
+    # ============================================
+    # CONDITIONAL SERVICE INCLUDES
+    # ============================================
+    
+    # These sections will be included/excluded based on environment variables
+    # See /etc/apache2/sites-available/services/*.conf
+    
+    @@INCLUDE_AUTH_OFFICE365@@
+    @@INCLUDE_SONARR@@
+    @@INCLUDE_RADARR@@
+    @@INCLUDE_WHISPARR@@
+    @@INCLUDE_LIDARR@@
+    @@INCLUDE_READARR@@
+    @@INCLUDE_PROWLARR@@
+    @@INCLUDE_OVERSEERR@@
+    @@INCLUDE_JELLYFIN@@
+    @@INCLUDE_EMBY@@
+    @@INCLUDE_PLEX@@
+    @@INCLUDE_TAUTULLI@@
+    @@INCLUDE_TRANSMISSION@@
+    @@INCLUDE_QBITTORRENT@@
+    @@INCLUDE_SABNZBD@@
+    @@INCLUDE_DELUGE@@
+    @@INCLUDE_CUSTOM_BACKEND@@
+    
+    # ============================================
+    # END CONDITIONAL INCLUDES
+    # ============================================
+    
+    # Error pages
+    ErrorDocument 502 /error-pages/502.html
+    ErrorDocument 503 /error-pages/503.html
+    
+    # Logging
+    ErrorLog ${APACHE_LOG_DIR}/error.log
+    CustomLog ${APACHE_LOG_DIR}/access.log combined
+    
+    # Health check endpoint
+    <Location /health>
+        ProxyPass !
+        SetHandler server-status
+    </Location>
+</VirtualHost>
