@@ -39,6 +39,7 @@ outputs/
 │   │       ├── sonarr.conf
 │   │       ├── radarr.conf
 │   │       ├── lidarr.conf
+│   │       ├── readarr.conf
 │   │       ├── prowlarr.conf
 │   │       ├── overseerr.conf
 │   │       ├── jellyfin.conf
@@ -128,8 +129,9 @@ Add/remove services → Just restart → No manual config editing
 - **Radarr** - Movie automation at `/radarr`
 - **Whisparr** - Adult content collection manager at `/whisparr`
 - **Lidarr** - Music automation at `/lidarr`
+- **Readarr** - Book automation at `/readarr`
 - **Prowlarr** - Indexer manager at `/prowlarr`
-- **Seerr** - Request manager at `/seerr`
+- **Overseerr** - Request manager at `/overseerr`
 
 ### Media Centers
 - **Jellyfin** - Open-source streaming at `/jellyfin`
@@ -160,7 +162,7 @@ Services on the Docker network can be accessed through the reverse proxy without
 ### 4. WebSocket Support
 Real-time features work out of the box:
 - Sonarr/Radarr SignalR updates
-- Seerr Socket.io notifications
+- Overseerr Socket.io notifications
 - qBittorrent real-time status
 
 ### 5. Load Balancing
@@ -178,7 +180,7 @@ Real-time features work out of the box:
 ENABLE_SONARR: "true"
 ENABLE_RADARR: "true"
 ENABLE_PROWLARR: "true"
-ENABLE_SEERR: "true"
+ENABLE_OVERSEERR: "true"
 ENABLE_QBITTORRENT: "true"
 ```
 Covers: Grabbing, organizing, and requesting TV/movies
@@ -188,7 +190,7 @@ Covers: Grabbing, organizing, and requesting TV/movies
 ENABLE_SONARR: "true"
 ENABLE_RADARR: "true"
 ENABLE_JELLYFIN: "true"
-ENABLE_SEERR: "true"
+ENABLE_OVERSEERR: "true"
 ENABLE_QBITTORRENT: "true"
 ENABLE_TAUTULLI: "true"
 ```

@@ -104,8 +104,9 @@ Verify you have the correct port for each service:
 | Sonarr | 8989 | 8990 |
 | Radarr | 7878 | 7879 |
 | Lidarr | 8686 | 8686 |
+| Readarr | 8787 | 8788 |
 | Prowlarr | 9696 | 9697 |
-| Seerr | 5055 | 5056 |
+| Overseerr | 5055 | 5056 |
 | Jellyfin | 8096 | 8097 |
 
 Check your docker-compose.yml to ensure ports match.

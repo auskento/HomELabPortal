@@ -195,6 +195,7 @@ ICON_URL_SONARR: "https://raw.githubusercontent.com/Sonarr/Sonarr/develop/Logo/2
 ICON_URL_RADARR: "https://raw.githubusercontent.com/Radarr/Radarr/develop/Logo/256.png"
 ICON_URL_JELLYFIN: "https://raw.githubusercontent.com/jellyfin/jellyfin/master/Logo.png"
 ICON_URL_LIDARR: "https://raw.githubusercontent.com/Lidarr/Lidarr/develop/Logo/256.png"
+ICON_URL_READARR: "https://raw.githubusercontent.com/Readarr/Readarr/develop/Logo/256.png"
 ICON_URL_TRANSMISSION: "https://raw.githubusercontent.com/transmission/transmission-web/master/src/images/logo.png"
 ICON_URL_QBITTORRENT: "https://raw.githubusercontent.com/qbittorrent/qBittorrent/master/src/gui/resources/icons/app/qbittorrent-tray.png"
 ```
@@ -209,8 +210,9 @@ ICON_URL_RADARR: "https://raw.githubusercontent.com/selfhosted/unraid-community-
 ICON_URL_WHISPARR: "https://raw.githubusercontent.com/selfhosted/unraid-community-apps/master/source/community/img/whisparr-icon.png"
 ICON_URL_JELLYFIN: "https://raw.githubusercontent.com/selfhosted/unraid-community-apps/master/source/community/img/jellyfin-icon.png"
 ICON_URL_LIDARR: "https://raw.githubusercontent.com/selfhosted/unraid-community-apps/master/source/community/img/lidarr-icon.png"
+ICON_URL_READARR: "https://raw.githubusercontent.com/selfhosted/unraid-community-apps/master/source/community/img/readarr-icon.png"
 ICON_URL_PROWLARR: "https://raw.githubusercontent.com/selfhosted/unraid-community-apps/master/source/community/img/prowlarr-icon.png"
-ICON_URL_SEERR: "https://raw.githubusercontent.com/selfhosted/unraid-community-apps/master/source/community/img/seerr-icon.png"
+ICON_URL_OVERSEERR: "https://raw.githubusercontent.com/selfhosted/unraid-community-apps/master/source/community/img/overseerr-icon.png"
 ICON_URL_TAUTULLI: "https://raw.githubusercontent.com/selfhosted/unraid-community-apps/master/source/community/img/tautulli-icon.png"
 ICON_URL_TRANSMISSION: "https://raw.githubusercontent.com/selfhosted/unraid-community-apps/master/source/community/img/transmission-icon.png"
 ICON_URL_QBITTORRENT: "https://raw.githubusercontent.com/selfhosted/unraid-community-apps/master/source/community/img/qbittorrent-icon.png"
@@ -322,8 +324,9 @@ ICON_URL_SONARR         → Sonarr (TV shows)
 ICON_URL_RADARR         → Radarr (Movies)
 ICON_URL_WHISPARR       → Whisparr (Adult content)
 ICON_URL_LIDARR         → Lidarr (Music)
+ICON_URL_READARR        → Readarr (Books)
 ICON_URL_PROWLARR       → Prowlarr (Indexer)
-ICON_URL_SEERR      → Seerr (Requests)
+ICON_URL_OVERSEERR      → Overseerr (Requests)
 ICON_URL_JELLYFIN       → Jellyfin (Streaming)
 ICON_URL_EMBY           → Emby (Streaming)
 ICON_URL_PLEX           → Plex (Streaming)
@@ -457,7 +460,7 @@ services:
       ENABLE_RADARR: "true"
       ENABLE_JELLYFIN: "true"
       ENABLE_PROWLARR: "true"
-      ENABLE_SEERR: "true"
+      ENABLE_OVERSEERR: "true"
       ENABLE_QBITTORRENT: "true"
       ENABLE_TAUTULLI: "true"
       
@@ -466,7 +469,7 @@ services:
       ICON_URL_RADARR: "https://github.com/Radarr/Radarr/raw/develop/Logo/256.png"
       ICON_URL_JELLYFIN: "https://raw.githubusercontent.com/selfhosted/unraid-community-apps/master/source/community/img/jellyfin-icon.png"
       ICON_URL_PROWLARR: "https://raw.githubusercontent.com/selfhosted/unraid-community-apps/master/linuxserver.io/img/prowlarr-icon.png"
-      ICON_URL_SEERR: "https://raw.githubusercontent.com/selfhosted/unraid-community-apps/master/linuxserver.io/img/seerr-icon.png"
+      ICON_URL_OVERSEERR: "https://raw.githubusercontent.com/selfhosted/unraid-community-apps/master/linuxserver.io/img/overseerr-icon.png"
       ICON_URL_QBITTORRENT: "https://raw.githubusercontent.com/selfhosted/unraid-community-apps/master/linuxserver.io/img/qbittorrent-icon.png"
       ICON_URL_TAUTULLI: "https://raw.githubusercontent.com/selfhosted/unraid-community-apps/master/linuxserver.io/img/tautulli-icon.png"
       

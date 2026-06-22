@@ -92,7 +92,7 @@ ENABLE_SONARR: "true"
 ENABLE_RADARR: "true"
 ENABLE_WHISPARR: "true"
 ENABLE_PROWLARR: "true"
-ENABLE_SEERR: "true"
+ENABLE_OVERSEERR: "true"
 ENABLE_QBITTORRENT: "true"
 ```
 
@@ -101,7 +101,7 @@ Access:
 - `https://yourdomain.com/radarr` - Movies
 - `https://yourdomain.com/whisparr` - Comics/Manga
 - `https://yourdomain.com/prowlarr` - Indexer management
-- `https://yourdomain.com/seerr` - Requests
+- `https://yourdomain.com/overseerr` - Requests
 - `https://yourdomain.com/qbittorrent` - Torrents
 
 ### With Custom HTML
@@ -197,8 +197,9 @@ All other services remain the same:
 ENABLE_SONARR: "true"
 ENABLE_RADARR: "true"
 ENABLE_LIDARR: "false"
+ENABLE_READARR: "false"
 ENABLE_PROWLARR: "false"
-ENABLE_SEERR: "false"
+ENABLE_OVERSEERR: "false"
 ENABLE_JELLYFIN: "false"
 ENABLE_EMBY: "false"
 ENABLE_PLEX: "false"
@@ -265,8 +266,9 @@ docker-compose restart apache-reverse-proxy
 2. **Radarr** - Movies
 3. **Whisparr** - Comics/Manga ⭐ NEW
 4. **Lidarr** - Music
+5. **Readarr** - Books
 6. **Prowlarr** - Indexer manager
-7. **Seerr** - Request manager
+7. **Overseerr** - Request manager
 8. **Jellyfin** - Media playback
 9. **Emby** - Premium media center
 10. **Plex** - Cloud sync media
@@ -285,7 +287,7 @@ ENABLE_SONARR: "true"
 ENABLE_RADARR: "true"
 ENABLE_WHISPARR: "true"      # ← New!
 ENABLE_PROWLARR: "true"
-ENABLE_SEERR: "true"
+ENABLE_OVERSEERR: "true"
 ENABLE_QBITTORRENT: "true"
 ```
 

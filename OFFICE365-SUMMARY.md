@@ -236,7 +236,7 @@ environment:
   ENABLE_RADARR: "true"
   ENABLE_JELLYFIN: "true"
   ENABLE_QBITTORRENT: "true"
-  ENABLE_SEERR: "true"
+  ENABLE_OVERSEERR: "true"
   
   # Office 365 Auth
   ENABLE_AUTH_OFFICE365: "true"

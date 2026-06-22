@@ -28,7 +28,7 @@ Before starting, decide which services you want to proxy. Common combinations:
 ENABLE_SONARR: "true"      # TV shows
 ENABLE_RADARR: "true"      # Movies
 ENABLE_PROWLARR: "true"    # Indexer management
-ENABLE_SEERR: "true"   # Request management
+ENABLE_OVERSEERR: "true"   # Request management
 ENABLE_QBITTORRENT: "true" # Torrents
 ```
 
@@ -37,7 +37,7 @@ ENABLE_QBITTORRENT: "true" # Torrents
 ENABLE_SONARR: "true"
 ENABLE_RADARR: "true"
 ENABLE_JELLYFIN: "true"    # Media playback
-ENABLE_SEERR: "true"
+ENABLE_OVERSEERR: "true"
 ENABLE_QBITTORRENT: "true"
 ```
 
@@ -172,7 +172,7 @@ https://yourdomain.com/sonarr      (if ENABLE_SONARR=true)
 https://yourdomain.com/radarr      (if ENABLE_RADARR=true)
 https://yourdomain.com/lidarr      (if ENABLE_LIDARR=true)
 https://yourdomain.com/prowlarr    (if ENABLE_PROWLARR=true)
-https://yourdomain.com/seerr   (if ENABLE_SEERR=true)
+https://yourdomain.com/overseerr   (if ENABLE_OVERSEERR=true)
 https://yourdomain.com/jellyfin    (if ENABLE_JELLYFIN=true)
 https://yourdomain.com/qbittorrent (if ENABLE_QBITTORRENT=true)
 ```
@@ -200,8 +200,9 @@ See `SERVICES.md` for complete information on each service:
 - **Sonarr** - TV show automation
 - **Radarr** - Movie automation
 - **Lidarr** - Music automation
+- **Readarr** - Book automation
 - **Prowlarr** - Indexer manager
-- **Seerr** - Request manager
+- **Overseerr** - Request manager
 - **Jellyfin** - Media streaming
 - **Emby** - Emby media server
 - **Plex** - Plex media server

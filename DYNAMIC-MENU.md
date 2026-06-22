@@ -85,7 +85,8 @@ Generating dashboard menu based on enabled services...
 | Radarr | ENABLE_RADARR | 7878 | Movie Automation |
 | Whisparr | ENABLE_WHISPARR | 6969 | Adult Collections |
 | Lidarr | ENABLE_LIDARR | 8686 | Music Automation |
-| Seerr | ENABLE_SEERR | 5055 | Request Manager |
+| Readarr | ENABLE_READARR | 8787 | Book Automation |
+| Overseerr | ENABLE_OVERSEERR | 5055 | Request Manager |
 | Jellyfin | ENABLE_JELLYFIN | 8096 | Media Streaming |
 | Emby | ENABLE_EMBY | 8096 | Media Streaming |
 | Plex | ENABLE_PLEX | 32400 | Media Streaming |
@@ -108,7 +109,7 @@ Menu shows: 2 icons
 ENABLE_SONARR: "true"
 ENABLE_RADARR: "true"
 ENABLE_PROWLARR: "true"
-ENABLE_SEERR: "true"
+ENABLE_OVERSEERR: "true"
 ENABLE_JELLYFIN: "true"
 ENABLE_QBITTORRENT: "true"
 ENABLE_TAUTULLI: "true"
@@ -158,7 +159,8 @@ Sonarr        - #08a3d4 (Teal)
 Radarr        - #65b342 (Green)
 Whisparr      - #d45ba0 (Pink)
 Lidarr        - #d45b9d (Magenta)
-Seerr     - #00a4dc (Cyan)
+Readarr       - #d48d4c (Orange)
+Overseerr     - #00a4dc (Cyan)
 Jellyfin      - #00a4dc (Cyan)
 Emby          - #9146FF (Purple)
 Plex          - #e5a00d (Gold)

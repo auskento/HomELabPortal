@@ -48,9 +48,14 @@ LIDARR_URL: "http://lidarr:8686"
 - **Docker Container Name:** `lidarr`
 - **Path on Dashboard:** `/lidarr/`
 
+#### Readarr (Books)
 ```yaml
+ENABLE_READARR: "true"
+READARR_URL: "http://readarr:8787"
 ```
 - **Default Port:** 8787
+- **Docker Container Name:** `readarr`
+- **Path on Dashboard:** `/readarr/`
 
 #### Prowlarr (Indexer Manager)
 ```yaml
@@ -65,14 +70,14 @@ PROWLARR_URL: "http://prowlarr:9696"
 
 ### Management Services
 
-#### Seerr (Request Manager)
+#### Overseerr (Request Manager)
 ```yaml
-ENABLE_SEERR: "true"
-SEERR_URL: "http://seerr:5055"
+ENABLE_OVERSEERR: "true"
+OVERSEERR_URL: "http://overseerr:5055"
 ```
 - **Default Port:** 5055
 - **Docker Container Name:** `overseerr`
-- **Path on Dashboard:** `/seerr/`
+- **Path on Dashboard:** `/overseerr/`
 
 ---
 
@@ -235,8 +240,9 @@ services:
       
       # All others disabled by default
       ENABLE_LIDARR: "false"
+      ENABLE_READARR: "false"
       ENABLE_PROWLARR: "false"
-      ENABLE_SEERR: "false"
+      ENABLE_OVERSEERR: "false"
       ENABLE_EMBY: "false"
       ENABLE_TAUTULLI: "false"
       ENABLE_TRANSMISSION: "false"
@@ -328,6 +334,7 @@ ENABLE_SONARR: "true"
 ENABLE_RADARR: "true"
 ENABLE_WHISPARR: "true"
 ENABLE_LIDARR: "true"
+ENABLE_READARR: "true"
 ENABLE_PROWLARR: "true"
 ENABLE_JELLYFIN: "true"
 ENABLE_SABNZBD: "true"

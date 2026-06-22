@@ -62,7 +62,8 @@ Each service has a specific filename pattern. Use **lowercase** service names:
 | qBittorrent | `qbittorrent.png` or `qbittorrent.jpg` or `qbittorrent.svg` |
 | Prowlarr | `prowlarr.png` or `prowlarr.jpg` or `prowlarr.svg` |
 | Lidarr | `lidarr.png` or `lidarr.jpg` or `lidarr.svg` |
-| Seerr | `overseerr.png` or `overseerr.jpg` or `overseerr.svg` |
+| Readarr | `readarr.png` or `readarr.jpg` or `readarr.svg` |
+| Overseerr | `overseerr.png` or `overseerr.jpg` or `overseerr.svg` |
 | Emby | `emby.png` or `emby.jpg` or `emby.svg` |
 | Tautulli | `tautulli.png` or `tautulli.jpg` or `tautulli.svg` |
 
