@@ -29,6 +29,8 @@ ENABLE_QBITTORRENT="${ENABLE_QBITTORRENT:-false}"
 ENABLE_SABNZBD="${ENABLE_SABNZBD:-false}"
 ENABLE_DELUGE="${ENABLE_DELUGE:-false}"
 ENABLE_AUTH_OFFICE365="${ENABLE_AUTH_OFFICE365:-false}"
+ENABLE_BASIC_AUTH="${ENABLE_BASIC_AUTH:-false}"
+BASIC_AUTH_CREDENTIALS="${BASIC_AUTH_CREDENTIALS:-}"
 SONARR_URL="${SONARR_URL:-}"
 RADARR_URL="${RADARR_URL:-}"
 WHISPARR_URL="${WHISPARR_URL:-}"
@@ -88,9 +90,11 @@ echo "Generating dashboard menu based on enabled services..."
 # Enable reverse proxy site
 a2ensite reverse-proxy.conf 2>/dev/null || true
 
-# Enable required Apache modules for OAuth2
+# Enable required Apache modules for OAuth2 and Basic Auth
 echo "Enabling Apache modules..."
 a2enmod auth_openidc 2>/dev/null || true
+a2enmod auth_basic 2>/dev/null || true
+a2enmod authn_file 2>/dev/null || true
 a2enmod proxy 2>/dev/null || true
 a2enmod proxy_http 2>/dev/null || true
 a2enmod headers 2>/dev/null || true
@@ -153,6 +157,57 @@ else
     a2disconf auth-office365-protect 2>/dev/null || true
     rm -f /etc/apache2/conf-enabled/oauth2-office365.conf
     rm -f /etc/apache2/conf-enabled/auth-office365-protect.conf
+fi
+
+# Basic Authentication Setup
+if [ "${ENABLE_BASIC_AUTH}" = "true" ]; then
+    echo "=== Setting up Basic Authentication ==="
+
+    # Validate required parameters
+    if [ -z "$BASIC_AUTH_CREDENTIALS" ]; then
+        echo "ERROR: BASIC_AUTH_CREDENTIALS is required when ENABLE_BASIC_AUTH=true"
+        echo "Format: username:password|username2:password2 (pipe-separated pairs)"
+        exit 1
+    fi
+
+    # Create .htpasswd file
+    HTPASSWD_FILE="/etc/apache2/.htpasswd"
+    > "$HTPASSWD_FILE"  # Clear the file
+
+    # Parse credentials and add to .htpasswd
+    IFS='|' read -ra CREDENTIALS_ARRAY <<< "$BASIC_AUTH_CREDENTIALS"
+    for credential in "${CREDENTIALS_ARRAY[@]}"; do
+        IFS=':' read -r username password <<< "$credential"
+        if [ -z "$username" ] || [ -z "$password" ]; then
+            echo "ERROR: Invalid credential format. Expected 'username:password'"
+            exit 1
+        fi
+        # Use htpasswd to create bcrypt hash (most secure)
+        htpasswd -bB "$HTPASSWD_FILE" "$username" "$password" 2>/dev/null || {
+            echo "ERROR: Failed to create htpasswd entry for user: $username"
+            exit 1
+        }
+        echo "✓ Added user to basic auth: $username"
+    done
+
+    # Set proper permissions
+    chmod 640 "$HTPASSWD_FILE"
+
+    # Enable the auth-basic config (it's already in conf-available from Dockerfile)
+    if [ -f /etc/apache2/conf-available/auth-basic.conf ]; then
+        cp /etc/apache2/conf-available/auth-basic.conf /etc/apache2/conf-enabled/auth-basic.conf
+        echo "✓ Basic auth configuration enabled"
+    else
+        echo "ERROR: auth-basic.conf not found in /etc/apache2/conf-available/"
+        exit 1
+    fi
+
+    echo "Basic Authentication configured with credentials from BASIC_AUTH_CREDENTIALS"
+else
+    echo "Basic Authentication is disabled (ENABLE_BASIC_AUTH=false)"
+    # Disable basic auth if it was previously enabled
+    rm -f /etc/apache2/conf-enabled/auth-basic.conf
+    rm -f /etc/apache2/.htpasswd
 fi
 
 # Function to wait for certificate

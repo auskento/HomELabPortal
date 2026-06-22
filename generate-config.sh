@@ -117,6 +117,7 @@ DELUGE_INCLUDE=$(generate_include "deluge" "$ENABLE_DELUGE")
 
 # Generate auth includes
 AUTH_OFFICE365_INCLUDE=$(generate_auth_include "auth-office365-protect" "$ENABLE_AUTH_OFFICE365")
+BASIC_AUTH_INCLUDE=$(generate_auth_include "auth-basic" "$ENABLE_BASIC_AUTH")
 
 # Generate custom backend include if enabled
 CUSTOM_BACKEND_INCLUDE=""
@@ -187,6 +188,7 @@ CONFIG="${CONFIG//@@INCLUDE_CUSTOM_BACKEND@@/$CUSTOM_BACKEND_INCLUDE}"
 
 # Replace auth includes
 CONFIG="${CONFIG//@@INCLUDE_AUTH_OFFICE365@@/$AUTH_OFFICE365_INCLUDE}"
+CONFIG="${CONFIG//@@INCLUDE_BASIC_AUTH@@/$BASIC_AUTH_INCLUDE}"
 
 # Write output file
 echo "$CONFIG" > "$OUTPUT_FILE"

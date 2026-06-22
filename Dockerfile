@@ -19,13 +19,15 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libapache2-mod-auth-openidc \
     && rm -rf /var/lib/apt/lists/*
 
-# Enable necessary Apache modules for reverse proxy and SSL
+# Enable necessary Apache modules for reverse proxy, SSL, and authentication
 RUN a2enmod rewrite \
     && a2enmod proxy \
     && a2enmod proxy_http \
     && a2enmod ssl \
     && a2enmod headers \
     && a2enmod auth_openidc \
+    && a2enmod auth_basic \
+    && a2enmod authn_file \
     && a2enmod session_crypto
 
 # Create directories
@@ -49,6 +51,7 @@ COPY apache-conf/reverse-proxy.conf.template /etc/apache2/sites-available/revers
 COPY apache-conf/ssl-config.conf /etc/apache2/mods-available/ssl-params.conf
 COPY apache-conf/oauth2-office365.conf /etc/apache2/conf-available/
 COPY apache-conf/auth-office365-protect.conf /etc/apache2/conf-available/
+COPY apache-conf/auth-basic.conf /etc/apache2/conf-available/
 COPY apache-conf/services/ /etc/apache2/sites-available/services/
 
 # Copy configuration generator script

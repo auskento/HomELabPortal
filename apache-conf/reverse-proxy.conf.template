@@ -70,7 +70,10 @@
     <Directory /var/www/html>
         Require all granted
     </Directory>
-    
+
+    # Basic Authentication (if enabled)
+    @@INCLUDE_BASIC_AUTH@@
+
     # ============================================
     # CONDITIONAL SERVICE INCLUDES
     # ============================================
