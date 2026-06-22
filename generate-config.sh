@@ -30,15 +30,23 @@ process_service_config() {
         return
     fi
     
-    # Extract host:port AND path from URL
+    # Extract host:port from URL
     service_host_with_port=$(echo "$service_url" | sed 's|^https*://||;s|/.*||')
     
     # Extract host WITHOUT port for cookie domain
     service_host_only=$(echo "$service_url" | sed 's|^https*://||;s|/.*||;s|:.*||')
     
-    # Replace ProxyPass URLs (keep the full host:port/path)
-    sed -i "s|http://[^/]*:${template_port}[^/]*|http://${service_host_with_port}|g" "$service_file"
-    sed -i "s|ws://[^/]*:${template_port}[^/]*|ws://${service_host_with_port}|g" "$service_file"
+    # Extract the path from the URL (everything after host:port)
+    service_path=$(echo "$service_url" | sed 's|^https*://[^/]*||')
+    
+    # If no path, default to the service name
+    if [ -z "$service_path" ]; then
+        service_path="/$service_name"
+    fi
+    
+    # Replace ProxyPass URLs, preserving the path
+    sed -i "s|http://[^/]*:${template_port}/[^/]*|http://${service_host_with_port}${service_path}|g" "$service_file"
+    sed -i "s|ws://[^/]*:${template_port}/[^/]*|ws://${service_host_with_port}${service_path}|g" "$service_file"
     
     # Replace cookie domain ONLY if the line contains ProxyPassReverseCookieDomain
     sed -i "s|\(ProxyPassReverseCookieDomain\) $service_name |\1 $service_host_only |g" "$service_file"
@@ -51,9 +59,7 @@ process_service_config() {
 [ "$ENABLE_RADARR" = "true" ] && process_service_config "radarr" "7878"
 [ "$ENABLE_WHISPARR" = "true" ] && process_service_config "whisparr" "6969"
 [ "$ENABLE_LIDARR" = "true" ] && process_service_config "lidarr" "8686"
-[ "$ENABLE_READARR" = "true" ] && process_service_config "readarr" "8787"
 [ "$ENABLE_PROWLARR" = "true" ] && process_service_config "prowlarr" "9696"
-[ "$ENABLE_OVERSEERR" = "true" ] && process_service_config "overseerr" "5055"
 [ "$ENABLE_JELLYFIN" = "true" ] && process_service_config "jellyfin" "8096"
 [ "$ENABLE_EMBY" = "true" ] && process_service_config "emby" "8096"
 [ "$ENABLE_PLEX" = "true" ] && process_service_config "plex" "32400"
@@ -98,7 +104,6 @@ RADARR_INCLUDE=$(generate_include "radarr" "$ENABLE_RADARR")
 WHISPARR_INCLUDE=$(generate_include "whisparr" "$ENABLE_WHISPARR")
 LIDARR_INCLUDE=$(generate_include "lidarr" "$ENABLE_LIDARR")
 PROWLARR_INCLUDE=$(generate_include "prowlarr" "$ENABLE_PROWLARR")
-OVERSEERR_INCLUDE=$(generate_include "overseerr" "$ENABLE_OVERSEERR")
 JELLYFIN_INCLUDE=$(generate_include "jellyfin" "$ENABLE_JELLYFIN")
 EMBY_INCLUDE=$(generate_include "emby" "$ENABLE_EMBY")
 PLEX_INCLUDE=$(generate_include "plex" "$ENABLE_PLEX")
@@ -166,9 +171,7 @@ CONFIG="${CONFIG//@@INCLUDE_SONARR@@/$SONARR_INCLUDE}"
 CONFIG="${CONFIG//@@INCLUDE_RADARR@@/$RADARR_INCLUDE}"
 CONFIG="${CONFIG//@@INCLUDE_WHISPARR@@/$WHISPARR_INCLUDE}"
 CONFIG="${CONFIG//@@INCLUDE_LIDARR@@/$LIDARR_INCLUDE}"
-CONFIG="${CONFIG//@@INCLUDE_READARR@@/$READARR_INCLUDE}"
 CONFIG="${CONFIG//@@INCLUDE_PROWLARR@@/$PROWLARR_INCLUDE}"
-CONFIG="${CONFIG//@@INCLUDE_OVERSEERR@@/$OVERSEERR_INCLUDE}"
 CONFIG="${CONFIG//@@INCLUDE_JELLYFIN@@/$JELLYFIN_INCLUDE}"
 CONFIG="${CONFIG//@@INCLUDE_EMBY@@/$EMBY_INCLUDE}"
 CONFIG="${CONFIG//@@INCLUDE_PLEX@@/$PLEX_INCLUDE}"

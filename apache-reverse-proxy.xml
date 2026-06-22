@@ -80,6 +80,10 @@
       <Value>Australia/Melbourne</Value>
     </Variable>
     <Variable>
+      <Name>STYLE</Name>
+      <Value>modern</Value>
+    </Variable>
+    <Variable>
       <Name>ENABLE_SABNZBD</Name>
       <Value>false</Value>
     </Variable>
@@ -295,6 +299,7 @@
   <Config Name="DOMAIN" Target="DOMAIN" Default="yourdomain.com" Mode="" Description="Domain Name (REQUIRED - e.g., example.com)" Type="Variable" Display="always" Required="true" Mask="false"/>
   <Config Name="EMAIL" Target="EMAIL" Default="admin@example.com" Mode="" Description="Email for Let's Encrypt (REQUIRED)" Type="Variable" Display="always" Required="true" Mask="false"/>
   <Config Name="Timezone" Target="TZ" Default="Australia/Melbourne" Mode="" Description="Timezone" Type="Variable" Display="always" Required="false" Mask="false"/>
+  <Config Name="Dashboard Style" Target="STYLE" Default="modern" Mode="" Description="Dashboard style (classic or modern)" Type="Variable" Display="always" Required="false" Mask="false"/>
   
   <!-- SABNZBD -->
   <Config Name="[1/14] Enable SABnzbd" Target="ENABLE_SABNZBD" Default="false" Mode="" Description="SABnzbd - Usenet Client" Type="Variable" Display="always" Required="false" Mask="false"/>
