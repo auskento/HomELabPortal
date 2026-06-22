@@ -237,6 +237,10 @@
 <body>
 
 <div class="header">
+    <div style="display:flex;align-items:center;gap:15px;flex-shrink:0">
+        <img src="/icons/apache-reverse-proxy.svg" alt="Apache Reverse Proxy" style="width:40px;height:40px;filter:drop-shadow(0 4px 16px rgba(58,160,224,.4))">
+        <div style="font-weight:600;font-size:16px;color:#cdd3dd;letter-spacing:0.1em">MEDIA SERVER</div>
+    </div>
     <div class="datetime-box">
         <div class="time" id="currentTime">--:--</div>
         <div class="date" id="currentDate">Loading...</div>
