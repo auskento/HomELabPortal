@@ -377,6 +377,50 @@ generate_dashboard2() {
     generate_dashboard_for_auth
 }
 
+# Generate grid-based dashboard (dashboard3.html with auto-fit columns)
+generate_dashboard3() {
+    local DASHBOARD_OUTPUT="/var/www/html/dashboard3.html"
+    local DASHBOARD_TEMPLATE="/var/www/html/dashboard3.html.template"
+
+    if [ ! -f "$DASHBOARD_TEMPLATE" ]; then
+        echo "⚠ Dashboard3 template not found: $DASHBOARD_TEMPLATE"
+        return
+    fi
+
+    # Count enabled services
+    local service_count=0
+    for service_key in "${SERVICE_ORDER[@]}"; do
+        local enable_var="ENABLE_${service_key}"
+        if [ "${!enable_var}" = "true" ]; then
+            ((service_count++))
+        fi
+    done
+
+    local services_array=$(generate_dashboard2_services_array)
+
+    # Set dashboard name and icon
+    local DASHBOARD_NAME="${DASHBOARD_NAME:-Media Server}"
+    local DASHBOARD_ICON="${DASHBOARD_ICON:-/icons/apache-reverse-proxy.png}"
+
+    # Calculate dynamic icon sizes
+    local sizes=$(calculate_icon_sizes "$service_count")
+    local ICON_SIZE=$(echo "$sizes" | cut -d'|' -f1)
+    local ICON_GAP=$(echo "$sizes" | cut -d'|' -f2)
+    local LOGO_SIZE=$(echo "$sizes" | cut -d'|' -f3)
+
+    local html_content=$(cat "$DASHBOARD_TEMPLATE")
+    html_content="${html_content//@@SERVICES_ARRAY@@/$services_array}"
+    html_content="${html_content//@@DASHBOARD_NAME@@/$DASHBOARD_NAME}"
+    html_content="${html_content//@@DASHBOARD_ICON@@/$DASHBOARD_ICON}"
+    html_content="${html_content//@@ICON_SIZE@@/$ICON_SIZE}"
+    html_content="${html_content//@@ICON_GAP@@/$ICON_GAP}"
+    html_content="${html_content//@@LOGO_SIZE@@/$LOGO_SIZE}"
+
+    echo "$html_content" > "$DASHBOARD_OUTPUT"
+
+    echo "✓ Grid dashboard generated (auto-fit columns): $DASHBOARD_OUTPUT"
+}
+
 # Main generation function
 generate_html() {
     echo "Generating all dashboards in synchronized order..."
@@ -395,6 +439,7 @@ generate_html() {
     generate_simple_menu
     generate_react_dashboard
     generate_dashboard2
+    generate_dashboard3
 
     echo ""
     echo "✓ All dashboards generated with $count enabled service(s)"
@@ -402,7 +447,8 @@ generate_html() {
     echo "Available at:"
     echo "  /index.html (classic menu)"
     echo "  /dashboard.html (React modern UI)"
-    echo "  /dashboard2.html (iframes with dynamic icons)"
+    echo "  /dashboard2.html (iframes, single column)"
+    echo "  /dashboard3.html (iframes, auto-fit grid columns)"
 }
 
 # Run generation
