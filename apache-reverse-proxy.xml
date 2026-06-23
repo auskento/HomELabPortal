@@ -305,7 +305,7 @@
     </Variable>
     <Variable>
       <Name>GOOGLE_REDIRECT_URI</Name>
-      <Value>https://yourdomain.com/auth/oauth2/callback</Value>
+      <Value>https://yourdomain.com</Value>
     </Variable>
     <Variable>
       <Name>GOOGLE_CRYPTO_PASSPHRASE</Name>
@@ -415,7 +415,7 @@
   <!-- GOOGLE OAUTH -->
   <Config Name="Google Client ID" Target="GOOGLE_CLIENT_ID" Default="" Mode="" Description="For AUTHTYPE=google. From Google Cloud Console" Type="Variable" Display="always" Required="false" Mask="false"/>
   <Config Name="Google Client Secret" Target="GOOGLE_CLIENT_SECRET" Default="" Mode="" Description="For AUTHTYPE=google. From Google Cloud Console" Type="Variable" Display="always" Required="false" Mask="true"/>
-  <Config Name="Google Redirect URI" Target="GOOGLE_REDIRECT_URI" Default="https://yourdomain.com/auth/oauth2/callback" Mode="" Description="For AUTHTYPE=google. Must match Google OAuth configuration" Type="Variable" Display="always" Required="false" Mask="false"/>
+  <Config Name="Google Redirect URI" Target="GOOGLE_REDIRECT_URI" Default="https://yourdomain.com" Mode="" Description="For AUTHTYPE=google. Just the domain root (no path). Must match Google OAuth configuration" Type="Variable" Display="always" Required="false" Mask="false"/>
   <Config Name="Google Crypto Passphrase" Target="GOOGLE_CRYPTO_PASSPHRASE" Default="" Mode="" Description="For AUTHTYPE=google. Session encryption key (auto-generated if blank)" Type="Variable" Display="advanced" Required="false" Mask="true"/>
   <Config Name="OIDC Provider Metadata URL" Target="OIDC_PROVIDER_METADATA_URL" Default="" Mode="" Description="Azure AD OIDC metadata URL (e.g., https://login.microsoftonline.com/{tenant-id}/v2.0/.well-known/openid-configuration)" Type="Variable" Display="always" Required="false" Mask="false"/>
   

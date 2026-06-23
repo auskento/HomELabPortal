@@ -125,7 +125,7 @@ Authentication using Google accounts. Best for teams using Google Workspace.
 AUTHTYPE=google
 GOOGLE_CLIENT_ID=your-client-id.apps.googleusercontent.com
 GOOGLE_CLIENT_SECRET=your-client-secret-here
-GOOGLE_REDIRECT_URI=https://transfers.limosani.au/auth/oauth2/callback
+GOOGLE_REDIRECT_URI=https://transfers.limosani.au
 ```
 
 ### Setup Steps
@@ -184,22 +184,26 @@ All methods are mutually exclusive. Set only one `AUTHTYPE`:
 AUTHTYPE=basic
 BASIC_AUTH_CREDENTIALS=user:password
 
-# Option 2: Entra
+# Option 2: Entra (Microsoft)
 AUTHTYPE=entra
 ENTRA_CLIENT_ID=...
 ENTRA_CLIENT_SECRET=...
-ENTRA_REDIRECT_URI=...
+ENTRA_REDIRECT_URI=https://your-domain/auth/oauth2/callback
 ENTRA_PROVIDER_METADATA_URL=...
 
 # Option 3: Google
 AUTHTYPE=google
 GOOGLE_CLIENT_ID=...
 GOOGLE_CLIENT_SECRET=...
-GOOGLE_REDIRECT_URI=...
+GOOGLE_REDIRECT_URI=https://your-domain
 
 # Option 4: Disabled
 AUTHTYPE=none
 ```
+
+**Note:** Entra and Google use different redirect URI formats:
+- **Entra**: `https://your-domain/auth/oauth2/callback` (specific path)
+- **Google**: `https://your-domain` (domain root only)
 
 When switching, the old auth method's configuration is automatically disabled.
 
