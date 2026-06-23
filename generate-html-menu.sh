@@ -325,11 +325,37 @@ generate_dashboard2() {
     generate_dashboard_for_auth
 }
 
+# Generate animated dashboard (dashboard3.html with object tags)
+generate_dashboard3() {
+    local DASHBOARD_OUTPUT="/var/www/html/dashboard3.html"
+    local DASHBOARD_TEMPLATE="/var/www/html/dashboard3.html.template"
+
+    if [ ! -f "$DASHBOARD_TEMPLATE" ]; then
+        echo "⚠ Dashboard3 template not found: $DASHBOARD_TEMPLATE"
+        return
+    fi
+
+    local services_array=$(generate_dashboard2_services_array)
+
+    # Set dashboard name and icon
+    local DASHBOARD_NAME="${DASHBOARD_NAME:-Media Server}"
+    local DASHBOARD_ICON="${DASHBOARD_ICON:-/icons/apache-reverse-proxy.png}"
+
+    local html_content=$(cat "$DASHBOARD_TEMPLATE")
+    html_content="${html_content//@@SERVICES_ARRAY@@/$services_array}"
+    html_content="${html_content//@@DASHBOARD_ICON@@/$DASHBOARD_ICON}"
+    html_content="${html_content//@@DASHBOARD_NAME@@/$DASHBOARD_NAME}"
+
+    echo "$html_content" > "$DASHBOARD_OUTPUT"
+
+    echo "✓ Animated dashboard generated (with object tags): $DASHBOARD_OUTPUT"
+}
+
 # Main generation function
 generate_html() {
-    echo "Generating both dashboards in synchronized order..."
+    echo "Generating all dashboards in synchronized order..."
     echo ""
-    
+
     # Count enabled services
     local count=0
     for service_key in "${SERVICE_ORDER[@]}"; do
@@ -338,19 +364,21 @@ generate_html() {
             ((count++))
         fi
     done
-    
-    # Generate both versions
+
+    # Generate all versions
     generate_simple_menu
     generate_react_dashboard
     generate_dashboard2
-    
+    generate_dashboard3
+
     echo ""
-    echo "✓ Both dashboards generated with $count enabled service(s)"
+    echo "✓ All dashboards generated with $count enabled service(s)"
     echo ""
-    echo "Service order matches:"
-    echo "  1. MEDIA services"
-    echo "  2. DOWNLOADS services"  
-    echo "  3. INDEXERS & INFRA services"
+    echo "Available at:"
+    echo "  /index.html (classic menu)"
+    echo "  /dashboard.html (React modern UI)"
+    echo "  /dashboard2.html (direct links)"
+    echo "  /dashboard3.html (animated SVG support)"
 }
 
 # Run generation
