@@ -75,24 +75,9 @@ cat << 'EOF'
     </Location>
 EOF
 
-# Add OAuth authentication if enabled
-if [ "$ENABLE_OAUTH" = "true" ]; then
-    cat << 'EOF'
-    
-    # OAuth2 Authentication Protection
-    <Location />
-        AuthType openid-connect
-        Require valid-user
-        LogLevel debug
-    </Location>
-    
-    # Pass Office 365 user information headers to Emby
-    RequestHeader set X-Remote-User %{OIDC_email}e
-    RequestHeader set X-Remote-Name %{OIDC_name}e
-    RequestHeader set X-Remote-ID %{OIDC_sub}e
-    RequestHeader set X-Auth-Method "Office365"
-EOF
-fi
+# Subdomains don't require separate OIDC auth
+# Users authenticate at main domain; subdomains are accessible without re-auth
+# Attempting to add OIDC here causes hostname mismatch errors with mod_auth_openidc
 
 cat << 'EOF'
     

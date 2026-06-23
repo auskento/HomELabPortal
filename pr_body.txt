@@ -1,45 +1,131 @@
 ## Summary
-Implements authentication-type-specific dashboards for basic auth and OAuth, with optimized UX for each method's constraints.
+
+Comprehensive authentication system refactoring implementing three authentication methods: Basic Auth, Entra ID (Microsoft), and Google OAuth. Includes auth-specific dashboard selection, configuration updates, and Unraid template improvements.
 
 ## What Changed
 
-### 1. Basic Auth Dashboard (direct links)
-- Reverted auth-basic.conf to protect all paths except /health and /icons
-- Replaced dashboard2.html with a simple direct-link version
-- Users authenticate once at dashboard, then navigate directly to services
-- Eliminates the re-prompting issue inherent to iframe + basic auth
+### 1. Three-Tier Authentication System
+- Implemented mutually exclusive auth methods: asic, ntra, google, 
+one
+- Renamed Office365/Microsoft OAuth to Entra ID terminology
+- Added Google OAuth support with OIDC implementation
+- Each method properly isolated with dedicated config files
 
-### 2. OAuth Dashboard (iframes + sessions)
-- Created dashboard-oauth.html.template with advanced features
-- Embedded iframes keep sidebar visible while viewing service content
-- User info display shows authenticated user name and email
-- Logout button for proper session-based sign out
-- Top bar shows current service with close button
-- Health monitoring checks service status
+### 2. Authentication Method Features
 
-### 3. Smart Dashboard Generation
-- Updated generate-html-menu.sh to check AUTHTYPE environment variable
-- Automatically selects correct template:
-  - AUTHTYPE=oauth → dashboard-oauth.html (iframes)
-  - AUTHTYPE=basic → dashboard2.html (direct links)
+**Basic Auth**
+- Simple HTTP Basic Auth with bcrypt-hashed credentials
+- Automatically forces classic interface (STYLE=classic)
+- Direct service links dashboard (no iframes, no re-prompting)
+- No external dependencies
 
-## Why
+**Entra ID (Microsoft)**
+- Azure AD / Microsoft Entra authentication
+- Redirect URI: https://domain/auth/oauth2/callback
+- Modern dashboard with embedded iframes
+- User info display and logout button
+- Session management
 
-**Basic Auth Limitations:**
-- Stateless, no session tracking
-- No built-in logout
-- Re-prompts on each iframe request
+**Google OAuth**
+- Google account / Workspace authentication  
+- Redirect URI: https://domain (domain root only)
+- Modern dashboard with embedded iframes
+- User info display and logout button
+- Session management
 
-**OAuth Strengths:**
-- Stateful sessions
-- User info available
-- Logout functionality
-- iframe-safe with proper session management
+### 3. Dashboard Selection
+- Created dashboard-oauth.html.template for OAuth methods (iframes + sessions)
+- Updated dashboard2.html.template for basic auth (direct links)
+- Updated generate-html-menu.sh to select correct dashboard based on AUTHTYPE
+- Basic auth automatically forces classic interface in docker-entrypoint.sh
 
-Each auth method now gets an optimized dashboard that works with its constraints rather than against them.
+### 4. Configuration Updates
+- Renamed oauth2-office365.conf → oauth2-entra.conf
+- Renamed auth-office365-protect.conf → auth-entra-protect.conf
+- Created oauth2-google.conf
+- Created auth-google-protect.conf
+- Updated generate-config.sh to handle all three methods
+- Updated reverse-proxy.conf.template with new include variables
+- Updated docker-entrypoint.sh with ENTRA_* and GOOGLE_* variables
+- Updated Dockerfile to copy new auth config files
 
-## Testing Needed
-- [ ] AUTHTYPE=basic: Verify no re-prompting when clicking services
-- [ ] AUTHTYPE=oauth: Verify iframes load with user info and logout button
-- [ ] Health monitoring works on both dashboards
-- [ ] Direct service access requires auth on basic auth setup
+### 5. Documentation & Examples
+- Created AUTHENTICATION-SETUP.md with comprehensive setup guides
+- Updated .env.example with new authentication variables
+- Updated Unraid template (apache-reverse-proxy.xml) with all three auth methods
+- Added clarification on different redirect URI formats
+
+### 6. Tautulli Configuration
+- Added missing /tautulli/newsletter location
+- Added missing /tautulli/image location
+- Simplified configuration to match standard template
+
+## Configuration Examples
+
+**Basic Auth:**
+\\\nv
+AUTHTYPE=basic
+BASIC_AUTH_CREDENTIALS=user1:password1|user2:password2
+\\\
+
+**Entra ID:**
+\\\nv
+AUTHTYPE=entra
+ENTRA_CLIENT_ID=...
+ENTRA_CLIENT_SECRET=...
+ENTRA_REDIRECT_URI=https://yourdomain.com/auth/oauth2/callback
+ENTRA_PROVIDER_METADATA_URL=https://login.microsoftonline.com/TENANT_ID/v2.0/.well-known/openid-configuration
+\\\
+
+**Google:**
+\\\nv
+AUTHTYPE=google
+GOOGLE_CLIENT_ID=...
+GOOGLE_CLIENT_SECRET=...
+GOOGLE_REDIRECT_URI=https://yourdomain.com
+\\\
+
+## Key Design Decisions
+
+1. **Auth Method Exclusivity**: Only one auth method can be active at a time to prevent conflicts
+2. **Dashboard Based on Auth**: Basic auth uses direct links, OAuth methods use iframes with session state
+3. **Automatic Interface Enforcement**: Basic auth forces classic interface in entrypoint
+4. **Different Redirect URIs**: Entra uses /auth/oauth2/callback, Google uses domain root
+5. **Backward Compatibility**: Old OAUTH2_* and OFFICE365_* variables replaced with method-specific ones
+
+## Testing Recommendations
+
+- [ ] Test basic auth with multiple users
+- [ ] Test Entra ID OAuth flow end-to-end
+- [ ] Test Google OAuth flow end-to-end
+- [ ] Verify dashboard selection matches auth method
+- [ ] Test switching between auth methods
+- [ ] Verify Tautulli newsletter and image endpoints work
+- [ ] Test with Unraid template UI
+
+## Files Changed
+
+- apache-conf/auth-basic.conf
+- apache-conf/oauth2-entra.conf (renamed from office365)
+- apache-conf/auth-entra-protect.conf (renamed from office365)
+- apache-conf/oauth2-google.conf (new)
+- apache-conf/auth-google-protect.conf (new)
+- apache-conf/reverse-proxy.conf.template
+- apache-conf/services/tautulli.conf
+- docker-entrypoint.sh
+- generate-config.sh
+- generate-html-menu.sh
+- html/dashboard2.html.template
+- html/dashboard-oauth.html.template (new)
+- Dockerfile
+- apache-reverse-proxy.xml
+- .env.example
+- AUTHENTICATION-SETUP.md (new)
+
+## Migration Notes
+
+For existing users upgrading from Office365 OAuth:
+1. Replace OAUTH2_* variables with ENTRA_*
+2. Replace OIDC_PROVIDER_METADATA_URL with ENTRA_PROVIDER_METADATA_URL  
+3. Set AUTHTYPE=entra (instead of relying on flags)
+4. Redirect URI format stays the same: /auth/oauth2/callback
