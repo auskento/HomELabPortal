@@ -30,9 +30,7 @@
 
     <div style="padding:26px 26px 20px 26px;border-bottom:1px solid rgba(255,255,255,.06)">
       <div style="display:flex;align-items:center;gap:11px;margin-bottom:22px">
-        <div style="width:34px;height:34px;border-radius:9px;background:linear-gradient(135deg,#3aa0e0,#2ecd6f);display:flex;align-items:center;justify-content:center;box-shadow:0 4px 16px rgba(58,160,224,.4)">
-          <div style="width:13px;height:13px;border:2.5px solid #08090c;border-radius:4px"></div>
-        </div>
+        <img src="@@DASHBOARD_ICON@@" alt="Dashboard" style="width:34px;height:34px;border-radius:9px;object-fit:contain;box-shadow:0 4px 16px rgba(58,160,224,.4)">
         <div style="font-family:'Space Grotesk',sans-serif;font-weight:600;letter-spacing:.14em;font-size:13px;color:#cdd3dd">@@DASHBOARD_NAME@@</div>
       </div>
       <div style="font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:25px;line-height:1.15;letter-spacing:-.01em;color:#f4f6fa">{{ greeting }}</div>
