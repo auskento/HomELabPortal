@@ -243,34 +243,36 @@ generate_react_dashboard() {
 }
 
 # Calculate dynamic icon sizes based on service count
+# Returns responsive multipliers instead of fixed pixels
 calculate_icon_sizes() {
     local service_count=$1
-    local icon_size icon_gap logo_size
+    local icon_multiplier gap_multiplier logo_multiplier
 
-    # Dynamic sizing based on number of services
+    # Service count tiers determine scaling multipliers
+    # Icons will scale responsively: base_unit * multiplier
     if [ "$service_count" -le 5 ]; then
-        icon_size="52px"
-        icon_gap="12px"
-        logo_size="40px"
+        icon_multiplier="1.3"
+        gap_multiplier="1.2"
+        logo_multiplier="1.25"
     elif [ "$service_count" -le 8 ]; then
-        icon_size="48px"
-        icon_gap="10px"
-        logo_size="36px"
+        icon_multiplier="1.2"
+        gap_multiplier="1.0"
+        logo_multiplier="1.125"
     elif [ "$service_count" -le 12 ]; then
-        icon_size="44px"
-        icon_gap="8px"
-        logo_size="32px"
+        icon_multiplier="1.1"
+        gap_multiplier="0.8"
+        logo_multiplier="1.0"
     elif [ "$service_count" -le 15 ]; then
-        icon_size="40px"
-        icon_gap="6px"
-        logo_size="30px"
+        icon_multiplier="1.0"
+        gap_multiplier="0.6"
+        logo_multiplier="0.9375"
     else
-        icon_size="36px"
-        icon_gap="5px"
-        logo_size="28px"
+        icon_multiplier="0.9"
+        gap_multiplier="0.5"
+        logo_multiplier="0.875"
     fi
 
-    echo "$icon_size|$icon_gap|$logo_size"
+    echo "$icon_multiplier|$gap_multiplier|$logo_multiplier"
 }
 
 # Generate icons-only services array for dashboard2
