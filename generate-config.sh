@@ -51,8 +51,8 @@ process_service_config() {
     # Replace ProxyPass URLs, preserving the path
     # Special handling for services that proxy to root (/)
     if [ "$service_name" = "deluge" ] || [ "$service_name" = "qbittorrent" ] || [ "$service_name" = "seerr" ]; then
-        sed -i "s|http://${service_name}:${template_port}/?|http://${service_host_with_port}|g" "$service_file"
-        sed -i "s|ws://${service_name}:${template_port}/?|ws://${service_host_with_port}|g" "$service_file"
+        sed -i "s|http://${service_name}:${template_port}([/ ]|http://${service_host_with_port}\1|g" "$service_file"
+        sed -i "s|ws://${service_name}:${template_port}([/ ]|ws://${service_host_with_port}\1|g" "$service_file"
     else
         sed -i "s|http://[^/]*:${template_port}/[^/]*|http://${service_host_with_port}${service_path}|g" "$service_file"
         sed -i "s|ws://[^/]*:${template_port}/[^/]*|ws://${service_host_with_port}${service_path}|g" "$service_file"
