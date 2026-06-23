@@ -196,7 +196,7 @@ generate_simple_menu() {
     
     # Set dashboard name and icon
     local DASHBOARD_NAME="${DASHBOARD_NAME:-Media Server}"
-    local DASHBOARD_ICON="${DASHBOARD_ICON:-/icons/apache-reverse-proxy.svg}"
+    local DASHBOARD_ICON="${DASHBOARD_ICON:-/icons/apache-reverse-proxy.png}"
     
     # Read template and replace placeholders
     local html_content=$(cat "$SIMPLE_TEMPLATE")
@@ -226,7 +226,7 @@ generate_react_dashboard() {
     
     # Set dashboard name and icon
     local DASHBOARD_NAME="${DASHBOARD_NAME:-Media Server}"
-    local DASHBOARD_ICON="${DASHBOARD_ICON:-/icons/apache-reverse-proxy.svg}"
+    local DASHBOARD_ICON="${DASHBOARD_ICON:-/icons/apache-reverse-proxy.png}"
     
     # Read template and replace placeholders
     local html_content=$(cat "$DASHBOARD_TEMPLATE")
@@ -305,7 +305,7 @@ generate_dashboard_for_auth() {
 
     # Set dashboard name and icon
     local DASHBOARD_NAME="${DASHBOARD_NAME:-Media Server}"
-    local DASHBOARD_ICON="${DASHBOARD_ICON:-/icons/apache-reverse-proxy.svg}"
+    local DASHBOARD_ICON="${DASHBOARD_ICON:-/icons/apache-reverse-proxy.png}"
 
     local html_content=$(cat "$DASHBOARD_TEMPLATE")
     html_content="${html_content//@@SERVICES_ARRAY@@/$services_array}"
