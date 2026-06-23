@@ -92,10 +92,6 @@
       <Value>/icons/apache-reverse-proxy.png</Value>
     </Variable>
     <Variable>
-      <Name>ANIMATED_DASHBOARD</Name>
-      <Value>false</Value>
-    </Variable>
-    <Variable>
       <Name>ENABLE_SABNZBD</Name>
       <Value>false</Value>
     </Variable>

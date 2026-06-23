@@ -292,13 +292,8 @@ generate_dashboard_for_auth() {
     if [ "$AUTHTYPE" = "oauth" ]; then
         DASHBOARD_TEMPLATE="/var/www/html/dashboard-oauth.html.template"
     else
-        # Check if animated icons are enabled (for SVG animations)
-        if [ "$ANIMATED_DASHBOARD" = "true" ]; then
-            DASHBOARD_TEMPLATE="/var/www/html/dashboard3.html.template"
-        else
-            # Default to basic auth dashboard (direct links, no iframes)
-            DASHBOARD_TEMPLATE="/var/www/html/dashboard2.html.template"
-        fi
+        # Default to basic auth dashboard (direct links, no iframes)
+        DASHBOARD_TEMPLATE="/var/www/html/dashboard2.html.template"
     fi
 
     if [ ! -f "$DASHBOARD_TEMPLATE" ]; then
@@ -320,8 +315,6 @@ generate_dashboard_for_auth() {
 
     if [ "$AUTHTYPE" = "oauth" ]; then
         echo "✓ OAuth dashboard generated (with iframes): $DASHBOARD_OUTPUT"
-    elif [ "$ANIMATED_DASHBOARD" = "true" ]; then
-        echo "✓ Animated dashboard generated (supports SVG animations): $DASHBOARD_OUTPUT"
     else
         echo "✓ Basic auth dashboard generated (direct links): $DASHBOARD_OUTPUT"
     fi
