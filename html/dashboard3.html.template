@@ -11,7 +11,7 @@
   <aside style="display:flex;flex-direction:column;align-items:center;gap:24px;padding:40px 30px;max-height:100%;overflow-y:auto;flex:none;border-right:1px solid rgba(255,255,255,.05)">
 
     <div style="display:flex;flex-direction:column;align-items:center;gap:6px">
-      <object data="@@DASHBOARD_ICON@@" type="image/svg+xml" style="width:48px;height:48px;border-radius:9px;filter:drop-shadow(0 4px 16px rgba(58,160,224,.4))"></object>
+      <img src="@@DASHBOARD_ICON@@" alt="Dashboard" style="width:48px;height:48px;border-radius:9px;object-fit:contain;filter:drop-shadow(0 4px 16px rgba(58,160,224,.4))">
       <div style="text-align:center">
         <div style="font-size:13px;color:#6b7385;letter-spacing:.08em">MEDIA</div>
       </div>
@@ -31,7 +31,7 @@
   </aside>
 
   <main style="flex:1;min-width:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:40px">
-    <object data="@@DASHBOARD_ICON@@" type="image/svg+xml" style="width:80px;height:80px;margin-bottom:26px;filter:drop-shadow(0 4px 16px rgba(58,160,224,.3))"></object>
+    <img src="@@DASHBOARD_ICON@@" alt="Dashboard" style="width:80px;height:80px;margin-bottom:26px;object-fit:contain;filter:drop-shadow(0 4px 16px rgba(58,160,224,.3))">
     <div style="font-weight:600;font-size:27px;color:#f4f6fa;letter-spacing:-.01em;margin-bottom:10px">Welcome back</div>
     <div style="font-size:15px;color:#828b9c;max-width:380px;line-height:1.55">Pick a service from the sidebar to open it here. Your library, downloads and indexers — all in one place.</div>
   </main>
@@ -78,6 +78,9 @@
     height: 40px;
     display: block;
     overflow: hidden;
+    flex-shrink: 0;
+    border: none;
+    pointer-events: none;
   }
 </style>
 
