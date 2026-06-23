@@ -17,7 +17,7 @@
       </div>
     </div>
 
-    <nav id="services-nav" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(60px,1fr));gap:var(--base-gap);justify-items:center;overflow-y:auto;flex:1;width:100%;transition:gap .3s">
+    <nav id="services-nav" style="display:grid;grid-template-columns:repeat(2,1fr);gap:var(--base-gap);justify-items:center;align-items:start;overflow-y:auto;flex:1;width:100%;padding:0;transition:gap .3s">
       <!-- Services injected here -->
     </nav>
 
