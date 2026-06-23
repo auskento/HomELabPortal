@@ -27,7 +27,9 @@ RUN a2enmod rewrite \
     && a2enmod headers \
     && a2enmod auth_openidc \
     && a2enmod auth_basic \
-    && a2enmod session_crypto
+    && a2enmod session_crypto \
+    && a2enmod filter \
+    && a2enmod substitute
 
 # Create directories
 RUN mkdir -p /var/www/html/error-pages \
