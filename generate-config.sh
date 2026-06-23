@@ -41,7 +41,7 @@ process_service_config() {
 
     # If no path, default to the service name (except services that proxy to root)
     if [ -z "$service_path" ]; then
-        if [ "$service_name" = "deluge" ] || [ "$service_name" = "qbittorrent" ]; then
+        if [ "$service_name" = "deluge" ] || [ "$service_name" = "qbittorrent" ] || [ "$service_name" = "seerr" ]; then
             service_path="/"
         else
             service_path="/$service_name"
@@ -50,7 +50,7 @@ process_service_config() {
 
     # Replace ProxyPass URLs, preserving the path
     # Special handling for services that proxy to root (/)
-    if [ "$service_name" = "deluge" ] || [ "$service_name" = "qbittorrent" ]; then
+    if [ "$service_name" = "deluge" ] || [ "$service_name" = "qbittorrent" ] || [ "$service_name" = "seerr" ]; then
         sed -i "s|http://${service_name}:${template_port}/|http://${service_host_with_port}/|g" "$service_file"
         sed -i "s|ws://${service_name}:${template_port}/|ws://${service_host_with_port}/|g" "$service_file"
     else
