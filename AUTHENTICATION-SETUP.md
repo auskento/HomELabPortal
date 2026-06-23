@@ -17,13 +17,14 @@ The Apache Reverse Proxy supports three mutually exclusive authentication method
 
 ## 1. Basic Authentication
 
-Simple username/password authentication. No external services required.
+Simple username/password authentication. No external services required. **Uses classic interface only** (automatically enforced).
 
 ### Environment Variables
 
 ```env
 AUTHTYPE=basic
 BASIC_AUTH_CREDENTIALS=user1:password1|user2:password2|admin:securepass
+STYLE=classic    # Automatically forced (cannot be changed)
 ```
 
 ### Format
@@ -35,10 +36,11 @@ Credentials are pipe-separated pairs in format `username:password`:
 ### Features
 - ✅ No external dependencies
 - ✅ Works offline
+- ✅ Uses simple classic interface
 - ❌ No session management
 - ❌ No logout button
 - ❌ Browser dialog only
-- Uses dashboard with direct service links (no iframes)
+- Uses dashboard with **direct service links** (no iframes)
 
 ### Security Considerations
 - Credentials are hashed with bcrypt

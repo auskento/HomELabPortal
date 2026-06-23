@@ -73,6 +73,9 @@ if ! grep -q "^ServerName" /etc/apache2/apache2.conf; then
     echo "Added ServerName: $DOMAIN"
 fi
 
+# Update env.conf with modified STYLE (in case basic auth forced it to classic)
+sed -i "s/^STYLE=.*/STYLE=\"${STYLE}\"/" /etc/apache2/env.conf
+
 # Configuration
 DOMAIN="${DOMAIN:-example.com}"
 EMAIL="${EMAIL:-admin@example.com}"
@@ -81,6 +84,7 @@ CERTBOT_WEBROOT="${CERTBOT_WEBROOT:-/var/www/letsencrypt}"
 echo "=== Apache & Let's Encrypt Setup ==="
 echo "Domain: $DOMAIN"
 echo "Email: $EMAIL"
+echo "Style: $STYLE (Auth: $AUTHTYPE)"
 
 # Generate Apache configuration from template based on environment variables
 echo "Generating Apache configuration with enabled services..."
@@ -122,6 +126,12 @@ fi
 # Normalize AUTHTYPE value (handle case and quotes)
 AUTHTYPE=$(echo "${AUTHTYPE}" | tr '[:upper:]' '[:lower:]' | sed "s/'//g" | sed 's/"//g' | xargs)
 echo "DEBUG: AUTHTYPE='${AUTHTYPE}'"
+
+# Force classic style for basic auth (basic auth doesn't support modern dashboards)
+if [ "$AUTHTYPE" = "basic" ]; then
+    STYLE="classic"
+    echo "INFO: Basic auth requires STYLE=classic (modern dashboards require session management)"
+fi
 
 # Authentication Setup - Mutually Exclusive
 case "${AUTHTYPE}" in
