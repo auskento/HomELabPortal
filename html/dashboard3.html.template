@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Media Server Dashboard</title>
+</head>
+<body style="margin:0;padding:0;min-height:100vh;background:#08090c;font-family:system-ui,sans-serif;color:#e9ecf2">
+<div style="display:flex;height:100vh;width:100vw;background:radial-gradient(1200px 700px at 18% -10%,rgba(58,160,224,.10),transparent 60%),radial-gradient(900px 600px at 100% 110%,rgba(46,205,111,.07),transparent 55%),#08090c;overflow:hidden">
+
+  <aside style="display:flex;flex-direction:column;align-items:center;gap:24px;padding:40px 30px;max-height:100%;overflow-y:auto;flex:none;border-right:1px solid rgba(255,255,255,.05)">
+
+    <div style="display:flex;flex-direction:column;align-items:center;gap:6px">
+      <object data="@@DASHBOARD_ICON@@" type="image/svg+xml" style="width:48px;height:48px;border-radius:9px;filter:drop-shadow(0 4px 16px rgba(58,160,224,.4))"></object>
+      <div style="text-align:center">
+        <div style="font-size:13px;color:#6b7385;letter-spacing:.08em">MEDIA</div>
+      </div>
+    </div>
+
+    <nav id="services-nav" style="display:flex;flex-direction:column;gap:20px;align-items:center">
+      <!-- Services injected here -->
+    </nav>
+
+    <div style="width:1px;height:20px;background:rgba(255,255,255,.1)"></div>
+
+    <div id="health-status" style="text-align:center;font-size:11px;color:#5d6575">
+      <span id="health-dot" style="display:block;width:8px;height:8px;border-radius:50%;background:#2ecd6f;margin:0 auto 6px;box-shadow:0 0 8px #2ecd6f;animation:floatGlow 2.6s ease-in-out infinite"></span>
+      <span id="health-text">Checking...</span>
+    </div>
+
+  </aside>
+
+  <main style="flex:1;min-width:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:40px">
+    <object data="@@DASHBOARD_ICON@@" type="image/svg+xml" style="width:80px;height:80px;margin-bottom:26px;filter:drop-shadow(0 4px 16px rgba(58,160,224,.3))"></object>
+    <div style="font-weight:600;font-size:27px;color:#f4f6fa;letter-spacing:-.01em;margin-bottom:10px">Welcome back</div>
+    <div style="font-size:15px;color:#828b9c;max-width:380px;line-height:1.55">Pick a service from the sidebar to open it here. Your library, downloads and indexers — all in one place.</div>
+  </main>
+
+</div>
+
+<style>
+  @keyframes floatGlow { 0%,100%{opacity:.55} 50%{opacity:.95} }
+  a {
+    text-decoration: none;
+    color: inherit;
+  }
+  .service-link {
+    cursor: pointer;
+    border: 0;
+    padding: 0;
+    background: transparent;
+    transition: transform .2s, filter .2s;
+    border-radius: 14px;
+    display: block;
+  }
+  .service-link:hover {
+    transform: scale(1.1);
+    filter: brightness(1.3);
+  }
+  .service-icon {
+    width: 60px;
+    height: 60px;
+    border-radius: 14px;
+    background: rgba(255,255,255,.05);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    box-shadow: inset 0 0 0 1px rgba(255,255,255,.08);
+    transition: box-shadow .2s;
+    border: 2px solid transparent;
+  }
+  .service-link:hover .service-icon {
+    box-shadow: inset 0 0 0 2px var(--accent), 0 0 16px var(--accent)66;
+  }
+  .service-icon object {
+    width: 40px;
+    height: 40px;
+  }
+</style>
+
+<script>
+  const SERVICES = @@SERVICES_ARRAY@@;
+  const nav = document.getElementById('services-nav');
+
+  // Render services as direct links with object tags for animated SVG support
+  SERVICES.forEach(app => {
+    if (app.popup) {
+      // External services open in popup
+      const btn = document.createElement('button');
+      btn.className = 'service-link';
+      btn.title = app.name;
+      btn.style.setProperty('--accent', app.accent);
+      btn.onclick = () => window.open(app.href, app.name, 'resizable=no,status=no,location=no,toolbar=no,menubar=no,scrollbars=no');
+
+      const iconEl = document.createElement('object');
+      iconEl.setAttribute('data', app.icon);
+      iconEl.setAttribute('type', 'image/svg+xml');
+
+      const iconContainer = document.createElement('div');
+      iconContainer.className = 'service-icon';
+      iconContainer.appendChild(iconEl);
+
+      btn.appendChild(iconContainer);
+      nav.appendChild(btn);
+    } else {
+      // Regular services are direct links
+      const link = document.createElement('a');
+      link.href = app.href;
+      link.title = app.name;
+      link.className = 'service-link';
+      link.style.setProperty('--accent', app.accent);
+
+      const iconEl = document.createElement('object');
+      iconEl.setAttribute('data', app.icon);
+      iconEl.setAttribute('type', 'image/svg+xml');
+
+      const iconContainer = document.createElement('div');
+      iconContainer.className = 'service-icon';
+      iconContainer.appendChild(iconEl);
+
+      link.appendChild(iconContainer);
+      nav.appendChild(link);
+    }
+  });
+
+  // Service health check
+  function checkServices() {
+    const health = {};
+    let checkCount = 0;
+
+    SERVICES.forEach(app => {
+      if (app.popup) {
+        health[app.id] = 'online';
+        checkCount++;
+        if (checkCount === SERVICES.length) {
+          updateHealthDisplay(health);
+        }
+        return;
+      }
+
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 10000);
+
+      fetch(app.href, { method: 'HEAD', signal: controller.signal })
+        .then(() => {
+          clearTimeout(timeoutId);
+          health[app.id] = 'online';
+        })
+        .catch(() => {
+          clearTimeout(timeoutId);
+          health[app.id] = 'offline';
+        })
+        .finally(() => {
+          checkCount++;
+          if (checkCount === SERVICES.length) {
+            updateHealthDisplay(health);
+          }
+        });
+    });
+  }
+
+  function updateHealthDisplay(health) {
+    const offlineCount = Object.values(health).filter(s => s === 'offline').length;
+    const healthText = document.getElementById('health-text');
+    const healthDot = document.getElementById('health-dot');
+
+    if (offlineCount === 0) {
+      healthText.textContent = 'All Online';
+      healthDot.style.background = '#2ecd6f';
+      healthDot.style.boxShadow = '0 0 8px #2ecd6f';
+    } else {
+      healthText.textContent = `${offlineCount} offline`;
+      healthDot.style.background = '#ff6b6b';
+      healthDot.style.boxShadow = '0 0 8px #ff6b6b';
+    }
+  }
+
+  checkServices();
+  setInterval(checkServices, 30000);
+</script>
+</body>
+</html>
