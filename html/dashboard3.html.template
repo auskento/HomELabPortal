@@ -8,7 +8,7 @@
 <body style="margin:0;padding:0;min-height:100vh;background:#08090c;font-family:system-ui,sans-serif;color:#e9ecf2">
 <div style="display:flex;height:100vh;width:100vw;background:radial-gradient(1200px 700px at 18% -10%,rgba(58,160,224,.10),transparent 60%),radial-gradient(900px 600px at 100% 110%,rgba(46,205,111,.07),transparent 55%),#08090c;overflow:hidden">
 
-  <aside style="display:flex;flex-direction:column;align-items:center;gap:12px;padding:20px 15px;flex:none;border-right:1px solid rgba(255,255,255,.05);overflow-y:hidden">
+  <aside style="display:flex;flex-direction:column;align-items:center;gap:12px;padding:20px 15px;flex:none;width:200px;border-right:1px solid rgba(255,255,255,.05);overflow-y:hidden">
 
     <div style="display:flex;flex-direction:column;align-items:center;gap:3px;flex-shrink:0">
       <img src="@@DASHBOARD_ICON@@" alt="Dashboard" style="width:var(--base-logo);height:var(--base-logo);object-fit:contain;filter:drop-shadow(0 4px 16px rgba(58,160,224,.4));transition:width .3s,height .3s">
@@ -17,7 +17,7 @@
       </div>
     </div>
 
-    <nav id="services-nav" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(calc(var(--base-icon-size) + 8px),1fr));gap:var(--base-gap);justify-items:center;overflow-y:auto;flex:1;width:100%;padding-right:4px;transition:gap .3s">
+    <nav id="services-nav" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(60px,1fr));gap:var(--base-gap);justify-items:center;overflow-y:auto;flex:1;width:100%;transition:gap .3s">
       <!-- Services injected here -->
     </nav>
 
