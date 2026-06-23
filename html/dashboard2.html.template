@@ -30,10 +30,13 @@
 
   </aside>
 
-  <main style="flex:1;min-width:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:40px">
-    <img src="@@DASHBOARD_ICON@@" alt="Dashboard" style="width:80px;height:80px;margin-bottom:26px;object-fit:contain;filter:drop-shadow(0 4px 16px rgba(58,160,224,.3))">
-    <div style="font-weight:600;font-size:27px;color:#f4f6fa;letter-spacing:-.01em;margin-bottom:10px">Welcome back</div>
-    <div style="font-size:15px;color:#828b9c;max-width:380px;line-height:1.55">Pick a service from the sidebar to open it here. Your library, downloads and indexers — all in one place.</div>
+  <main style="flex:1;min-width:0;position:relative;display:flex;flex-direction:column">
+    <iframe style="flex:1;width:100%;border:0;background:#0b0d11;display:none" frameborder="0"></iframe>
+    <div id="welcome-screen" style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:40px">
+      <img src="@@DASHBOARD_ICON@@" alt="Dashboard" style="width:80px;height:80px;margin-bottom:26px;object-fit:contain;filter:drop-shadow(0 4px 16px rgba(58,160,224,.3))">
+      <div style="font-weight:600;font-size:27px;color:#f4f6fa;letter-spacing:-.01em;margin-bottom:10px">Welcome back</div>
+      <div style="font-size:15px;color:#828b9c;max-width:380px;line-height:1.55">Pick a service from the sidebar to open it here. Your library, downloads and indexers — all in one place.</div>
+    </div>
   </main>
 
 </div>
@@ -87,36 +90,36 @@
 <script>
   const SERVICES = @@SERVICES_ARRAY@@;
   const nav = document.getElementById('services-nav');
+  const frame = document.querySelector('iframe');
+  const welcomeScreen = document.getElementById('welcome-screen');
 
-  // Render services as direct links
+  // Render services with iframe loading
   SERVICES.forEach(app => {
+    const btn = document.createElement('button');
+    btn.className = 'service-link';
+    btn.title = app.name;
+    btn.style.setProperty('--accent', app.accent);
+
     if (app.popup) {
-      // External services open in popup
-      const btn = document.createElement('button');
-      btn.className = 'service-link';
-      btn.title = app.name;
-      btn.style.setProperty('--accent', app.accent);
       btn.onclick = () => window.open(app.href, app.name, 'resizable=no,status=no,location=no,toolbar=no,menubar=no,scrollbars=no');
-      btn.innerHTML = `
-        <div class="service-icon">
-          <img src="${app.icon}" alt="${app.name}" />
-        </div>
-      `;
-      nav.appendChild(btn);
     } else {
-      // Regular services are direct links
-      const link = document.createElement('a');
-      link.href = app.href;
-      link.title = app.name;
-      link.className = 'service-link';
-      link.style.setProperty('--accent', app.accent);
-      link.innerHTML = `
-        <div class="service-icon">
-          <img src="${app.icon}" alt="${app.name}" />
-        </div>
-      `;
-      nav.appendChild(link);
+      btn.onclick = () => {
+        frame.src = app.href;
+      };
     }
+
+    btn.innerHTML = `
+      <div class="service-icon">
+        <img src="${app.icon}" alt="${app.name}" />
+      </div>
+    `;
+    nav.appendChild(btn);
+  });
+
+  // Handle iframe load/unload
+  frame.addEventListener('load', () => {
+    welcomeScreen.style.display = 'none';
+    frame.style.display = 'block';
   });
 
   // Service health check
