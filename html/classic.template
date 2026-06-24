@@ -25,44 +25,58 @@
             padding: 15px 20px;
             border-bottom: 2px solid #444;
             display: flex;
-            align-items: center;
+            align-items: flex-start;
             justify-content: space-between;
             overflow: auto;
-            min-height: 150px;
+            min-height: 120px;
             gap: 30px;
         }
-        
+
+        .header-left {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 12px;
+            flex-shrink: 0;
+        }
+
+        .header-branding {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
         .datetime-box {
             flex-shrink: 0;
             background-color: rgba(74, 158, 255, 0.1);
             border: 1px solid rgba(74, 158, 255, 0.3);
-            border-radius: 12px;
-            padding: 20px 25px;
+            border-radius: 8px;
+            padding: 8px 12px;
             text-align: center;
-            min-width: 140px;
+            min-width: auto;
         }
-        
+
         .datetime-box .time {
-            font-size: 32px;
+            font-size: 20px;
             font-weight: bold;
             font-variant-numeric: tabular-nums;
             color: #4a9eff;
-            margin-bottom: 5px;
+            margin-bottom: 2px;
             font-family: 'Courier New', monospace;
         }
-        
+
         .datetime-box .date {
-            font-size: 12px;
+            font-size: 10px;
             color: #888;
             text-transform: uppercase;
             letter-spacing: 0.5px;
         }
-        
+
         .datetime-box .style-switcher {
-            margin-top: 12px;
-            padding-top: 12px;
+            margin-top: 8px;
+            padding-top: 6px;
             border-top: 1px solid rgba(74, 158, 255, 0.2);
-            font-size: 11px;
+            font-size: 9px;
         }
         
         .datetime-box .style-switcher a {
@@ -201,20 +215,26 @@
             body {
                 flex-direction: column;
             }
-            
+
             .header {
-                min-height: 120px;
-                flex-direction: column;
-                gap: 15px;
+                min-height: auto;
+                flex-direction: row;
+                gap: 20px;
             }
-            
+
+            .header-left {
+                flex-direction: column;
+                align-items: center;
+                gap: 10px;
+            }
+
             .datetime-box {
                 min-width: auto;
-                padding: 15px 20px;
+                padding: 8px 12px;
             }
-            
+
             .datetime-box .time {
-                font-size: 24px;
+                font-size: 18px;
             }
             
             .content {
@@ -237,21 +257,23 @@
 <body>
 
 <div class="header">
-    <a href="/" style="text-decoration:none;display:flex;align-items:center;gap:15px;flex-shrink:0">
-        <img src="@@DASHBOARD_ICON@@" alt="Dashboard" style="width:40px;height:40px;object-fit:contain;filter:drop-shadow(0 4px 16px rgba(58,160,224,.4))">
-        <div id="dashboard-name" style="font-weight:600;font-size:16px;color:#cdd3dd;letter-spacing:0.1em">@@DASHBOARD_NAME@@</div>
-    </a>
-    <div class="datetime-box">
-        <div class="time" id="currentTime">--:--</div>
-        <div class="date" id="currentDate">Loading...</div>
-        <div class="style-switcher" style="display:flex;gap:8px;font-size:11px">
-            <a href="/" style="text-decoration:none;color:#4a9eff">Classic</a>
-            <span style="color:#5d6575">|</span>
-            <a href="/modern.html" style="text-decoration:none;color:#4a9eff">Modern</a>
-            <span style="color:#5d6575">|</span>
-            <a href="/sleek.html" style="text-decoration:none;color:#4a9eff">Sleek</a>
-            <span style="color:#5d6575">|</span>
-            <a href="/minimal.html" style="text-decoration:none;color:#4a9eff">Minimal</a>
+    <div class="header-left">
+        <a href="/" style="text-decoration:none;display:flex;align-items:center;gap:10px;flex-shrink:0">
+            <img src="@@DASHBOARD_ICON@@" alt="Dashboard" style="width:32px;height:32px;object-fit:contain;filter:drop-shadow(0 4px 16px rgba(58,160,224,.4))">
+            <div id="dashboard-name" style="font-weight:600;font-size:14px;color:#cdd3dd;letter-spacing:0.1em">@@DASHBOARD_NAME@@</div>
+        </a>
+        <div class="datetime-box">
+            <div class="time" id="currentTime">--:--</div>
+            <div class="date" id="currentDate">Loading...</div>
+            <div class="style-switcher" style="display:flex;gap:6px;justify-content:center">
+                <a href="/" style="text-decoration:none;color:#4a9eff">Classic</a>
+                <span style="color:#5d6575">|</span>
+                <a href="/modern.html" style="text-decoration:none;color:#4a9eff">Modern</a>
+                <span style="color:#5d6575">|</span>
+                <a href="/sleek.html" style="text-decoration:none;color:#4a9eff">Sleek</a>
+                <span style="color:#5d6575">|</span>
+                <a href="/minimal.html" style="text-decoration:none;color:#4a9eff">Minimal</a>
+            </div>
         </div>
     </div>
     <div class="menu-container">
