@@ -54,15 +54,6 @@
       <Exclude/>
       <IsFileShare>false</IsFileShare>
     </Volume>
-    <Volume>
-      <HostDir>/mnt/user/appdata/apache-reverse-proxy/html</HostDir>
-      <ContainerDir>/var/www/html</ContainerDir>
-      <Mode>rw</Mode>
-      <Description>HTML Dashboard</Description>
-      <Access>rw</Access>
-      <Exclude/>
-      <IsFileShare>false</IsFileShare>
-    </Volume>
   </Data>
   
   <!-- ENVIRONMENT VARIABLES - These get passed to the container -->
@@ -459,5 +450,4 @@
   
   <!-- VOLUMES -->
   <Config Name="Certificates Volume" Target="/etc/letsencrypt" Default="/mnt/user/appdata/apache-reverse-proxy/letsencrypt" Mode="rw" Description="SSL Certificates" Type="Path" Display="always" Required="true" Mask="false">/mnt/user/appdata/apache-reverse-proxy/letsencrypt</Config>
-  <Config Name="Logs Volume" Target="/var/log/apache2" Default="/mnt/user/appdata/apache-reverse-proxy/logs" Mode="rw" Description="Apache Logs" Type="Path" Display="always" Required="false" Mask="false">/mnt/user/appdata/apache-reverse-proxy/logs</Config>
-  <Config Name="HTML Volume" Target="/var/www/html" Default="/mnt/user/appdata/apache-reverse-proxy/html" Mode="rw" Description="HTML Dashboard" Type="Path" Display="always" Required="false" Mask="false">/mnt/user/appdata/apache-reverse-proxy/html</Config></Container>
+  <Config Name="Logs Volume" Target="/var/log/apache2" Default="/mnt/user/appdata/apache-reverse-proxy/logs" Mode="rw" Description="Apache Logs" Type="Path" Display="always" Required="false" Mask="false">/mnt/user/appdata/apache-reverse-proxy/logs</Config></Container>

@@ -58,7 +58,6 @@ services:
     volumes:
       - /mnt/user/appdata/apache-reverse-proxy/letsencrypt:/etc/letsencrypt
       - /mnt/user/appdata/apache-reverse-proxy/logs:/var/log/apache2
-      - /mnt/user/appdata/apache-reverse-proxy/html:/var/www/html
     restart: unless-stopped
     networks:
       - media-network
@@ -163,7 +162,6 @@ services:
       SONARR_URL: http://192.168.1.104:8989
     volumes:
       - /mnt/docker-data/apache-reverse-proxy/logs:/var/log/apache2
-      - /mnt/docker-data/apache-reverse-proxy/html:/var/www/html
     restart: unless-stopped
 ```
 
@@ -212,7 +210,6 @@ services:
     volumes:
       - /data/apache-proxy/letsencrypt:/etc/letsencrypt
       - /data/apache-proxy/logs:/var/log/apache2
-      - /data/apache-proxy/html:/var/www/html
     restart: unless-stopped
 ```
 
@@ -280,7 +277,6 @@ services:
     volumes:
       - /docker/apache-proxy/letsencrypt:/etc/letsencrypt
       - /docker/apache-proxy/logs:/var/log/apache2
-      - /docker/apache-proxy/html:/var/www/html
     restart: unless-stopped
 ```
 
@@ -412,7 +408,6 @@ docker run -d \
   -e RADARR_URL=http://radarr:7878 \
   -v /data/letsencrypt:/etc/letsencrypt \
   -v /data/logs:/var/log/apache2 \
-  -v /data/html:/var/www/html \
   auskento/apache-reverse-proxy:latest
 ```
 
@@ -431,7 +426,6 @@ docker run -d \
   -e JELLYFIN_URL=http://jellyfin:8096 \
   -v /data/letsencrypt:/etc/letsencrypt \
   -v /data/logs:/var/log/apache2 \
-  -v /data/html:/var/www/html \
   auskento/apache-reverse-proxy:latest
 ```
 
