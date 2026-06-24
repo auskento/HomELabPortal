@@ -7,6 +7,10 @@
 <script crossorigin src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/react.production.min.js"></script>
 <script crossorigin src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/react-dom.production.min.js"></script>
 <script src="support.js"></script>
+<script>
+window.getCoordinates = function() { return { x: 0, y: 0, width: 0, height: 0 }; };
+window.ClientData = { update: function() {} };
+</script>
 </head>
 <body>
 <x-dc>
