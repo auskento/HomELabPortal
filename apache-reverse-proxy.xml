@@ -17,7 +17,7 @@
   <Description>Apache Reverse Proxy with flexible deployment modes, 14 media services, customizable dashboards (4 styles), and authentication options (None, Basic, Entra ID, Google OAuth).</Description>
   <Overview>Apache Reverse Proxy for Media Services&#13;&#13;This container provides:&#13;- Public mode: Automatic HTTPS with Let's Encrypt SSL certificates&#13;- Private mode: Internal-only deployment without certificate generation&#13;- Reverse proxy for up to 16 different services&#13;- Responsive web dashboard with 4 customizable styles: classic, modern, sleek, minimal&#13;- Dashboard customization: custom title, icon, and default landing page&#13;- Four authentication options: None, Basic Auth, Entra ID (Microsoft), or Google OAuth2&#13;- Custom service icons and smart icon management&#13;- Service health monitoring&#13;&#13;Quick Start (Public Deployment - ACCESS_MODE=public):&#13;1. Set DOMAIN and EMAIL (required for Let's Encrypt)&#13;2. Choose AUTHTYPE (none, basic, entra, or google)&#13;3. Enable services and configure backend URLs&#13;4. (Optional) Customize dashboard STYLE, DASHBOARD_NAME, DASHBOARD_ICON, LANDING&#13;&#13;Quick Start (Private Deployment - ACCESS_MODE=private):&#13;1. Set ACCESS_MODE=private&#13;2. Choose AUTHTYPE (none or basic only - Entra/Google not available)&#13;3. Enable services and configure backend URLs&#13;4. DOMAIN and EMAIL still required in config but not used for certificates&#13;&#13;Supported Services (16):&#13;SABnzbd, NZBGet, NZBHydra, Deluge, Transmission, qBittorrent, Radarr, Sonarr, Whisparr, Prowlarr, Seerr, Lidarr, Emby, Plex, Jellyfin, Tautulli&#13;&#13;Dashboard Styles:&#13;- Classic: Traditional sidebar menu&#13;- Modern: React-based with full features (recommended)&#13;- Sleek: Compact sidebar with gradient styling&#13;- Minimal: Single-column minimal design&#13;&#13;Documentation:&#13;https://github.com/auskento/apache-reverse-proxy</Overview>
   <Networking>
-    <Mode>bridge</Mode>
+    <Mode>br0</Mode>
     <Publish>
       <Port>
         <HostPort>80</HostPort>
@@ -76,6 +76,10 @@
       <Value>admin@example.com</Value>
     </Variable>
     <Variable>
+      <Name>ACCESS_MODE</Name>
+      <Value>public</Value>
+    </Variable>
+    <Variable>
       <Name>TZ</Name>
       <Value>Australia/Melbourne</Value>
     </Variable>
@@ -92,17 +96,58 @@
       <Value>/icons/apache-reverse-proxy.png</Value>
     </Variable>
     <Variable>
-      <Name>LANDING</Name>
+      <Name>DASHBOARD_LANDING</Name>
       <Value></Value>
     </Variable>
     <Variable>
-      <Name>DASH_ORDER</Name>
+      <Name>DASHBOARD_ORDER</Name>
       <Value>DOWNLOADS,INFRA,MEDIA</Value>
     </Variable>
     <Variable>
       <Name>AUTHTYPE</Name>
       <Value>none</Value>
     </Variable>
+    <Variable>
+      <Name>BASIC_AUTH_CREDENTIALS</Name>
+      <Value/>
+    </Variable>
+    <Variable>
+      <Name>ENTRA_CLIENT_ID</Name>
+      <Value/>
+    </Variable>
+    <Variable>
+      <Name>ENTRA_CLIENT_SECRET</Name>
+      <Value/>
+    </Variable>
+    <Variable>
+      <Name>ENTRA_REDIRECT_URI</Name>
+      <Value>https://yourdomain.com/auth/oauth2/callback</Value>
+    </Variable>
+    <Variable>
+      <Name>ENTRA_PROVIDER_METADATA_URL</Name>
+      <Value/>
+    </Variable>
+    <Variable>
+      <Name>ENTRA_CRYPTO_PASSPHRASE</Name>
+      <Value/>
+    </Variable>
+    <Variable>
+      <Name>GOOGLE_CLIENT_ID</Name>
+      <Value/>
+    </Variable>
+    <Variable>
+      <Name>GOOGLE_CLIENT_SECRET</Name>
+      <Value/>
+    </Variable>
+    <Variable>
+      <Name>GOOGLE_REDIRECT_URI</Name>
+      <Value>https://yourdomain.com</Value>
+    </Variable>
+    <Variable>
+      <Name>GOOGLE_CRYPTO_PASSPHRASE</Name>
+      <Value/>
+    </Variable>
+    <!-- DOWNLOADS Services -->
     <Variable>
       <Name>ENABLE_SABNZBD</Name>
       <Value>false</Value>
@@ -113,6 +158,30 @@
     </Variable>
     <Variable>
       <Name>ICON_URL_SABNZBD</Name>
+      <Value/>
+    </Variable>
+    <Variable>
+      <Name>ENABLE_NZBGET</Name>
+      <Value>false</Value>
+    </Variable>
+    <Variable>
+      <Name>NZBGET_URL</Name>
+      <Value>http://nzbget:6789</Value>
+    </Variable>
+    <Variable>
+      <Name>ICON_URL_NZBGET</Name>
+      <Value/>
+    </Variable>
+    <Variable>
+      <Name>ENABLE_NZBHYDRA</Name>
+      <Value>false</Value>
+    </Variable>
+    <Variable>
+      <Name>NZBHYDRA_URL</Name>
+      <Value>http://nzbhydra:5076</Value>
+    </Variable>
+    <Variable>
+      <Name>ICON_URL_NZBHYDRA</Name>
       <Value/>
     </Variable>
     <Variable>
@@ -151,6 +220,7 @@
       <Name>ICON_URL_QBITTORRENT</Name>
       <Value/>
     </Variable>
+    <!-- INFRA Services -->
     <Variable>
       <Name>ENABLE_RADARR</Name>
       <Value>false</Value>
@@ -173,18 +243,6 @@
     </Variable>
     <Variable>
       <Name>ICON_URL_SONARR</Name>
-      <Value/>
-    </Variable>
-    <Variable>
-      <Name>ENABLE_WHISPARR</Name>
-      <Value>false</Value>
-    </Variable>
-    <Variable>
-      <Name>WHISPARR_URL</Name>
-      <Value>http://whisparr:6969</Value>
-    </Variable>
-    <Variable>
-      <Name>ICON_URL_WHISPARR</Name>
       <Value/>
     </Variable>
     <Variable>
@@ -223,6 +281,19 @@
       <Name>ICON_URL_LIDARR</Name>
       <Value/>
     </Variable>
+    <Variable>
+      <Name>ENABLE_WHISPARR</Name>
+      <Value>false</Value>
+    </Variable>
+    <Variable>
+      <Name>WHISPARR_URL</Name>
+      <Value>http://whisparr:6969</Value>
+    </Variable>
+    <Variable>
+      <Name>ICON_URL_WHISPARR</Name>
+      <Value/>
+    </Variable>
+    <!-- MEDIA Services -->
     <Variable>
       <Name>ENABLE_EMBY</Name>
       <Value>false</Value>
@@ -279,74 +350,6 @@
       <Name>ICON_URL_TAUTULLI</Name>
       <Value/>
     </Variable>
-    <Variable>
-      <Name>ENABLE_NZBGET</Name>
-      <Value>false</Value>
-    </Variable>
-    <Variable>
-      <Name>NZBGET_URL</Name>
-      <Value>http://nzbget:6789</Value>
-    </Variable>
-    <Variable>
-      <Name>ICON_URL_NZBGET</Name>
-      <Value/>
-    </Variable>
-    <Variable>
-      <Name>ENABLE_NZBHYDRA</Name>
-      <Value>false</Value>
-    </Variable>
-    <Variable>
-      <Name>NZBHYDRA_URL</Name>
-      <Value>http://nzbhydra:5076</Value>
-    </Variable>
-    <Variable>
-      <Name>ICON_URL_NZBHYDRA</Name>
-      <Value/>
-    </Variable>
-    <Variable>
-      <Name>BASIC_AUTH_CREDENTIALS</Name>
-      <Value/>
-    </Variable>
-    <Variable>
-      <Name>ENTRA_CLIENT_ID</Name>
-      <Value/>
-    </Variable>
-    <Variable>
-      <Name>ENTRA_CLIENT_SECRET</Name>
-      <Value/>
-    </Variable>
-    <Variable>
-      <Name>ENTRA_REDIRECT_URI</Name>
-      <Value>https://yourdomain.com/auth/oauth2/callback</Value>
-    </Variable>
-    <Variable>
-      <Name>ENTRA_PROVIDER_METADATA_URL</Name>
-      <Value/>
-    </Variable>
-    <Variable>
-      <Name>ENTRA_CRYPTO_PASSPHRASE</Name>
-      <Value/>
-    </Variable>
-    <Variable>
-      <Name>GOOGLE_CLIENT_ID</Name>
-      <Value/>
-    </Variable>
-    <Variable>
-      <Name>GOOGLE_CLIENT_SECRET</Name>
-      <Value/>
-    </Variable>
-    <Variable>
-      <Name>GOOGLE_REDIRECT_URI</Name>
-      <Value>https://yourdomain.com</Value>
-    </Variable>
-    <Variable>
-      <Name>GOOGLE_CRYPTO_PASSPHRASE</Name>
-      <Value/>
-    </Variable>
-    <Variable>
-      <Name>SSL_PROTOCOLS</Name>
-      <Value>all -SSLv2 -SSLv3 -TLSv1 -TLSv1.1</Value>
-    </Variable>
   </Environment>
   
   <Labels/>
@@ -355,94 +358,80 @@
   <Config Name="DOMAIN" Target="DOMAIN" Default="yourdomain.com" Mode="" Description="Domain Name (REQUIRED - e.g., example.com)" Type="Variable" Display="always" Required="true" Mask="false"/>
   <Config Name="EMAIL" Target="EMAIL" Default="admin@example.com" Mode="" Description="Email for Let's Encrypt (REQUIRED)" Type="Variable" Display="always" Required="true" Mask="false"/>
   <Config Name="Timezone" Target="TZ" Default="Australia/Melbourne" Mode="" Description="Timezone" Type="Variable" Display="always" Required="false" Mask="false"/>
-  <Config Name="Access Mode" Target="ACCESS_MODE" Default="public" Mode="" Description="Deployment mode: public (with Let's Encrypt HTTPS) or private (internal only, no certs)" Type="Variable" Display="always" Required="true" Mask="false"/>
   <Config Name="Dashboard Style" Target="STYLE" Default="modern" Mode="" Description="Dashboard style: classic, modern, sleek, or minimal" Type="Variable" Display="always" Required="false" Mask="false"/>
   <Config Name="Dashboard Name" Target="DASHBOARD_NAME" Default="Media Server" Mode="" Description="Custom dashboard title shown in header" Type="Variable" Display="always" Required="false" Mask="false"/>
   <Config Name="Dashboard Icon" Target="DASHBOARD_ICON" Default="/icons/apache-reverse-proxy.png" Mode="" Description="Dashboard icon path (place custom icons in html/icons directory)" Type="Variable" Display="always" Required="false" Mask="false"/>
-  <Config Name="Landing Page" Target="LANDING" Default="" Mode="" Description="Default iframe page (e.g., sonarr/calendar or radarr). Leave blank for welcome screen" Type="Variable" Display="always" Required="false" Mask="false"/>
-  <Config Name="Dashboard Group Order" Target="DASH_ORDER" Default="DOWNLOADS,INFRA,MEDIA" Mode="" Description="Comma-separated group order (e.g., DOWNLOADS,INFRA,MEDIA or MEDIA,DOWNLOADS,INFRA)" Type="Variable" Display="always" Required="false" Mask="false"/>
+  <Config Name="Dashboard Landing" Target="DASHBOARD_LANDING" Default="" Mode="" Description="Default iframe page (examples: radarr, sonarr/calendar, plex/web). Leave blank for welcome screen" Type="Variable" Display="always" Required="false" Mask="false"/>
+  <Config Name="Dashboard Order" Target="DASHBOARD_ORDER" Default="DOWNLOADS,INFRA,MEDIA" Mode="" Description="Service group display order. Categories: DOWNLOADS (SABnzbd, NZBGet, NZBHydra, Deluge, Transmission, qBittorrent), INFRA (Radarr, Sonarr, Prowlarr, Seerr, Lidarr, Whisparr), MEDIA (Emby, Plex, Jellyfin, Tautulli). Example: MEDIA,DOWNLOADS,INFRA" Type="Variable" Display="always" Required="false" Mask="false"/>
   
-  <!-- SABNZBD -->
-  <Config Name="[1/14] Enable SABnzbd" Target="ENABLE_SABNZBD" Default="false" Mode="" Description="SABnzbd - Usenet Client" Type="Variable" Display="always" Required="false" Mask="false"/>
+  <!-- DOWNLOADS SERVICES -->
+  <Config Name="[1/16] Enable SABnzbd" Target="ENABLE_SABNZBD" Default="false" Mode="" Description="SABnzbd - Usenet Client" Type="Variable" Display="always" Required="false" Mask="false"/>
   <Config Name="SABnzbd URL" Target="SABNZBD_URL" Default="http://sabnzbd:8080" Mode="" Description="Backend URL" Type="Variable" Display="always" Required="false" Mask="false"/>
   <Config Name="SABnzbd Icon URL" Target="ICON_URL_SABNZBD" Default="" Mode="" Description="Icon URL (leave blank for auto-generated)" Type="Variable" Display="advanced" Required="false" Mask="false"/>
 
-  <!-- DELUGE -->
-  <Config Name="[2/14] Enable Deluge" Target="ENABLE_DELUGE" Default="false" Mode="" Description="Deluge - Torrent Client" Type="Variable" Display="always" Required="false" Mask="false"/>
+  <Config Name="[2/16] Enable NZBGet" Target="ENABLE_NZBGET" Default="false" Mode="" Description="NZBGet - Usenet Downloads" Type="Variable" Display="always" Required="false" Mask="false"/>
+  <Config Name="NZBGet URL" Target="NZBGET_URL" Default="http://nzbget:6789" Mode="" Description="Backend URL" Type="Variable" Display="always" Required="false" Mask="false"/>
+  <Config Name="NZBGet Icon URL" Target="ICON_URL_NZBGET" Default="" Mode="" Description="Icon URL (leave blank for auto-generated)" Type="Variable" Display="advanced" Required="false" Mask="false"/>
+
+  <Config Name="[3/16] Enable NZBHydra" Target="ENABLE_NZBHYDRA" Default="false" Mode="" Description="NZBHydra - NZB Indexer" Type="Variable" Display="always" Required="false" Mask="false"/>
+  <Config Name="NZBHydra URL" Target="NZBHYDRA_URL" Default="http://nzbhydra:5076" Mode="" Description="Backend URL" Type="Variable" Display="always" Required="false" Mask="false"/>
+  <Config Name="NZBHydra Icon URL" Target="ICON_URL_NZBHYDRA" Default="" Mode="" Description="Icon URL (leave blank for auto-generated)" Type="Variable" Display="advanced" Required="false" Mask="false"/>
+
+  <Config Name="[4/16] Enable Deluge" Target="ENABLE_DELUGE" Default="false" Mode="" Description="Deluge - Torrent Client" Type="Variable" Display="always" Required="false" Mask="false"/>
   <Config Name="Deluge URL" Target="DELUGE_URL" Default="http://deluge:8112" Mode="" Description="Backend URL" Type="Variable" Display="always" Required="false" Mask="false"/>
   <Config Name="Deluge Icon URL" Target="ICON_URL_DELUGE" Default="" Mode="" Description="Icon URL (leave blank for auto-generated)" Type="Variable" Display="advanced" Required="false" Mask="false"/>
 
-  <!-- TRANSMISSION -->
-  <Config Name="[3/14] Enable Transmission" Target="ENABLE_TRANSMISSION" Default="false" Mode="" Description="Transmission - Torrent Client" Type="Variable" Display="always" Required="false" Mask="false"/>
+  <Config Name="[5/16] Enable Transmission" Target="ENABLE_TRANSMISSION" Default="false" Mode="" Description="Transmission - Torrent Client" Type="Variable" Display="always" Required="false" Mask="false"/>
   <Config Name="Transmission URL" Target="TRANSMISSION_URL" Default="http://transmission:6969" Mode="" Description="Backend URL" Type="Variable" Display="always" Required="false" Mask="false"/>
   <Config Name="Transmission Icon URL" Target="ICON_URL_TRANSMISSION" Default="" Mode="" Description="Icon URL (leave blank for auto-generated)" Type="Variable" Display="advanced" Required="false" Mask="false"/>
 
-  <!-- QBITTORRENT -->
-  <Config Name="[4/14] Enable qBittorrent" Target="ENABLE_QBITTORRENT" Default="false" Mode="" Description="qBittorrent - Torrent Client" Type="Variable" Display="always" Required="false" Mask="false"/>
+  <Config Name="[6/16] Enable qBittorrent" Target="ENABLE_QBITTORRENT" Default="false" Mode="" Description="qBittorrent - Torrent Client" Type="Variable" Display="always" Required="false" Mask="false"/>
   <Config Name="qBittorrent URL" Target="QBITTORRENT_URL" Default="http://qbittorrent:8080" Mode="" Description="Backend URL" Type="Variable" Display="always" Required="false" Mask="false"/>
   <Config Name="qBittorrent Icon URL" Target="ICON_URL_QBITTORRENT" Default="" Mode="" Description="Icon URL (leave blank for auto-generated)" Type="Variable" Display="advanced" Required="false" Mask="false"/>
 
-  <!-- RADARR -->
-  <Config Name="[5/14] Enable Radarr" Target="ENABLE_RADARR" Default="false" Mode="" Description="Radarr - Movie Automation" Type="Variable" Display="always" Required="false" Mask="false"/>
+  <!-- INFRA SERVICES -->
+  <Config Name="[7/16] Enable Radarr" Target="ENABLE_RADARR" Default="false" Mode="" Description="Radarr - Movie Automation" Type="Variable" Display="always" Required="false" Mask="false"/>
   <Config Name="Radarr URL" Target="RADARR_URL" Default="http://radarr:7878" Mode="" Description="Backend URL" Type="Variable" Display="always" Required="false" Mask="false"/>
   <Config Name="Radarr Icon URL" Target="ICON_URL_RADARR" Default="" Mode="" Description="Icon URL (leave blank for auto-generated)" Type="Variable" Display="advanced" Required="false" Mask="false"/>
 
-  <!-- SONARR -->
-  <Config Name="[6/14] Enable Sonarr" Target="ENABLE_SONARR" Default="false" Mode="" Description="Sonarr - TV Show Automation" Type="Variable" Display="always" Required="false" Mask="false"/>
+  <Config Name="[8/16] Enable Sonarr" Target="ENABLE_SONARR" Default="false" Mode="" Description="Sonarr - TV Show Automation" Type="Variable" Display="always" Required="false" Mask="false"/>
   <Config Name="Sonarr URL" Target="SONARR_URL" Default="http://sonarr:8989" Mode="" Description="Backend URL" Type="Variable" Display="always" Required="false" Mask="false"/>
   <Config Name="Sonarr Icon URL" Target="ICON_URL_SONARR" Default="" Mode="" Description="Icon URL (leave blank for auto-generated)" Type="Variable" Display="advanced" Required="false" Mask="false"/>
 
-  <!-- WHISPARR -->
-  <Config Name="[7/14] Enable Whisparr" Target="ENABLE_WHISPARR" Default="false" Mode="" Description="Whisparr - Adult Content" Type="Variable" Display="always" Required="false" Mask="false"/>
-  <Config Name="Whisparr URL" Target="WHISPARR_URL" Default="http://whisparr:6969" Mode="" Description="Backend URL" Type="Variable" Display="always" Required="false" Mask="false"/>
-  <Config Name="Whisparr Icon URL" Target="ICON_URL_WHISPARR" Default="" Mode="" Description="Icon URL (leave blank for auto-generated)" Type="Variable" Display="advanced" Required="false" Mask="false"/>
-
-  <!-- PROWLARR -->
-  <Config Name="[8/14] Enable Prowlarr" Target="ENABLE_PROWLARR" Default="false" Mode="" Description="Prowlarr - Indexer Manager" Type="Variable" Display="always" Required="false" Mask="false"/>
+  <Config Name="[9/16] Enable Prowlarr" Target="ENABLE_PROWLARR" Default="false" Mode="" Description="Prowlarr - Indexer Manager" Type="Variable" Display="always" Required="false" Mask="false"/>
   <Config Name="Prowlarr URL" Target="PROWLARR_URL" Default="http://prowlarr:9696" Mode="" Description="Backend URL" Type="Variable" Display="always" Required="false" Mask="false"/>
   <Config Name="Prowlarr Icon URL" Target="ICON_URL_PROWLARR" Default="" Mode="" Description="Icon URL (leave blank for auto-generated)" Type="Variable" Display="advanced" Required="false" Mask="false"/>
 
-  <!-- SEERR -->
-  <Config Name="[9/14] Enable Seerr" Target="ENABLE_SEERR" Default="false" Mode="" Description="Seerr - Request Manager" Type="Variable" Display="always" Required="false" Mask="false"/>
+  <Config Name="[10/16] Enable Seerr" Target="ENABLE_SEERR" Default="false" Mode="" Description="Seerr - Request Manager" Type="Variable" Display="always" Required="false" Mask="false"/>
   <Config Name="Seerr URL" Target="SEERR_URL" Default="http://seerr:5055" Mode="" Description="Backend URL" Type="Variable" Display="always" Required="false" Mask="false"/>
   <Config Name="Seerr Icon URL" Target="ICON_URL_SEERR" Default="" Mode="" Description="Icon URL (leave blank for auto-generated)" Type="Variable" Display="advanced" Required="false" Mask="false"/>
 
-  <!-- LIDARR -->
-  <Config Name="[10/14] Enable Lidarr" Target="ENABLE_LIDARR" Default="false" Mode="" Description="Lidarr - Music Automation" Type="Variable" Display="always" Required="false" Mask="false"/>
+  <Config Name="[11/16] Enable Lidarr" Target="ENABLE_LIDARR" Default="false" Mode="" Description="Lidarr - Music Automation" Type="Variable" Display="always" Required="false" Mask="false"/>
   <Config Name="Lidarr URL" Target="LIDARR_URL" Default="http://lidarr:8686" Mode="" Description="Backend URL" Type="Variable" Display="always" Required="false" Mask="false"/>
   <Config Name="Lidarr Icon URL" Target="ICON_URL_LIDARR" Default="" Mode="" Description="Icon URL (leave blank for auto-generated)" Type="Variable" Display="advanced" Required="false" Mask="false"/>
 
-  <!-- EMBY -->
-  <Config Name="[11/14] Enable Emby" Target="ENABLE_EMBY" Default="false" Mode="" Description="Emby - Media Streaming" Type="Variable" Display="always" Required="false" Mask="false"/>
+  <Config Name="[12/16] Enable Whisparr" Target="ENABLE_WHISPARR" Default="false" Mode="" Description="Whisparr - Adult Content" Type="Variable" Display="always" Required="false" Mask="false"/>
+  <Config Name="Whisparr URL" Target="WHISPARR_URL" Default="http://whisparr:6969" Mode="" Description="Backend URL" Type="Variable" Display="always" Required="false" Mask="false"/>
+  <Config Name="Whisparr Icon URL" Target="ICON_URL_WHISPARR" Default="" Mode="" Description="Icon URL (leave blank for auto-generated)" Type="Variable" Display="advanced" Required="false" Mask="false"/>
+
+  <!-- MEDIA SERVICES -->
+  <Config Name="[13/16] Enable Emby" Target="ENABLE_EMBY" Default="false" Mode="" Description="Emby - Media Streaming" Type="Variable" Display="always" Required="false" Mask="false"/>
   <Config Name="Emby URL" Target="EMBY_URL" Default="http://emby:8096" Mode="" Description="Backend URL" Type="Variable" Display="always" Required="false" Mask="false"/>
   <Config Name="Emby Icon URL" Target="ICON_URL_EMBY" Default="" Mode="" Description="Icon URL (leave blank for auto-generated)" Type="Variable" Display="advanced" Required="false" Mask="false"/>
   <Config Name="Emby Subdomain" Target="EMBY_DOMAIN" Default="" Mode="" Description="Subdomain for dedicated VirtualHost (e.g., emby_domain.yourdomain.com) - optional" Type="Variable" Display="always" Required="false" Mask="false"/>
 
-  <!-- PLEX -->
-  <Config Name="[12/14] Enable Plex" Target="ENABLE_PLEX" Default="false" Mode="" Description="Plex - Media Streaming" Type="Variable" Display="always" Required="false" Mask="false"/>
+  <Config Name="[14/16] Enable Plex" Target="ENABLE_PLEX" Default="false" Mode="" Description="Plex - Media Streaming" Type="Variable" Display="always" Required="false" Mask="false"/>
   <Config Name="Plex URL" Target="PLEX_URL" Default="http://plex:32400" Mode="" Description="Backend URL" Type="Variable" Display="always" Required="false" Mask="false"/>
   <Config Name="Plex Icon URL" Target="ICON_URL_PLEX" Default="" Mode="" Description="Icon URL (leave blank for auto-generated)" Type="Variable" Display="advanced" Required="false" Mask="false"/>
   <Config Name="Plex Subdomain" Target="PLEX_DOMAIN" Default="" Mode="" Description="Subdomain for dedicated VirtualHost (e.g., plex_domain.yourdomain.com) - optional" Type="Variable" Display="always" Required="false" Mask="false"/>
 
-  <!-- JELLYFIN -->
-  <Config Name="[13/14] Enable Jellyfin" Target="ENABLE_JELLYFIN" Default="false" Mode="" Description="Jellyfin - Media Streaming" Type="Variable" Display="always" Required="false" Mask="false"/>
+  <Config Name="[15/16] Enable Jellyfin" Target="ENABLE_JELLYFIN" Default="false" Mode="" Description="Jellyfin - Media Streaming" Type="Variable" Display="always" Required="false" Mask="false"/>
   <Config Name="Jellyfin URL" Target="JELLYFIN_URL" Default="http://jellyfin:8096" Mode="" Description="Backend URL" Type="Variable" Display="always" Required="false" Mask="false"/>
   <Config Name="Jellyfin Icon URL" Target="ICON_URL_JELLYFIN" Default="" Mode="" Description="Icon URL (leave blank for auto-generated)" Type="Variable" Display="advanced" Required="false" Mask="false"/>
 
-  <!-- TAUTULLI -->
-  <Config Name="[14/16] Enable Tautulli" Target="ENABLE_TAUTULLI" Default="false" Mode="" Description="Tautulli - Analytics" Type="Variable" Display="always" Required="false" Mask="false"/>
+  <Config Name="[16/16] Enable Tautulli" Target="ENABLE_TAUTULLI" Default="false" Mode="" Description="Tautulli - Analytics" Type="Variable" Display="always" Required="false" Mask="false"/>
   <Config Name="Tautulli URL" Target="TAUTULLI_URL" Default="http://tautulli:8181" Mode="" Description="Backend URL" Type="Variable" Display="always" Required="false" Mask="false"/>
   <Config Name="Tautulli Icon URL" Target="ICON_URL_TAUTULLI" Default="" Mode="" Description="Icon URL (leave blank for auto-generated)" Type="Variable" Display="advanced" Required="false" Mask="false"/>
-
-  <!-- NZBGET -->
-  <Config Name="[15/16] Enable NZBGet" Target="ENABLE_NZBGET" Default="false" Mode="" Description="NZBGet - Usenet Downloads" Type="Variable" Display="always" Required="false" Mask="false"/>
-  <Config Name="NZBGet URL" Target="NZBGET_URL" Default="http://nzbget:6789" Mode="" Description="Backend URL" Type="Variable" Display="always" Required="false" Mask="false"/>
-  <Config Name="NZBGet Icon URL" Target="ICON_URL_NZBGET" Default="" Mode="" Description="Icon URL (leave blank for auto-generated)" Type="Variable" Display="advanced" Required="false" Mask="false"/>
-
-  <!-- NZBHYDRA -->
-  <Config Name="[16/16] Enable NZBHydra" Target="ENABLE_NZBHYDRA" Default="false" Mode="" Description="NZBHydra - NZB Indexer" Type="Variable" Display="always" Required="false" Mask="false"/>
-  <Config Name="NZBHydra URL" Target="NZBHYDRA_URL" Default="http://nzbhydra:5076" Mode="" Description="Backend URL" Type="Variable" Display="always" Required="false" Mask="false"/>
-  <Config Name="NZBHydra Icon URL" Target="ICON_URL_NZBHYDRA" Default="" Mode="" Description="Icon URL (leave blank for auto-generated)" Type="Variable" Display="advanced" Required="false" Mask="false"/>
 
   <!-- AUTHENTICATION -->
   <Config Name="Auth Type" Target="AUTHTYPE" Default="none" Mode="" Description="Authentication method: none, basic, entra, or google" Type="Variable" Display="always" Required="true" Mask="false"/>
