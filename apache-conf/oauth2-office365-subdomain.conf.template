@@ -7,7 +7,7 @@ OIDCClientSecret @@OAUTH2_CLIENT_SECRET@@
 OIDCRedirectURI @@OAUTH2_REDIRECT_URI_SUBDOMAIN@@
 
 # Azure AD Configuration - use tenant-specific endpoint
-OIDCProviderMetadataURL @@OIDC_PROVIDER_METADATA_URL@@
+OIDCProviderMetadataURL @@ENTRA_PROVIDER_METADATA_URL@@
 
 # Scopes - what information to request from Office 365
 OIDCScope "openid profile email"
