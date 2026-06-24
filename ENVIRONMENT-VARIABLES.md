@@ -115,26 +115,34 @@ For `ACCESS_MODE=public`, these **must** be set:
 
 ### Enable/Disable Services
 
-For each service, use `ENABLE_*` variables:
+For each service, use `ENABLE_*` variables (grouped by DASH_ORDER category):
 
+**DOWNLOADS Category:**
 ```
-ENABLE_SONARR=true/false
-ENABLE_RADARR=true/false
-ENABLE_WHISPARR=true/false
-ENABLE_JELLYFIN=true/false
-ENABLE_LIDARR=true/false
-ENABLE_READARR=true/false
-ENABLE_PROWLARR=true/false
-ENABLE_OVERSEERR=true/false
-ENABLE_EMBY=true/false
-ENABLE_PLEX=true/false
-ENABLE_TAUTULLI=true/false
-ENABLE_TRANSMISSION=true/false
-ENABLE_QBITTORRENT=true/false
 ENABLE_SABNZBD=true/false
-ENABLE_DELUGE=true/false
 ENABLE_NZBGET=true/false
 ENABLE_NZBHYDRA=true/false
+ENABLE_DELUGE=true/false
+ENABLE_TRANSMISSION=true/false
+ENABLE_QBITTORRENT=true/false
+```
+
+**INFRA Category (Indexers & Infrastructure):**
+```
+ENABLE_RADARR=true/false
+ENABLE_SONARR=true/false
+ENABLE_PROWLARR=true/false
+ENABLE_SEERR=true/false
+ENABLE_LIDARR=true/false
+ENABLE_WHISPARR=true/false
+```
+
+**MEDIA Category (Media Servers):**
+```
+ENABLE_EMBY=true/false
+ENABLE_PLEX=true/false
+ENABLE_JELLYFIN=true/false
+ENABLE_TAUTULLI=true/false
 ```
 
 **Type:** Boolean (`true` or `false`)  
@@ -145,26 +153,34 @@ ENABLE_NZBHYDRA=true/false
 
 ### Service Backend URLs
 
-For each enabled service, specify the backend address:
+For each enabled service, specify the backend address (grouped by category):
 
+**DOWNLOADS Category:**
 ```
-SONARR_URL=http://sonarr:8989
-RADARR_URL=http://radarr:7878
-WHISPARR_URL=http://whisparr:6969
-JELLYFIN_URL=http://jellyfin:8096
-LIDARR_URL=http://lidarr:8686
-READARR_URL=http://readarr:8787
-PROWLARR_URL=http://prowlarr:9696
-OVERSEERR_URL=http://overseerr:5055
-EMBY_URL=http://emby:8096
-PLEX_URL=http://plex:32400
-TAUTULLI_URL=http://tautulli:8181
-TRANSMISSION_URL=http://transmission:6969
-QBITTORRENT_URL=http://qbittorrent:8080
 SABNZBD_URL=http://sabnzbd:8080
-DELUGE_URL=http://deluge:8112
 NZBGET_URL=http://nzbget:6789
 NZBHYDRA_URL=http://nzbhydra:5076
+DELUGE_URL=http://deluge:8112
+TRANSMISSION_URL=http://transmission:6969
+QBITTORRENT_URL=http://qbittorrent:8080
+```
+
+**INFRA Category:**
+```
+RADARR_URL=http://radarr:7878
+SONARR_URL=http://sonarr:8989
+PROWLARR_URL=http://prowlarr:9696
+SEERR_URL=http://seerr:5055
+LIDARR_URL=http://lidarr:8686
+WHISPARR_URL=http://whisparr:6969
+```
+
+**MEDIA Category:**
+```
+EMBY_URL=http://emby:8096
+PLEX_URL=http://plex:32400
+JELLYFIN_URL=http://jellyfin:8096
+TAUTULLI_URL=http://tautulli:8181
 ```
 
 **Type:** URL  
@@ -178,26 +194,34 @@ NZBHYDRA_URL=http://nzbhydra:5076
 
 ### Service Icon URLs
 
-Customize icons for each service:
+Customize icons for each service (grouped by category):
 
+**DOWNLOADS Category:**
 ```
-ICON_URL_SONARR=
-ICON_URL_RADARR=
-ICON_URL_WHISPARR=
-ICON_URL_JELLYFIN=
-ICON_URL_LIDARR=
-ICON_URL_READARR=
-ICON_URL_PROWLARR=
-ICON_URL_OVERSEERR=
-ICON_URL_EMBY=
-ICON_URL_PLEX=
-ICON_URL_TAUTULLI=
-ICON_URL_TRANSMISSION=
-ICON_URL_QBITTORRENT=
 ICON_URL_SABNZBD=
-ICON_URL_DELUGE=
 ICON_URL_NZBGET=
 ICON_URL_NZBHYDRA=
+ICON_URL_DELUGE=
+ICON_URL_TRANSMISSION=
+ICON_URL_QBITTORRENT=
+```
+
+**INFRA Category:**
+```
+ICON_URL_RADARR=
+ICON_URL_SONARR=
+ICON_URL_PROWLARR=
+ICON_URL_SEERR=
+ICON_URL_LIDARR=
+ICON_URL_WHISPARR=
+```
+
+**MEDIA Category:**
+```
+ICON_URL_EMBY=
+ICON_URL_PLEX=
+ICON_URL_JELLYFIN=
+ICON_URL_TAUTULLI=
 ```
 
 **Type:** URL  
