@@ -9,7 +9,15 @@
 <script src="support.js"></script>
 <script>
 window.getCoordinates = function() { return { x: 0, y: 0, width: 0, height: 0 }; };
-window.ClientData = { update: function() {} };
+window.ClientData = window.ClientData || {};
+window.ClientData.update = function() {};
+if (typeof window !== 'undefined' && window.parent && window.parent !== window) {
+  try {
+    window.parent.getCoordinates = window.parent.getCoordinates || function() { return { x: 0, y: 0, width: 0, height: 0 }; };
+    window.parent.ClientData = window.parent.ClientData || {};
+    window.parent.ClientData.update = window.parent.ClientData.update || function() {};
+  } catch(e) {}
+}
 </script>
 </head>
 <body>
