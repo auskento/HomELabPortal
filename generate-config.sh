@@ -38,19 +38,32 @@ process_service_config() {
     
     # Extract the path from the URL (everything after host:port)
     service_path=$(echo "$service_url" | sed 's|^https*://[^/]*||')
-    
-    # If no path, default to the service name
+
+    # If no path, default to the service name (except services that proxy to root)
     if [ -z "$service_path" ]; then
-        service_path="/$service_name"
+        if [ "$service_name" = "deluge" ] || [ "$service_name" = "qbittorrent" ] || [ "$service_name" = "seerr" ]; then
+            service_path="/"
+        else
+            service_path="/$service_name"
+        fi
     fi
-    
+
     # Replace ProxyPass URLs, preserving the path
-    sed -i "s|http://[^/]*:${template_port}/[^/]*|http://${service_host_with_port}${service_path}|g" "$service_file"
-    sed -i "s|ws://[^/]*:${template_port}/[^/]*|ws://${service_host_with_port}${service_path}|g" "$service_file"
+    # Special handling for services that proxy to root (/)
+    if [ "$service_name" = "deluge" ] || [ "$service_name" = "qbittorrent" ] || [ "$service_name" = "seerr" ]; then
+        sed -i "s|http://${service_name}:${template_port}|http://${service_host_with_port}|g" "$service_file"
+        sed -i "s|ws://${service_name}:${template_port}|ws://${service_host_with_port}|g" "$service_file"
+    else
+        sed -i "s|http://[^/]*:${template_port}/[^/]*|http://${service_host_with_port}${service_path}|g" "$service_file"
+        sed -i "s|ws://[^/]*:${template_port}/[^/]*|ws://${service_host_with_port}${service_path}|g" "$service_file"
+    fi
     
     # Replace cookie domain ONLY if the line contains ProxyPassReverseCookieDomain
     sed -i "s|\(ProxyPassReverseCookieDomain\) $service_name |\1 $service_host_only |g" "$service_file"
-    
+
+    # Replace DOMAIN placeholder for services that use it (e.g., Seerr)
+    sed -i "s|@@DOMAIN@@|$DOMAIN|g" "$service_file"
+
     echo "Updated $service_name config to use: $service_url"
 }
 
@@ -60,6 +73,7 @@ process_service_config() {
 [ "$ENABLE_WHISPARR" = "true" ] && process_service_config "whisparr" "6969"
 [ "$ENABLE_LIDARR" = "true" ] && process_service_config "lidarr" "8686"
 [ "$ENABLE_PROWLARR" = "true" ] && process_service_config "prowlarr" "9696"
+[ "$ENABLE_SEERR" = "true" ] && process_service_config "seerr" "5055"
 [ "$ENABLE_JELLYFIN" = "true" ] && process_service_config "jellyfin" "8096"
 [ "$ENABLE_EMBY" = "true" ] && process_service_config "emby" "8096"
 [ "$ENABLE_PLEX" = "true" ] && process_service_config "plex" "32400"
@@ -114,9 +128,21 @@ QBITTORRENT_INCLUDE=$(generate_include "qbittorrent" "$ENABLE_QBITTORRENT")
 SABNZBD_INCLUDE=$(generate_include "sabnzbd" "$ENABLE_SABNZBD")
 DELUGE_INCLUDE=$(generate_include "deluge" "$ENABLE_DELUGE")
 
-# Generate auth includes
-AUTH_OFFICE365_INCLUDE=$(generate_auth_include "auth-office365-protect" "$ENABLE_AUTH_OFFICE365")
-BASIC_AUTH_INCLUDE=$(generate_auth_include "auth-basic" "$ENABLE_BASIC_AUTH")
+# Generate auth includes based on AUTHTYPE (mutually exclusive)
+AUTH_ENTRA_INCLUDE=""
+AUTH_GOOGLE_INCLUDE=""
+BASIC_AUTH_INCLUDE=""
+case "$AUTHTYPE" in
+    entra)
+        AUTH_ENTRA_INCLUDE=$(generate_auth_include "auth-entra-protect" "true")
+        ;;
+    google)
+        AUTH_GOOGLE_INCLUDE=$(generate_auth_include "auth-google-protect" "true")
+        ;;
+    basic)
+        BASIC_AUTH_INCLUDE=$(generate_auth_include "auth-basic" "true")
+        ;;
+esac
 
 # Generate custom backend include if enabled
 CUSTOM_BACKEND_INCLUDE=""
@@ -186,7 +212,8 @@ CONFIG="${CONFIG//@@INCLUDE_DELUGE@@/$DELUGE_INCLUDE}"
 CONFIG="${CONFIG//@@INCLUDE_CUSTOM_BACKEND@@/$CUSTOM_BACKEND_INCLUDE}"
 
 # Replace auth includes
-CONFIG="${CONFIG//@@INCLUDE_AUTH_OFFICE365@@/$AUTH_OFFICE365_INCLUDE}"
+CONFIG="${CONFIG//@@INCLUDE_AUTH_ENTRA@@/$AUTH_ENTRA_INCLUDE}"
+CONFIG="${CONFIG//@@INCLUDE_AUTH_GOOGLE@@/$AUTH_GOOGLE_INCLUDE}"
 CONFIG="${CONFIG//@@INCLUDE_BASIC_AUTH@@/$BASIC_AUTH_INCLUDE}"
 
 # Write output file

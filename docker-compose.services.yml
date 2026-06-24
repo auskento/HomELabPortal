@@ -41,7 +41,7 @@ services:
       ENABLE_LIDARR: "false"
       ENABLE_READARR: "false"
       ENABLE_PROWLARR: "false"
-      ENABLE_OVERSEERR: "false"
+      ENABLE_SEERR: "false"
       ENABLE_EMBY: "false"
       ENABLE_PLEX: "false"
       ENABLE_TAUTULLI: "false"
@@ -50,10 +50,8 @@ services:
       ENABLE_SABNZBD: "false"
       ENABLE_DELUGE: "false"
       
-      ENABLE_BASIC_AUTH: "false"
+      AUTHTYPE: "none"
       BASIC_AUTH_CREDENTIALS: ""
-
-      ENABLE_AUTH_OFFICE365: "false"
       SSL_PROTOCOLS: "all -SSLv2 -SSLv3 -TLSv1 -TLSv1.1"
       SSL_CIPHERS: "HIGH:!aNULL:!MD5"
     

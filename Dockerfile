@@ -27,7 +27,9 @@ RUN a2enmod rewrite \
     && a2enmod headers \
     && a2enmod auth_openidc \
     && a2enmod auth_basic \
-    && a2enmod session_crypto
+    && a2enmod session_crypto \
+    && a2enmod filter \
+    && a2enmod substitute
 
 # Create directories
 RUN mkdir -p /var/www/html/error-pages \
@@ -36,6 +38,7 @@ RUN mkdir -p /var/www/html/error-pages \
     && mkdir -p /etc/letsencrypt \
     && mkdir -p /etc/letsencrypt/live \
     && mkdir -p /var/log/apache2 \
+    && mkdir -p /var/log/apache2/reverse-proxy-debug \
     && chmod -R 777 /etc/letsencrypt \
     && chmod 777 /etc/letsencrypt/live \
     && chmod -R 777 /var/log/apache2
@@ -48,19 +51,17 @@ RUN chmod -R 755 /var/www/html && \
 # Copy Apache configuration
 COPY apache-conf/reverse-proxy.conf.template /etc/apache2/sites-available/reverse-proxy.conf.template
 COPY apache-conf/ssl-config.conf /etc/apache2/mods-available/ssl-params.conf
-COPY apache-conf/oauth2-office365.conf /etc/apache2/conf-available/
-COPY apache-conf/auth-office365-protect.conf /etc/apache2/conf-available/
+COPY apache-conf/oauth2-entra.conf /etc/apache2/conf-available/
+COPY apache-conf/auth-entra-protect.conf /etc/apache2/conf-available/
+COPY apache-conf/oauth2-google.conf /etc/apache2/conf-available/
+COPY apache-conf/auth-google-protect.conf /etc/apache2/conf-available/
 COPY apache-conf/auth-basic.conf /etc/apache2/conf-available/
 COPY apache-conf/services/ /etc/apache2/sites-available/services/
 
-# Copy configuration generator script
-COPY generate-config.sh generate-html-menu.sh download-icons.sh generate-emby-virtualhost.sh generate-plex-virtualhost.sh /usr/local/bin/
+# Copy configuration generator scripts
+COPY generate-config.sh generate-html-menu.sh download-icons.sh generate-emby-virtualhost.sh generate-plex-virtualhost.sh apache-log-rotator.sh update-dashboard-config.sh /usr/local/bin/
 COPY support.js /usr/local/bin/
-RUN chmod +x /usr/local/bin/generate-config.sh /usr/local/bin/generate-html-menu.sh /usr/local/bin/download-icons.sh /usr/local/bin/generate-emby-virtualhost.sh /usr/local/bin/generate-plex-virtualhost.sh
-
-# Copy HTML menu generator script
-COPY generate-html-menu.sh /usr/local/bin/
-RUN chmod +x /usr/local/bin/generate-html-menu.sh
+RUN chmod +x /usr/local/bin/generate-config.sh /usr/local/bin/generate-html-menu.sh /usr/local/bin/download-icons.sh /usr/local/bin/generate-emby-virtualhost.sh /usr/local/bin/generate-plex-virtualhost.sh /usr/local/bin/apache-log-rotator.sh /usr/local/bin/update-dashboard-config.sh
 
 # Copy icon download script
 COPY download-icons.sh /usr/local/bin/

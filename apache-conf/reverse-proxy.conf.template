@@ -77,11 +77,13 @@
     # ============================================
     # CONDITIONAL SERVICE INCLUDES
     # ============================================
-    
+
     # These sections will be included/excluded based on environment variables
     # See /etc/apache2/sites-available/services/*.conf
-    
-    @@INCLUDE_AUTH_OFFICE365@@
+
+    # Authentication includes (mutually exclusive: entra, google, or basic)
+    @@INCLUDE_AUTH_ENTRA@@
+    @@INCLUDE_AUTH_GOOGLE@@
     @@INCLUDE_SONARR@@
     @@INCLUDE_RADARR@@
     @@INCLUDE_WHISPARR@@
@@ -109,6 +111,10 @@
     # Logging
     ErrorLog ${APACHE_LOG_DIR}/error.log
     CustomLog ${APACHE_LOG_DIR}/access.log combined
+
+    # Debug logging with detailed information
+    LogLevel warn
+    CustomLog "|/usr/local/bin/apache-log-rotator.sh" combined env=!nolog
     
     # Health check endpoint
     <Location /health>

@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Media Server Dashboard</title>
+<title>@@DASHBOARD_NAME@@</title>
 <script crossorigin src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/react.production.min.js"></script>
 <script crossorigin src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/react-dom.production.min.js"></script>
 </head>
@@ -29,12 +29,10 @@
   <aside style="width:320px;flex:none;height:100%;display:flex;flex-direction:column;background:linear-gradient(180deg,rgba(20,23,30,.72),rgba(12,14,19,.72));backdrop-filter:blur(18px);border-right:1px solid rgba(255,255,255,.07)">
 
     <div style="padding:26px 26px 20px 26px;border-bottom:1px solid rgba(255,255,255,.06)">
-      <div style="display:flex;align-items:center;gap:11px;margin-bottom:22px">
-        <div style="width:34px;height:34px;border-radius:9px;background:linear-gradient(135deg,#3aa0e0,#2ecd6f);display:flex;align-items:center;justify-content:center;box-shadow:0 4px 16px rgba(58,160,224,.4)">
-          <div style="width:13px;height:13px;border:2.5px solid #08090c;border-radius:4px"></div>
-        </div>
+      <a href="/" style="display:flex;align-items:center;gap:11px;margin-bottom:22px;text-decoration:none;cursor:pointer">
+        <img src="@@DASHBOARD_ICON@@" alt="Dashboard" style="width:34px;height:34px;border-radius:9px;object-fit:contain;box-shadow:0 4px 16px rgba(58,160,224,.4)">
         <div style="font-family:'Space Grotesk',sans-serif;font-weight:600;letter-spacing:.14em;font-size:13px;color:#cdd3dd">@@DASHBOARD_NAME@@</div>
-      </div>
+      </a>
       <div style="font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:25px;line-height:1.15;letter-spacing:-.01em;color:#f4f6fa">{{ greeting }}</div>
       <div style="display:flex;align-items:baseline;gap:10px;margin-top:7px">
         <div style="font-family:'Space Grotesk',sans-serif;font-weight:500;font-size:15px;color:#8b93a3;font-variant-numeric:tabular-nums">{{ clock }}</div>
@@ -76,18 +74,26 @@
           <span style="font-size:11px;color:#ff9999;padding-left:15px">{{ offlineList }}</span>
         </sc-if>
       </div>
-      <a href="/" style="font-size:11px;color:#4a9eff;text-decoration:none;text-align:center;padding:8px 0;border-top:1px solid rgba(255,255,255,.06);transition:color 0.2s">← Classic Menu</a>
+      <div style="font-size:11px;text-align:center;padding:8px 0;border-top:1px solid rgba(255,255,255,.06);display:flex;gap:6px;justify-content:center;flex-wrap:wrap">
+        <a href="/classic.html" style="color:#4a9eff;text-decoration:none;transition:color 0.2s">Classic</a>
+        <span style="color:#5d6575">|</span>
+        <a href="/" style="color:#4a9eff;text-decoration:none;transition:color 0.2s">Modern</a>
+        <span style="color:#5d6575">|</span>
+        <a href="/sleek.html" style="color:#4a9eff;text-decoration:none;transition:color 0.2s">Sleek</a>
+        <span style="color:#5d6575">|</span>
+        <a href="/minimal.html" style="color:#4a9eff;text-decoration:none;transition:color 0.2s">Minimal</a>
+      </div>
     </div>
   </aside>
 
   <main style="flex:1;min-width:0;position:relative">
-    <iframe name="Main" ref="{{ frameRef }}" title="App" style="position:absolute;inset:0;width:100%;height:100%;border:0;background:#0b0d11"></iframe>
+    <iframe name="Main" ref="{{ frameRef }}" title="App" src="/@@LANDING@@" style="position:absolute;inset:0;width:100%;height:100%;border:0;background:#0b0d11"></iframe>
 
     <sc-if value="{{ showWelcome }}" hint-placeholder-val="{{ true }}">
       <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:40px;background:radial-gradient(900px 600px at 50% 30%,rgba(58,160,224,.08),transparent 60%),#0b0d11">
-        <div style="width:64px;height:64px;border-radius:18px;background:linear-gradient(135deg,#3aa0e0,#2ecd6f);display:flex;align-items:center;justify-content:center;box-shadow:0 10px 40px rgba(58,160,224,.35);margin-bottom:26px">
-          <div style="width:22px;height:22px;border:3px solid #0b0d11;border-radius:6px"></div>
-        </div>
+        <a href="/" style="display:flex;align-items:center;justify-content:center;text-decoration:none;cursor:pointer">
+          <img src="@@DASHBOARD_ICON@@" alt="Dashboard" style="width:80px;height:80px;margin-bottom:26px;object-fit:contain;filter:drop-shadow(0 4px 16px rgba(58,160,224,.3))">
+        </a>
         <div style="font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:27px;color:#f4f6fa;letter-spacing:-.01em">Welcome back</div>
         <div style="font-size:15px;color:#828b9c;margin-top:10px;max-width:380px;line-height:1.55">Pick a service from the sidebar to open it here. Your library, downloads and indexers — all in one place.</div>
       </div>
@@ -104,11 +110,33 @@ class Component extends DCLogic {
     this._t = setInterval(() => this.setState({ now: new Date() }), 1000);
     this.checkServices();
     this._healthCheck = setInterval(() => this.checkServices(), 30000); // Check every 30 seconds
+
+    // Handle iframe loading with LANDING page
+    if (this._frame) {
+      // If iframe has a src, hide welcome screen initially
+      if (this._frame.src && this._frame.src !== 'about:blank') {
+        this.setState({ showWelcome: false });
+      }
+
+      // Hide welcome screen when iframe loads successfully
+      this._frame.addEventListener('load', () => {
+        this.setState({ showWelcome: false });
+      });
+
+      // Show welcome screen if iframe fails to load
+      this._frame.addEventListener('error', () => {
+        this.setState({ showWelcome: true });
+      });
+    }
   }
   
-  componentWillUnmount() { 
+  componentWillUnmount() {
     clearInterval(this._t);
     clearInterval(this._healthCheck);
+    if (this._frame) {
+      this._frame.removeEventListener('load', this._onIframeLoad);
+      this._frame.removeEventListener('error', this._onIframeError);
+    }
   }
 
   checkServices() {

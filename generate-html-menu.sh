@@ -9,10 +9,11 @@ if [ -f /etc/apache2/env.conf ]; then
     source /etc/apache2/env.conf
 fi
 
-SIMPLE_TEMPLATE="/var/www/html/index.html.template"
-DASHBOARD_TEMPLATE="/var/www/html/index.html.dashboard"
-SIMPLE_OUTPUT="/var/www/html/index.html"
-DASHBOARD_OUTPUT="/var/www/html/dashboard.html"
+CLASSIC_TEMPLATE="/var/www/html/classic.template"
+MODERN_TEMPLATE="/var/www/html/modern.template"
+SLEEK_TEMPLATE="/var/www/html/sleek.template"
+MINIMAL_TEMPLATE="/var/www/html/minimal.template"
+DASHBOARD_OAUTH_TEMPLATE="/var/www/html/dashboard-oauth.html.template"
 
 # Define all available services with metadata
 # Format: SERVICE_KEY="Category|Name|Description|Icon|Href|Accent"
@@ -29,7 +30,7 @@ declare -A SERVICES=(
     [SONARR]="INFRA|Sonarr|TV shows|/icons/sonarr.png|/sonarr/calendar|#3aa0e0"
     [WHISPARR]="INFRA|Whisparr|Adult content|/icons/whisparr.png|/whisparr/|#ef7e30"
     [PROWLARR]="INFRA|Prowlarr|Indexer manager|/icons/prowlarr.png|/prowlarr/|#e8810e"
-    [OVERSEERR]="INFRA|Overseerr|Requests|/icons/overseerr.png|/overseerr/|#00a4dc"
+    [SEERR]="INFRA|Seerr|Requests|/icons/seerr.png|/seerr/|#00a4dc"
     [LIDARR]="INFRA|Lidarr|Music|/icons/lidarr.png|/lidarr/|#2ecd6f"
     
     # MEDIA category
@@ -44,7 +45,7 @@ declare -a SERVICE_ORDER=(
     # DOWNLOADERS
     "SABNZBD" "DELUGE" "TRANSMISSION" "QBITTORRENT"
     # INDEXERS
-    "RADARR" "SONARR" "WHISPARR" "PROWLARR" "OVERSEERR" "LIDARR"
+    "RADARR" "SONARR" "WHISPARR" "PROWLARR" "SEERR" "LIDARR"
     # MEDIA SERVERS
     "EMBY" "PLEX" "JELLYFIN" "TAUTULLI"
 )
@@ -183,32 +184,190 @@ generate_services_array() {
     echo "$array"
 }
 
-# Generate simple menu (index.html)
-generate_simple_menu() {
-    if [ ! -f "$SIMPLE_TEMPLATE" ]; then
-        echo "ERROR: Simple template not found: $SIMPLE_TEMPLATE"
+# Generate dashboard based on STYLE
+generate_style_dashboard() {
+    local STYLE="${STYLE:-classic}"
+    local OUTPUT_FILE="/var/www/html/index.html"
+    local TEMPLATE_FILE
+
+    # Map style to template
+    case "$STYLE" in
+        classic)
+            TEMPLATE_FILE="$CLASSIC_TEMPLATE"
+            ;;
+        modern)
+            TEMPLATE_FILE="$MODERN_TEMPLATE"
+            ;;
+        sleek)
+            TEMPLATE_FILE="$SLEEK_TEMPLATE"
+            ;;
+        minimal)
+            TEMPLATE_FILE="$MINIMAL_TEMPLATE"
+            ;;
+        *)
+            echo "ERROR: Invalid STYLE: $STYLE"
+            return 1
+            ;;
+    esac
+
+    if [ ! -f "$TEMPLATE_FILE" ]; then
+        echo "ERROR: Template not found: $TEMPLATE_FILE"
         return 1
     fi
-    
-    # Generate menu items and services list
-    local menu_items=$(generate_menu_items)
-    local services_list=$(generate_services_list)
-    
-    # Set dashboard name and icon
-    local DASHBOARD_NAME="${DASHBOARD_NAME:-Media Server}"
-    local DASHBOARD_ICON="${DASHBOARD_ICON:-/icons/apache-reverse-proxy-logo.png}"
-    
-    # Read template and replace placeholders
-    local html_content=$(cat "$SIMPLE_TEMPLATE")
-    html_content="${html_content//@@MENU_ITEMS@@/$menu_items}"
-    html_content="${html_content//@@ENABLED_SERVICES_LIST@@/$services_list}"
-    html_content="${html_content//@@DASHBOARD_NAME@@/$DASHBOARD_NAME}"
-    html_content="${html_content//@@DASHBOARD_ICON@@/$DASHBOARD_ICON}"
-    
-    # Write output file
-    echo "$html_content" > "$SIMPLE_OUTPUT"
-    
-    echo "✓ Simple menu generated: $SIMPLE_OUTPUT"
+
+    # For classic style, generate menu items and services list
+    if [ "$STYLE" = "classic" ]; then
+        local menu_items=$(generate_menu_items)
+        local services_list=$(generate_services_list)
+
+        local html_content=$(cat "$TEMPLATE_FILE")
+        html_content="${html_content//@@MENU_ITEMS@@/$menu_items}"
+        html_content="${html_content//@@ENABLED_SERVICES_LIST@@/$services_list}"
+        html_content="${html_content//@@DASHBOARD_NAME@@/${DASHBOARD_NAME:-Media Server}}"
+        html_content="${html_content//@@DASHBOARD_ICON@@/${DASHBOARD_ICON:-/icons/apache-reverse-proxy.png}}"
+
+        if [ -z "$LANDING" ]; then
+            html_content=$(echo "$html_content" | sed 's|src="/@@LANDING@@"|src="about:blank"|')
+        else
+            html_content="${html_content//@@LANDING@@/$LANDING}"
+        fi
+
+        echo "$html_content" > "$OUTPUT_FILE"
+    elif [ "$STYLE" = "modern" ]; then
+        # Modern dashboard uses React with full services array (with categories)
+        local services_array=$(generate_services_array)
+        local html_content=$(cat "$TEMPLATE_FILE")
+        html_content="${html_content//@@SERVICES_ARRAY@@/$services_array}"
+        html_content="${html_content//@@DASHBOARD_NAME@@/${DASHBOARD_NAME:-Media Server}}"
+        html_content="${html_content//@@DASHBOARD_ICON@@/${DASHBOARD_ICON:-/icons/apache-reverse-proxy.png}}"
+
+        if [ -z "$LANDING" ]; then
+            html_content=$(echo "$html_content" | sed 's|src="/@@LANDING@@"||')
+        else
+            html_content="${html_content//@@LANDING@@/$LANDING}"
+        fi
+
+        echo "$html_content" > "$OUTPUT_FILE"
+    else
+        # For sleek and minimal styles, generate icons-only services array
+        local services_array=$(generate_dashboard2_services_array)
+        local service_count=0
+        for service_key in "${SERVICE_ORDER[@]}"; do
+            local enable_var="ENABLE_${service_key}"
+            if [ "${!enable_var}" = "true" ]; then
+                ((service_count++))
+            fi
+        done
+
+        local sizes=$(calculate_icon_sizes "$service_count")
+        local ICON_SIZE=$(echo "$sizes" | cut -d'|' -f1)
+        local ICON_GAP=$(echo "$sizes" | cut -d'|' -f2)
+        local LOGO_SIZE=$(echo "$sizes" | cut -d'|' -f3)
+
+        local html_content=$(cat "$TEMPLATE_FILE")
+        html_content="${html_content//@@SERVICES_ARRAY@@/$services_array}"
+        html_content="${html_content//@@DASHBOARD_NAME@@/${DASHBOARD_NAME:-Media Server}}"
+        html_content="${html_content//@@DASHBOARD_ICON@@/${DASHBOARD_ICON:-/icons/apache-reverse-proxy.png}}"
+
+        if [ -z "$LANDING" ]; then
+            html_content=$(echo "$html_content" | sed 's|src="/@@LANDING@@"||')
+        else
+            html_content="${html_content//@@LANDING@@/$LANDING}"
+        fi
+
+        html_content="${html_content//@@ICON_SIZE@@/$ICON_SIZE}"
+        html_content="${html_content//@@ICON_GAP@@/$ICON_GAP}"
+        html_content="${html_content//@@LOGO_SIZE@@/$LOGO_SIZE}"
+
+        echo "$html_content" > "$OUTPUT_FILE"
+    fi
+
+    echo "✓ Dashboard generated: $STYLE → $OUTPUT_FILE"
+}
+
+# Generate all dashboard styles for style switching
+generate_all_styles() {
+    local STYLE="${STYLE:-classic}"
+    local service_count=0
+    for service_key in "${SERVICE_ORDER[@]}"; do
+        local enable_var="ENABLE_${service_key}"
+        if [ "${!enable_var}" = "true" ]; then
+            ((service_count++))
+        fi
+    done
+
+    local sizes=$(calculate_icon_sizes "$service_count")
+    local ICON_SIZE=$(echo "$sizes" | cut -d'|' -f1)
+    local ICON_GAP=$(echo "$sizes" | cut -d'|' -f2)
+    local LOGO_SIZE=$(echo "$sizes" | cut -d'|' -f3)
+
+    # Generate Classic (always)
+    if [ -f "$CLASSIC_TEMPLATE" ]; then
+        local menu_items=$(generate_menu_items)
+        local services_list=$(generate_services_list)
+        local html_content=$(cat "$CLASSIC_TEMPLATE")
+        html_content="${html_content//@@MENU_ITEMS@@/$menu_items}"
+        html_content="${html_content//@@ENABLED_SERVICES_LIST@@/$services_list}"
+        html_content="${html_content//@@DASHBOARD_NAME@@/${DASHBOARD_NAME:-Media Server}}"
+        html_content="${html_content//@@DASHBOARD_ICON@@/${DASHBOARD_ICON:-/icons/apache-reverse-proxy.png}}"
+        if [ -z "$LANDING" ]; then
+            html_content=$(echo "$html_content" | sed 's|src="/@@LANDING@@"|src="about:blank"|')
+        else
+            html_content="${html_content//@@LANDING@@/$LANDING}"
+        fi
+        echo "$html_content" > "/var/www/html/classic.html"
+    fi
+
+    # Generate Modern (always)
+    if [ -f "$MODERN_TEMPLATE" ]; then
+        local services_array=$(generate_services_array)
+        local html_content=$(cat "$MODERN_TEMPLATE")
+        html_content="${html_content//@@SERVICES_ARRAY@@/$services_array}"
+        html_content="${html_content//@@DASHBOARD_NAME@@/${DASHBOARD_NAME:-Media Server}}"
+        html_content="${html_content//@@DASHBOARD_ICON@@/${DASHBOARD_ICON:-/icons/apache-reverse-proxy.png}}"
+        if [ -z "$LANDING" ]; then
+            html_content=$(echo "$html_content" | sed 's|src="/@@LANDING@@"||')
+        else
+            html_content="${html_content//@@LANDING@@/$LANDING}"
+        fi
+        echo "$html_content" > "/var/www/html/modern.html"
+    fi
+
+    # Generate Sleek (always)
+    if [ -f "$SLEEK_TEMPLATE" ]; then
+        local services_array=$(generate_dashboard2_services_array)
+        local html_content=$(cat "$SLEEK_TEMPLATE")
+        html_content="${html_content//@@SERVICES_ARRAY@@/$services_array}"
+        html_content="${html_content//@@DASHBOARD_NAME@@/${DASHBOARD_NAME:-Media Server}}"
+        html_content="${html_content//@@DASHBOARD_ICON@@/${DASHBOARD_ICON:-/icons/apache-reverse-proxy.png}}"
+        if [ -z "$LANDING" ]; then
+            html_content=$(echo "$html_content" | sed 's|src="/@@LANDING@@"||')
+        else
+            html_content="${html_content//@@LANDING@@/$LANDING}"
+        fi
+        html_content="${html_content//@@ICON_SIZE@@/$ICON_SIZE}"
+        html_content="${html_content//@@ICON_GAP@@/$ICON_GAP}"
+        html_content="${html_content//@@LOGO_SIZE@@/$LOGO_SIZE}"
+        echo "$html_content" > "/var/www/html/sleek.html"
+    fi
+
+    # Generate Minimal (always)
+    if [ -f "$MINIMAL_TEMPLATE" ]; then
+        local services_array=$(generate_dashboard2_services_array)
+        local html_content=$(cat "$MINIMAL_TEMPLATE")
+        html_content="${html_content//@@SERVICES_ARRAY@@/$services_array}"
+        html_content="${html_content//@@DASHBOARD_NAME@@/${DASHBOARD_NAME:-Media Server}}"
+        html_content="${html_content//@@DASHBOARD_ICON@@/${DASHBOARD_ICON:-/icons/apache-reverse-proxy.png}}"
+        if [ -z "$LANDING" ]; then
+            html_content=$(echo "$html_content" | sed 's|src="/@@LANDING@@"||')
+        else
+            html_content="${html_content//@@LANDING@@/$LANDING}"
+        fi
+        html_content="${html_content//@@ICON_SIZE@@/$ICON_SIZE}"
+        html_content="${html_content//@@ICON_GAP@@/$ICON_GAP}"
+        html_content="${html_content//@@LOGO_SIZE@@/$LOGO_SIZE}"
+        echo "$html_content" > "/var/www/html/minimal.html"
+    fi
 }
 
 # Generate React dashboard (dashboard.html)
@@ -217,29 +376,71 @@ generate_react_dashboard() {
         echo "ERROR: Dashboard template not found: $DASHBOARD_TEMPLATE"
         return 1
     fi
-    
+
     # Copy support.js
     cp /usr/local/bin/support.js /var/www/html/support.js 2>/dev/null || true
-    
+
     # Generate services array
     local services_array=$(generate_services_array)
-    
-    # Set dashboard name and icon
+
+    # Set dashboard name, icon, and landing page
     local DASHBOARD_NAME="${DASHBOARD_NAME:-Media Server}"
-    local DASHBOARD_ICON="${DASHBOARD_ICON:-/icons/apache-reverse-proxy-logo.png}"
-    
+    local DASHBOARD_ICON="${DASHBOARD_ICON:-/icons/apache-reverse-proxy.png}"
+    local LANDING="${LANDING:-}"
+
     # Read template and replace placeholders
     local html_content=$(cat "$DASHBOARD_TEMPLATE")
     html_content="${html_content//@@SERVICES_ARRAY@@/$services_array}"
     html_content="${html_content//@@DASHBOARD_NAME@@/$DASHBOARD_NAME}"
     html_content="${html_content//@@DASHBOARD_ICON@@/$DASHBOARD_ICON}"
-    
+
+    # Only set iframe src if LANDING is provided
+    if [ -z "$LANDING" ]; then
+        html_content=$(echo "$html_content" | sed 's|src="/@@LANDING@@"||')
+    else
+        html_content="${html_content//@@LANDING@@/$LANDING}"
+    fi
+
     # Write output file
     echo "$html_content" > "$DASHBOARD_OUTPUT"
-    
+
     echo "✓ React dashboard generated: $DASHBOARD_OUTPUT"
     echo "Debug: Service count in dashboard array:"
     echo "$services_array" | grep -o "{ cat:" | wc -l
+}
+
+# Calculate dynamic icon sizes based on service count
+# Returns responsive multipliers instead of fixed pixels
+calculate_icon_sizes() {
+    local service_count=$1
+    local icon_multiplier gap_multiplier logo_multiplier
+
+    # Service count tiers determine scaling multipliers
+    # Icons will scale responsively: base_unit * multiplier
+    # Larger multipliers for 2-column grid layout
+    if [ "$service_count" -le 5 ]; then
+        icon_multiplier="1.7"
+        gap_multiplier="1.4"
+        logo_multiplier="1.5"
+    elif [ "$service_count" -le 8 ]; then
+        icon_multiplier="1.6"
+        gap_multiplier="1.2"
+        logo_multiplier="1.375"
+    elif [ "$service_count" -le 12 ]; then
+        icon_multiplier="1.5"
+        gap_multiplier="1.0"
+        logo_multiplier="1.25"
+    elif [ "$service_count" -le 15 ]; then
+        icon_multiplier="1.4"
+        gap_multiplier="0.8"
+        logo_multiplier="1.125"
+    else
+        icon_multiplier="1.2"
+        gap_multiplier="0.6"
+        logo_multiplier="1.0"
+    fi
+
+    echo "$icon_multiplier|$gap_multiplier|$logo_multiplier"
 }
 
 # Generate icons-only services array for dashboard2
@@ -283,34 +484,134 @@ generate_dashboard2_services_array() {
     echo "[$array]"
 }
 
-# Generate icons-only dashboard (dashboard2.html)
-generate_dashboard2() {
-    local DASHBOARD2_OUTPUT="/var/www/html/dashboard2.html"
-    local DASHBOARD2_TEMPLATE="/var/www/html/dashboard2.html.template"
-    
-    if [ ! -f "$DASHBOARD2_TEMPLATE" ]; then
+# Generate dashboard based on authentication type
+generate_dashboard_for_auth() {
+    local DASHBOARD_OUTPUT="/var/www/html/dashboard2.html"
+    local DASHBOARD_TEMPLATE=""
+
+    # Choose template based on AUTHTYPE
+    if [ "$AUTHTYPE" = "oauth" ]; then
+        DASHBOARD_TEMPLATE="/var/www/html/dashboard-oauth.html.template"
+    else
+        # Default to basic auth dashboard (direct links, no iframes)
+        DASHBOARD_TEMPLATE="/var/www/html/dashboard2.html.template"
+    fi
+
+    if [ ! -f "$DASHBOARD_TEMPLATE" ]; then
+        echo "⚠ Dashboard template not found: $DASHBOARD_TEMPLATE"
         return
     fi
-    
+
+    # Count enabled services
+    local service_count=0
+    for service_key in "${SERVICE_ORDER[@]}"; do
+        local enable_var="ENABLE_${service_key}"
+        if [ "${!enable_var}" = "true" ]; then
+            ((service_count++))
+        fi
+    done
+
     local services_array=$(generate_dashboard2_services_array)
-    
-    # Set dashboard name and icon
+
+    # Set dashboard name, icon, and landing page
     local DASHBOARD_NAME="${DASHBOARD_NAME:-Media Server}"
-    local DASHBOARD_ICON="${DASHBOARD_ICON:-/icons/apache-reverse-proxy-logo.png}"
-    
-    local html_content=$(cat "$DASHBOARD2_TEMPLATE")
+    local DASHBOARD_ICON="${DASHBOARD_ICON:-/icons/apache-reverse-proxy.png}"
+    local LANDING="${LANDING:-}"
+
+    # Calculate dynamic icon sizes
+    local sizes=$(calculate_icon_sizes "$service_count")
+    local ICON_SIZE=$(echo "$sizes" | cut -d'|' -f1)
+    local ICON_GAP=$(echo "$sizes" | cut -d'|' -f2)
+    local LOGO_SIZE=$(echo "$sizes" | cut -d'|' -f3)
+
+    local html_content=$(cat "$DASHBOARD_TEMPLATE")
     html_content="${html_content//@@SERVICES_ARRAY@@/$services_array}"
+    html_content="${html_content//@@DASHBOARD_NAME@@/$DASHBOARD_NAME}"
     html_content="${html_content//@@DASHBOARD_ICON@@/$DASHBOARD_ICON}"
-    
-    echo "$html_content" > "$DASHBOARD2_OUTPUT"
-    echo "✓ Icons-only dashboard generated: $DASHBOARD2_OUTPUT"
+
+    # Only set iframe src if LANDING is provided; otherwise remove src attribute to show welcome screen
+    if [ -z "$LANDING" ]; then
+        html_content=$(echo "$html_content" | sed 's|src="/@@LANDING@@"||')
+    else
+        html_content="${html_content//@@LANDING@@/$LANDING}"
+    fi
+
+    html_content="${html_content//@@ICON_SIZE@@/$ICON_SIZE}"
+    html_content="${html_content//@@ICON_GAP@@/$ICON_GAP}"
+    html_content="${html_content//@@LOGO_SIZE@@/$LOGO_SIZE}"
+
+    echo "$html_content" > "$DASHBOARD_OUTPUT"
+
+    if [ "$AUTHTYPE" = "oauth" ]; then
+        echo "✓ OAuth dashboard generated (with iframes): $DASHBOARD_OUTPUT"
+    else
+        echo "✓ Basic auth dashboard generated ($service_count services, $ICON_SIZE icons): $DASHBOARD_OUTPUT"
+    fi
+}
+
+# Generate icons-only dashboard (dashboard2.html)
+generate_dashboard2() {
+    generate_dashboard_for_auth
+}
+
+# Generate grid-based dashboard (dashboard3.html with auto-fit columns)
+generate_dashboard3() {
+    local DASHBOARD_OUTPUT="/var/www/html/dashboard3.html"
+    local DASHBOARD_TEMPLATE="/var/www/html/dashboard3.html.template"
+
+    if [ ! -f "$DASHBOARD_TEMPLATE" ]; then
+        echo "⚠ Dashboard3 template not found: $DASHBOARD_TEMPLATE"
+        return
+    fi
+
+    # Count enabled services
+    local service_count=0
+    for service_key in "${SERVICE_ORDER[@]}"; do
+        local enable_var="ENABLE_${service_key}"
+        if [ "${!enable_var}" = "true" ]; then
+            ((service_count++))
+        fi
+    done
+
+    local services_array=$(generate_dashboard2_services_array)
+
+    # Set dashboard name, icon, and landing page
+    local DASHBOARD_NAME="${DASHBOARD_NAME:-Media Server}"
+    local DASHBOARD_ICON="${DASHBOARD_ICON:-/icons/apache-reverse-proxy.png}"
+    local LANDING="${LANDING:-}"
+
+    # Calculate dynamic icon sizes
+    local sizes=$(calculate_icon_sizes "$service_count")
+    local ICON_SIZE=$(echo "$sizes" | cut -d'|' -f1)
+    local ICON_GAP=$(echo "$sizes" | cut -d'|' -f2)
+    local LOGO_SIZE=$(echo "$sizes" | cut -d'|' -f3)
+
+    local html_content=$(cat "$DASHBOARD_TEMPLATE")
+    html_content="${html_content//@@SERVICES_ARRAY@@/$services_array}"
+    html_content="${html_content//@@DASHBOARD_NAME@@/$DASHBOARD_NAME}"
+    html_content="${html_content//@@DASHBOARD_ICON@@/$DASHBOARD_ICON}"
+
+    # Only set iframe src if LANDING is provided; otherwise remove src attribute to show welcome screen
+    if [ -z "$LANDING" ]; then
+        html_content=$(echo "$html_content" | sed 's|src="/@@LANDING@@"||')
+    else
+        html_content="${html_content//@@LANDING@@/$LANDING}"
+    fi
+
+    html_content="${html_content//@@ICON_SIZE@@/$ICON_SIZE}"
+    html_content="${html_content//@@ICON_GAP@@/$ICON_GAP}"
+    html_content="${html_content//@@LOGO_SIZE@@/$LOGO_SIZE}"
+
+    echo "$html_content" > "$DASHBOARD_OUTPUT"
+
+    echo "✓ Grid dashboard generated (auto-fit columns): $DASHBOARD_OUTPUT"
 }
 
 # Main generation function
 generate_html() {
-    echo "Generating both dashboards in synchronized order..."
+    echo "Generating dashboards for STYLE=$STYLE..."
     echo ""
-    
+
     # Count enabled services
     local count=0
     for service_key in "${SERVICE_ORDER[@]}"; do
@@ -319,19 +620,22 @@ generate_html() {
             ((count++))
         fi
     done
-    
-    # Generate both versions
-    generate_simple_menu
-    generate_react_dashboard
-    generate_dashboard2
-    
+
+    # Generate primary dashboard based on STYLE
+    generate_style_dashboard
+
+    # Generate all alternate styles for switching between any style
+    generate_all_styles
+
     echo ""
-    echo "✓ Both dashboards generated with $count enabled service(s)"
+    echo "✓ Dashboards generated with $count enabled service(s)"
     echo ""
-    echo "Service order matches:"
-    echo "  1. MEDIA services"
-    echo "  2. DOWNLOADS services"  
-    echo "  3. INDEXERS & INFRA services"
+    echo "Available dashboards:"
+    echo "  /index.html (primary: $STYLE)"
+    echo "  /classic.html"
+    echo "  /modern.html"
+    echo "  /sleek.html"
+    echo "  /minimal.html"
 }
 
 # Run generation

@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-    <title>Media Server - Dashboard</title>
+    <title>@@DASHBOARD_NAME@@</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <style>
         * {
@@ -237,15 +237,21 @@
 <body>
 
 <div class="header">
-    <div id="dashboard-header" style="display:flex;align-items:center;gap:15px;flex-shrink:0">
-        <img src="/icons/apache-reverse-proxy.svg" alt="Apache Reverse Proxy" style="width:40px;height:40px;filter:drop-shadow(0 4px 16px rgba(58,160,224,.4))">
+    <a href="/" style="text-decoration:none;display:flex;align-items:center;gap:15px;flex-shrink:0">
+        <img src="@@DASHBOARD_ICON@@" alt="Dashboard" style="width:40px;height:40px;object-fit:contain;filter:drop-shadow(0 4px 16px rgba(58,160,224,.4))">
         <div id="dashboard-name" style="font-weight:600;font-size:16px;color:#cdd3dd;letter-spacing:0.1em">@@DASHBOARD_NAME@@</div>
-    </div>
+    </a>
     <div class="datetime-box">
         <div class="time" id="currentTime">--:--</div>
         <div class="date" id="currentDate">Loading...</div>
-        <div class="style-switcher">
-            <a href="/dashboard.html">Modern UI &rarr;</a>
+        <div class="style-switcher" style="display:flex;gap:8px;font-size:11px">
+            <a href="/" style="text-decoration:none;color:#4a9eff">Classic</a>
+            <span style="color:#5d6575">|</span>
+            <a href="/modern.html" style="text-decoration:none;color:#4a9eff">Modern</a>
+            <span style="color:#5d6575">|</span>
+            <a href="/sleek.html" style="text-decoration:none;color:#4a9eff">Sleek</a>
+            <span style="color:#5d6575">|</span>
+            <a href="/minimal.html" style="text-decoration:none;color:#4a9eff">Minimal</a>
         </div>
     </div>
     <div class="menu-container">
@@ -261,7 +267,7 @@
     </div>
 </div>
 
-<iframe name="content" class="content" src="about:blank" frameborder="0" scrolling="yes">
+<iframe name="content" class="content" src="/@@LANDING@@" frameborder="0" scrolling="yes">
     <!-- Fallback content if iframe fails -->
     <div class="welcome-screen">
         <h1>🎬 Media Server Dashboard</h1>

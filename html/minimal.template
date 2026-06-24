@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>@@DASHBOARD_NAME@@</title>
+</head>
+<body style="margin:0;padding:0;min-height:100vh;background:#08090c;font-family:system-ui,sans-serif;color:#e9ecf2">
+<div style="display:flex;height:100vh;width:100vw;background:radial-gradient(1200px 700px at 18% -10%,rgba(58,160,224,.10),transparent 60%),radial-gradient(900px 600px at 100% 110%,rgba(46,205,111,.07),transparent 55%),#08090c;overflow:hidden">
+
+  <aside style="display:flex;flex-direction:column;align-items:center;gap:12px;padding:20px 15px;flex:none;border-right:1px solid rgba(255,255,255,.05);overflow-y:hidden">
+
+    <div style="display:flex;flex-direction:column;align-items:center;gap:3px;flex-shrink:0">
+      <a href="/" style="display:flex;align-items:center;justify-content:center;text-decoration:none;cursor:pointer">
+        <img src="@@DASHBOARD_ICON@@" alt="Dashboard" style="width:var(--base-logo);height:var(--base-logo);object-fit:contain;filter:drop-shadow(0 4px 16px rgba(58,160,224,.4));transition:width .3s,height .3s">
+      </a>
+      <div style="text-align:center">
+        <div style="font-size:10px;color:#6b7385;letter-spacing:.05em;word-break:break-word;max-width:80px">@@DASHBOARD_NAME@@</div>
+      </div>
+    </div>
+
+    <nav id="services-nav" style="display:flex;flex-direction:column;gap:var(--base-gap);align-items:center;overflow-y:auto;flex:1;width:100%;padding-right:4px;transition:gap .3s">
+      <!-- Services injected here -->
+    </nav>
+
+    <div style="width:1px;height:10px;background:rgba(255,255,255,.1);flex-shrink:0"></div>
+
+    <div id="health-status" style="text-align:center;font-size:10px;color:#5d6575;flex-shrink:0">
+      <span id="health-dot" style="display:block;width:6px;height:6px;border-radius:50%;background:#2ecd6f;margin:0 auto 4px;box-shadow:0 0 6px #2ecd6f;animation:floatGlow 2.6s ease-in-out infinite"></span>
+      <span id="health-text">Checking...</span>
+    </div>
+
+    <div style="font-size:9px;text-align:center;padding:8px 0;border-top:1px solid rgba(255,255,255,.1);display:flex;gap:4px;justify-content:center;flex-wrap:wrap;width:100%">
+      <a href="/classic.html" style="color:#4a9eff;text-decoration:none;transition:color 0.2s">Classic</a>
+      <span style="color:#5d6575">|</span>
+      <a href="/" style="color:#4a9eff;text-decoration:none;transition:color 0.2s">Modern</a>
+      <span style="color:#5d6575">|</span>
+      <a href="/sleek.html" style="color:#4a9eff;text-decoration:none;transition:color 0.2s">Sleek</a>
+      <span style="color:#5d6575">|</span>
+      <a href="/minimal.html" style="color:#4a9eff;text-decoration:none;transition:color 0.2s">Minimal</a>
+    </div>
+
+  </aside>
+
+  <main style="flex:1;min-width:0;position:relative;display:flex;flex-direction:column">
+    <iframe src="/@@LANDING@@" style="flex:1;width:100%;border:0;background:#0b0d11;display:none" frameborder="0"></iframe>
+    <div id="welcome-screen" style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:40px">
+      <img src="@@DASHBOARD_ICON@@" alt="Dashboard" style="width:80px;height:80px;margin-bottom:26px;object-fit:contain;filter:drop-shadow(0 4px 16px rgba(58,160,224,.3))">
+      <div style="font-weight:600;font-size:27px;color:#f4f6fa;letter-spacing:-.01em;margin-bottom:10px">Welcome back</div>
+      <div style="font-size:15px;color:#828b9c;max-width:380px;line-height:1.55">Pick a service from the sidebar to open it here. Your library, downloads and indexers — all in one place.</div>
+    </div>
+  </main>
+
+</div>
+
+<style>
+  @keyframes floatGlow { 0%,100%{opacity:.55} 50%{opacity:.95} }
+  a {
+    text-decoration: none;
+    color: inherit;
+  }
+  .service-link {
+    cursor: pointer;
+    border: 0;
+    padding: 0;
+    background: transparent;
+    transition: transform .2s, filter .2s;
+    border-radius: 14px;
+    display: block;
+  }
+  .service-link:hover {
+    transform: scale(1.1);
+    filter: brightness(1.3);
+  }
+  :root {
+    --icon-multiplier: @@ICON_SIZE@@;
+    --gap-multiplier: @@ICON_GAP@@;
+    --logo-multiplier: @@LOGO_SIZE@@;
+    --base-icon-size: calc(40px * var(--icon-multiplier));
+    --base-gap: calc(8px * var(--gap-multiplier));
+    --base-logo: calc(36px * var(--logo-multiplier));
+  }
+  .service-icon {
+    width: var(--base-icon-size);
+    height: var(--base-icon-size);
+    border-radius: 10px;
+    background: rgba(255,255,255,.05);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    box-shadow: inset 0 0 0 1px rgba(255,255,255,.08);
+    transition: box-shadow .2s, width .3s, height .3s;
+    border: 2px solid transparent;
+    flex-shrink: 0;
+  }
+  .service-link:hover .service-icon {
+    box-shadow: inset 0 0 0 2px var(--accent), 0 0 12px var(--accent)66;
+  }
+  .service-icon img {
+    width: 80%;
+    height: 80%;
+    object-fit: contain;
+  }
+</style>
+
+<script>
+  const SERVICES = @@SERVICES_ARRAY@@;
+  const nav = document.getElementById('services-nav');
+  const frame = document.querySelector('iframe');
+  const welcomeScreen = document.getElementById('welcome-screen');
+
+  // Render services with iframe loading
+  SERVICES.forEach(app => {
+    const btn = document.createElement('button');
+    btn.className = 'service-link';
+    btn.title = app.name;
+    btn.style.setProperty('--accent', app.accent);
+
+    if (app.popup) {
+      btn.onclick = () => window.open(app.href, app.name, 'resizable=no,status=no,location=no,toolbar=no,menubar=no,scrollbars=no');
+    } else {
+      btn.onclick = () => {
+        frame.src = app.href;
+      };
+    }
+
+    btn.innerHTML = `
+      <div class="service-icon">
+        <img src="${app.icon}" alt="${app.name}" />
+      </div>
+    `;
+    nav.appendChild(btn);
+  });
+
+  // Handle iframe load/unload
+  frame.addEventListener('load', () => {
+    welcomeScreen.style.display = 'none';
+    frame.style.display = 'block';
+  });
+
+  // Service health check
+  function checkServices() {
+    const health = {};
+    let checkCount = 0;
+
+    SERVICES.forEach(app => {
+      if (app.popup) {
+        health[app.id] = 'online';
+        checkCount++;
+        if (checkCount === SERVICES.length) {
+          updateHealthDisplay(health);
+        }
+        return;
+      }
+
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 10000);
+
+      fetch(app.href, { method: 'HEAD', signal: controller.signal })
+        .then(() => {
+          clearTimeout(timeoutId);
+          health[app.id] = 'online';
+        })
+        .catch(() => {
+          clearTimeout(timeoutId);
+          health[app.id] = 'offline';
+        })
+        .finally(() => {
+          checkCount++;
+          if (checkCount === SERVICES.length) {
+            updateHealthDisplay(health);
+          }
+        });
+    });
+  }
+
+  function updateHealthDisplay(health) {
+    const offlineCount = Object.values(health).filter(s => s === 'offline').length;
+    const healthText = document.getElementById('health-text');
+    const healthDot = document.getElementById('health-dot');
+
+    if (offlineCount === 0) {
+      healthText.textContent = 'All Online';
+      healthDot.style.background = '#2ecd6f';
+      healthDot.style.boxShadow = '0 0 8px #2ecd6f';
+    } else {
+      healthText.textContent = `${offlineCount} offline`;
+      healthDot.style.background = '#ff6b6b';
+      healthDot.style.boxShadow = '0 0 8px #ff6b6b';
+    }
+  }
+
+  checkServices();
+  setInterval(checkServices, 30000);
+</script>
+</body>
+</html>

@@ -8,8 +8,27 @@ mkdir -p /etc/letsencrypt/live 2>/dev/null || true
 chmod 777 /etc/letsencrypt/live 2>/dev/null || true
 chmod -R 777 /var/log/apache2 2>/dev/null || true
 
+# Ensure debug log directory exists and has proper permissions
+mkdir -p /var/log/apache2/reverse-proxy-debug || {
+    echo "ERROR: Failed to create /var/log/apache2/reverse-proxy-debug directory"
+    exit 1
+}
+chmod 777 /var/log/apache2/reverse-proxy-debug || {
+    echo "ERROR: Failed to set permissions on /var/log/apache2/reverse-proxy-debug"
+    exit 1
+}
+
+# Load persistent dashboard configuration if it exists
+# This allows changing UI style and landing page without rebuilding the image
+if [ -f /etc/apache2/dashboard.conf ]; then
+    echo "Loading persistent dashboard configuration..."
+    source /etc/apache2/dashboard.conf
+    echo "DEBUG: Loaded STYLE=$STYLE, LANDING=$LANDING"
+fi
+
 # Write environment variables to config file for scripts to source
 cat > /etc/apache2/env.conf << ENVEOF
+ACCESS_MODE="${ACCESS_MODE:-public}"
 DOMAIN="${DOMAIN:-example.com}"
 EMAIL="${EMAIL:-admin@example.com}"
 STYLE="${STYLE:-classic}"
@@ -19,7 +38,7 @@ ENABLE_WHISPARR="${ENABLE_WHISPARR:-false}"
 ENABLE_LIDARR="${ENABLE_LIDARR:-false}"
 ENABLE_READARR="${ENABLE_READARR:-false}"
 ENABLE_PROWLARR="${ENABLE_PROWLARR:-false}"
-ENABLE_OVERSEERR="${ENABLE_OVERSEERR:-false}"
+ENABLE_SEERR="${ENABLE_SEERR:-false}"
 ENABLE_JELLYFIN="${ENABLE_JELLYFIN:-false}"
 ENABLE_EMBY="${ENABLE_EMBY:-false}"
 ENABLE_PLEX="${ENABLE_PLEX:-false}"
@@ -28,15 +47,23 @@ ENABLE_TRANSMISSION="${ENABLE_TRANSMISSION:-false}"
 ENABLE_QBITTORRENT="${ENABLE_QBITTORRENT:-false}"
 ENABLE_SABNZBD="${ENABLE_SABNZBD:-false}"
 ENABLE_DELUGE="${ENABLE_DELUGE:-false}"
-ENABLE_AUTH_OFFICE365="${ENABLE_AUTH_OFFICE365:-false}"
-ENABLE_BASIC_AUTH="${ENABLE_BASIC_AUTH:-false}"
+AUTHTYPE="${AUTHTYPE:-none}"
 BASIC_AUTH_CREDENTIALS="${BASIC_AUTH_CREDENTIALS:-}"
+ENTRA_CLIENT_ID="${ENTRA_CLIENT_ID:-}"
+ENTRA_CLIENT_SECRET="${ENTRA_CLIENT_SECRET:-}"
+ENTRA_REDIRECT_URI="${ENTRA_REDIRECT_URI:-}"
+ENTRA_PROVIDER_METADATA_URL="${ENTRA_PROVIDER_METADATA_URL:-}"
+ENTRA_CRYPTO_PASSPHRASE="${ENTRA_CRYPTO_PASSPHRASE:-}"
+GOOGLE_CLIENT_ID="${GOOGLE_CLIENT_ID:-}"
+GOOGLE_CLIENT_SECRET="${GOOGLE_CLIENT_SECRET:-}"
+GOOGLE_REDIRECT_URI="${GOOGLE_REDIRECT_URI:-}"
+GOOGLE_CRYPTO_PASSPHRASE="${GOOGLE_CRYPTO_PASSPHRASE:-}"
 SONARR_URL="${SONARR_URL:-}"
 RADARR_URL="${RADARR_URL:-}"
 WHISPARR_URL="${WHISPARR_URL:-}"
 LIDARR_URL="${LIDARR_URL:-}"
 PROWLARR_URL="${PROWLARR_URL:-}"
-OVERSEERR_URL="${OVERSEERR_URL:-}"
+SEERR_URL="${SEERR_URL:-}"
 JELLYFIN_URL="${JELLYFIN_URL:-}"
 EMBY_URL="${EMBY_URL:-}"
 EMBY_DOMAIN="${EMBY_DOMAIN:-}"
@@ -47,6 +74,8 @@ TRANSMISSION_URL="${TRANSMISSION_URL:-}"
 QBITTORRENT_URL="${QBITTORRENT_URL:-}"
 SABNZBD_URL="${SABNZBD_URL:-}"
 DELUGE_URL="${DELUGE_URL:-}"
+DASHBOARD_ICON="${DASHBOARD_ICON:-/icons/apache-reverse-proxy.png}"
+LANDING="${LANDING:-}"
 ENVEOF
 
 echo ""
@@ -65,14 +94,48 @@ if ! grep -q "^ServerName" /etc/apache2/apache2.conf; then
     echo "Added ServerName: $DOMAIN"
 fi
 
+# Update env.conf with modified STYLE (in case basic auth forced it to classic)
+sed -i "s/^STYLE=.*/STYLE=\"${STYLE}\"/" /etc/apache2/env.conf
+
 # Configuration
+ACCESS_MODE=$(echo "${ACCESS_MODE}" | tr '[:upper:]' '[:lower:]' | sed "s/'//g" | sed 's/"//g' | xargs)
 DOMAIN="${DOMAIN:-example.com}"
 EMAIL="${EMAIL:-admin@example.com}"
 CERTBOT_WEBROOT="${CERTBOT_WEBROOT:-/var/www/letsencrypt}"
 
-echo "=== Apache & Let's Encrypt Setup ==="
-echo "Domain: $DOMAIN"
-echo "Email: $EMAIL"
+echo "=== Access Mode Setup ==="
+echo "Access Mode: $ACCESS_MODE"
+
+# Validate ACCESS_MODE for private
+if [ "$ACCESS_MODE" = "private" ]; then
+    echo "✓ Private mode - Internal dashboard only"
+
+    # Validate that only none or basic auth are used in private mode
+    if [ "$AUTHTYPE" != "none" ] && [ "$AUTHTYPE" != "basic" ]; then
+        echo "ERROR: Private mode only supports 'none' or 'basic' authentication"
+        echo "Provided AUTHTYPE: $AUTHTYPE"
+        exit 1
+    fi
+
+    # Set default values for private mode
+    DOMAIN="${DOMAIN:-192.168.1.1}"
+    EMAIL="${EMAIL:-admin@local}"
+    SKIP_CERT_GENERATION=true
+    echo "Domain: $DOMAIN (IP-based, no certificate generation)"
+elif [ "$ACCESS_MODE" = "public" ]; then
+    echo "✓ Public mode - Full features enabled"
+    SKIP_CERT_GENERATION=false
+    echo "Domain: $DOMAIN"
+    echo "Email: $EMAIL"
+else
+    echo "ERROR: Invalid ACCESS_MODE: $ACCESS_MODE"
+    echo "Valid options: private, public"
+    exit 1
+fi
+
+echo ""
+echo "=== Apache Setup ==="
+echo "Style: $STYLE (Auth: $AUTHTYPE)"
 
 # Generate Apache configuration from template based on environment variables
 echo "Generating Apache configuration with enabled services..."
@@ -84,7 +147,7 @@ echo "Generating Apache configuration with enabled services..."
 echo ""
 /usr/local/bin/download-icons.sh
 
-# Generate HTML dashboard menu based on enabled services
+# Generate HTML dashboard based on enabled services and STYLE
 echo ""
 echo "Generating dashboard menu based on enabled services..."
 /usr/local/bin/generate-html-menu.sh
@@ -111,114 +174,154 @@ else
     echo "✗ WARNING: auth_openidc module file NOT found"
 fi
 
-# Office 365 / Azure AD Authentication Setup
-if [ "${ENABLE_AUTH_OFFICE365}" = "true" ]; then
-    echo "=== Setting up Office 365 Authentication ==="
-    
-    # Validate required OAuth2 parameters
-    if [ -z "$OAUTH2_CLIENT_ID" ] || [ -z "$OAUTH2_CLIENT_SECRET" ]; then
-        echo "ERROR: OAUTH2_CLIENT_ID and OAUTH2_CLIENT_SECRET are required for Office 365 auth"
-        echo "Please set these environment variables in docker-compose.yml"
-        exit 1
-    fi
-    
-    # Generate crypto passphrase if not provided
-    if [ -z "$OAUTH2_CRYPTO_PASSPHRASE" ]; then
-        OAUTH2_CRYPTO_PASSPHRASE=$(openssl rand -base64 24)
-        echo "Generated random crypto passphrase"
-    fi
-    
-    # Update OAuth2 configuration with actual values
-    echo "Configuring Office 365 OAuth2 settings..."
-    
-    # Create temp oauth2 config with actual values
-    cat /etc/apache2/conf-available/oauth2-office365.conf \
-        | sed "s|@@OAUTH2_CLIENT_ID@@|$OAUTH2_CLIENT_ID|g" \
-        | sed "s|@@OAUTH2_CLIENT_SECRET@@|$OAUTH2_CLIENT_SECRET|g" \
-        | sed "s|@@OAUTH2_REDIRECT_URI@@|$OAUTH2_REDIRECT_URI|g" \
-        | sed "s|@@OIDC_PROVIDER_METADATA_URL@@|$OIDC_PROVIDER_METADATA_URL|g" \
-        | sed "s|@@CRYPTO_PASSPHRASE@@|$OAUTH2_CRYPTO_PASSPHRASE|g" \
-        > /etc/apache2/conf-enabled/oauth2-office365.conf
-    
-    # Enable auth protection
-    cp /etc/apache2/conf-available/auth-office365-protect.conf /etc/apache2/conf-enabled/
-    
-    # Enable the auth config
-    a2enconf oauth2-office365 2>/dev/null || true
-    a2enconf auth-office365-protect 2>/dev/null || true
-    
-    echo "Office 365 Authentication configured"
-    echo "  Client ID: ${OAUTH2_CLIENT_ID:0:20}..."
-    echo "  Redirect URI: $OAUTH2_REDIRECT_URI"
-    echo "  Allowed Domains: $OAUTH2_ALLOWED_DOMAINS"
-else
-    echo "Office 365 Authentication is disabled (ENABLE_AUTH_OFFICE365=false)"
-    # Disable OAuth2 configs if they were previously enabled
-    a2disconf oauth2-office365 2>/dev/null || true
-    a2disconf auth-office365-protect 2>/dev/null || true
-    rm -f /etc/apache2/conf-enabled/oauth2-office365.conf
-    rm -f /etc/apache2/conf-enabled/auth-office365-protect.conf
+# Normalize AUTHTYPE value (handle case and quotes)
+AUTHTYPE=$(echo "${AUTHTYPE}" | tr '[:upper:]' '[:lower:]' | sed "s/'//g" | sed 's/"//g' | xargs)
+echo "DEBUG: AUTHTYPE='${AUTHTYPE}'"
+
+# Force classic style for basic auth (basic auth doesn't support modern dashboards)
+if [ "$AUTHTYPE" = "basic" ]; then
+    STYLE="classic"
+    echo "INFO: Basic auth requires STYLE=classic (modern dashboards require session management)"
 fi
 
-# Basic Authentication Setup
-echo "DEBUG: ENABLE_BASIC_AUTH='${ENABLE_BASIC_AUTH}' (type: $([ -z "${ENABLE_BASIC_AUTH}" ] && echo 'empty' || echo 'set'))"
-echo "DEBUG: BASIC_AUTH_CREDENTIALS='${BASIC_AUTH_CREDENTIALS}' (length: ${#BASIC_AUTH_CREDENTIALS})"
+# Authentication Setup - Mutually Exclusive
+case "${AUTHTYPE}" in
+    basic)
+        echo "=== Setting up Basic Authentication ==="
 
-# Normalize the value (handle uppercase, with/without quotes, etc.)
-ENABLE_BASIC_AUTH=$(echo "${ENABLE_BASIC_AUTH}" | tr '[:upper:]' '[:lower:]' | sed "s/'//g" | sed 's/"//g' | xargs)
-echo "DEBUG: ENABLE_BASIC_AUTH normalized to '${ENABLE_BASIC_AUTH}'"
-
-if [ "${ENABLE_BASIC_AUTH}" = "true" ] || [ "${ENABLE_BASIC_AUTH}" = "1" ]; then
-    echo "=== Setting up Basic Authentication ==="
-
-    # Validate required parameters
-    if [ -z "$BASIC_AUTH_CREDENTIALS" ]; then
-        echo "ERROR: BASIC_AUTH_CREDENTIALS is required when ENABLE_BASIC_AUTH=true"
-        echo "Format: username:password|username2:password2 (pipe-separated pairs)"
-        exit 1
-    fi
-
-    # Create .htpasswd file
-    HTPASSWD_FILE="/etc/apache2/.htpasswd"
-    > "$HTPASSWD_FILE"  # Clear the file
-
-    # Parse credentials and add to .htpasswd
-    IFS='|' read -ra CREDENTIALS_ARRAY <<< "$BASIC_AUTH_CREDENTIALS"
-    for credential in "${CREDENTIALS_ARRAY[@]}"; do
-        IFS=':' read -r username password <<< "$credential"
-        if [ -z "$username" ] || [ -z "$password" ]; then
-            echo "ERROR: Invalid credential format. Expected 'username:password'"
+        # Validate required parameters
+        if [ -z "$BASIC_AUTH_CREDENTIALS" ]; then
+            echo "ERROR: BASIC_AUTH_CREDENTIALS is required when AUTHTYPE=basic"
+            echo "Format: username:password|username2:password2 (pipe-separated pairs)"
             exit 1
         fi
-        # Use htpasswd to create bcrypt hash (most secure)
-        htpasswd -bB "$HTPASSWD_FILE" "$username" "$password" 2>/dev/null || {
-            echo "ERROR: Failed to create htpasswd entry for user: $username"
+
+        # Create .htpasswd file
+        HTPASSWD_FILE="/etc/apache2/.htpasswd"
+        > "$HTPASSWD_FILE"
+
+        # Parse credentials and add to .htpasswd
+        IFS='|' read -ra CREDENTIALS_ARRAY <<< "$BASIC_AUTH_CREDENTIALS"
+        for credential in "${CREDENTIALS_ARRAY[@]}"; do
+            IFS=':' read -r username password <<< "$credential"
+            if [ -z "$username" ] || [ -z "$password" ]; then
+                echo "ERROR: Invalid credential format. Expected 'username:password'"
+                exit 1
+            fi
+            htpasswd -bB "$HTPASSWD_FILE" "$username" "$password" 2>/dev/null || {
+                echo "ERROR: Failed to create htpasswd entry for user: $username"
+                exit 1
+            }
+            echo "✓ Added user to basic auth: $username"
+        done
+
+        # Set proper permissions
+        chown root:www-data "$HTPASSWD_FILE"
+        chmod 640 "$HTPASSWD_FILE"
+
+        # Enable basic auth config
+        if [ -f /etc/apache2/conf-available/auth-basic.conf ]; then
+            cp /etc/apache2/conf-available/auth-basic.conf /etc/apache2/conf-enabled/auth-basic.conf
+            echo "✓ Basic authentication enabled"
+        else
+            echo "ERROR: auth-basic.conf not found"
             exit 1
-        }
-        echo "✓ Added user to basic auth: $username"
-    done
+        fi
 
-    # Set proper permissions - make readable by Apache (www-data)
-    chown root:www-data "$HTPASSWD_FILE"
-    chmod 640 "$HTPASSWD_FILE"
+        # Disable OAuth2
+        a2disconf oauth2-office365 2>/dev/null || true
+        a2disconf auth-office365-protect 2>/dev/null || true
+        rm -f /etc/apache2/conf-enabled/oauth2-office365.conf
+        rm -f /etc/apache2/conf-enabled/auth-office365-protect.conf
+        ;;
 
-    # Enable the auth-basic config (it's already in conf-available from Dockerfile)
-    if [ -f /etc/apache2/conf-available/auth-basic.conf ]; then
-        cp /etc/apache2/conf-available/auth-basic.conf /etc/apache2/conf-enabled/auth-basic.conf
-        echo "✓ Basic auth configuration enabled"
-    else
-        echo "ERROR: auth-basic.conf not found in /etc/apache2/conf-available/"
-        exit 1
-    fi
+    entra)
+        echo "=== Setting up Entra ID (Microsoft) Authentication ==="
 
-    echo "Basic Authentication configured with credentials from BASIC_AUTH_CREDENTIALS"
-else
-    echo "DEBUG: Basic Authentication check failed. ENABLE_BASIC_AUTH='${ENABLE_BASIC_AUTH}' is not equal to 'true'"
-    echo "Basic Authentication is disabled (ENABLE_BASIC_AUTH=false or not 'true')"
-    # Disable basic auth if it was previously enabled
-    rm -f /etc/apache2/conf-enabled/auth-basic.conf
-    rm -f /etc/apache2/.htpasswd
-fi
+        # Validate required parameters
+        if [ -z "$ENTRA_CLIENT_ID" ] || [ -z "$ENTRA_CLIENT_SECRET" ] || [ -z "$ENTRA_PROVIDER_METADATA_URL" ]; then
+            echo "ERROR: ENTRA_CLIENT_ID, ENTRA_CLIENT_SECRET, and ENTRA_PROVIDER_METADATA_URL are required for AUTHTYPE=entra"
+            exit 1
+        fi
+
+        # Generate crypto passphrase if not provided
+        if [ -z "$ENTRA_CRYPTO_PASSPHRASE" ]; then
+            ENTRA_CRYPTO_PASSPHRASE=$(openssl rand -base64 24)
+            echo "Generated random crypto passphrase"
+        fi
+
+        # Configure Entra OAuth2
+        cat /etc/apache2/conf-available/oauth2-entra.conf \
+            | sed "s|@@ENTRA_CLIENT_ID@@|$ENTRA_CLIENT_ID|g" \
+            | sed "s|@@ENTRA_CLIENT_SECRET@@|$ENTRA_CLIENT_SECRET|g" \
+            | sed "s|@@ENTRA_REDIRECT_URI@@|$ENTRA_REDIRECT_URI|g" \
+            | sed "s|@@ENTRA_PROVIDER_METADATA_URL@@|$ENTRA_PROVIDER_METADATA_URL|g" \
+            | sed "s|@@ENTRA_CRYPTO_PASSPHRASE@@|$ENTRA_CRYPTO_PASSPHRASE|g" \
+            > /etc/apache2/conf-enabled/oauth2-entra.conf
+
+        cp /etc/apache2/conf-available/auth-entra-protect.conf /etc/apache2/conf-enabled/
+        a2enconf oauth2-entra 2>/dev/null || true
+        a2enconf auth-entra-protect 2>/dev/null || true
+
+        echo "✓ Entra ID authentication enabled"
+        echo "  Client ID: ${ENTRA_CLIENT_ID:0:20}..."
+
+        # Disable other auth methods
+        rm -f /etc/apache2/conf-enabled/auth-basic.conf /etc/apache2/conf-enabled/oauth2-google.conf /etc/apache2/conf-enabled/auth-google-protect.conf
+        rm -f /etc/apache2/.htpasswd
+        ;;
+
+    google)
+        echo "=== Setting up Google OAuth2 Authentication ==="
+
+        # Validate required parameters
+        if [ -z "$GOOGLE_CLIENT_ID" ] || [ -z "$GOOGLE_CLIENT_SECRET" ] || [ -z "$GOOGLE_REDIRECT_URI" ]; then
+            echo "ERROR: GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, and GOOGLE_REDIRECT_URI are required for AUTHTYPE=google"
+            exit 1
+        fi
+
+        # Generate crypto passphrase if not provided
+        if [ -z "$GOOGLE_CRYPTO_PASSPHRASE" ]; then
+            GOOGLE_CRYPTO_PASSPHRASE=$(openssl rand -base64 24)
+            echo "Generated random crypto passphrase"
+        fi
+
+        # Configure Google OAuth2
+        cat /etc/apache2/conf-available/oauth2-google.conf \
+            | sed "s|@@GOOGLE_CLIENT_ID@@|$GOOGLE_CLIENT_ID|g" \
+            | sed "s|@@GOOGLE_CLIENT_SECRET@@|$GOOGLE_CLIENT_SECRET|g" \
+            | sed "s|@@GOOGLE_REDIRECT_URI@@|$GOOGLE_REDIRECT_URI|g" \
+            | sed "s|@@GOOGLE_CRYPTO_PASSPHRASE@@|$GOOGLE_CRYPTO_PASSPHRASE|g" \
+            > /etc/apache2/conf-enabled/oauth2-google.conf
+
+        cp /etc/apache2/conf-available/auth-google-protect.conf /etc/apache2/conf-enabled/
+        a2enconf oauth2-google 2>/dev/null || true
+        a2enconf auth-google-protect 2>/dev/null || true
+
+        echo "✓ Google authentication enabled"
+        echo "  Client ID: ${GOOGLE_CLIENT_ID:0:20}..."
+
+        # Disable other auth methods
+        rm -f /etc/apache2/conf-enabled/auth-basic.conf /etc/apache2/conf-enabled/oauth2-entra.conf /etc/apache2/conf-enabled/auth-entra-protect.conf
+        rm -f /etc/apache2/.htpasswd
+        ;;
+
+    none|*)
+        echo "=== Authentication Disabled (AUTHTYPE=none) ==="
+
+        # Disable all authentication methods
+        a2disconf oauth2-entra 2>/dev/null || true
+        a2disconf auth-entra-protect 2>/dev/null || true
+        a2disconf oauth2-google 2>/dev/null || true
+        a2disconf auth-google-protect 2>/dev/null || true
+        rm -f /etc/apache2/conf-enabled/oauth2-entra.conf /etc/apache2/conf-enabled/auth-entra-protect.conf
+        rm -f /etc/apache2/conf-enabled/oauth2-google.conf /etc/apache2/conf-enabled/auth-google-protect.conf
+        rm -f /etc/apache2/conf-enabled/auth-basic.conf
+        rm -f /etc/apache2/.htpasswd
+
+        echo "✓ No authentication required"
+        ;;
+esac
 
 # Function to wait for certificate
 wait_for_cert() {
@@ -242,47 +345,66 @@ wait_for_cert() {
 
 
 
-# Check if certificate exists, if not generate it
-if [ ! -f "/etc/letsencrypt/live/$DOMAIN/fullchain.pem" ]; then
-    echo ""
-    echo "=== Obtaining Let's Encrypt Certificate ==="
-    
-    # Ensure directory exists
-    mkdir -p "/etc/letsencrypt/live/$DOMAIN"
-    
-    # Obtain certificate using standalone method
-    echo "Requesting certificate from Let's Encrypt for $DOMAIN..."
-    certbot certonly \
-        --standalone \
-        --preferred-challenges http \
-        --email "$EMAIL" \
-        --agree-tos \
-        --no-eff-email \
-        --non-interactive \
-        -d "$DOMAIN" \
-        || {
-            echo "Certbot failed. Generating self-signed certificate as fallback..."
-            
-            # Ensure directory exists
-            mkdir -p "/etc/letsencrypt/live/$DOMAIN"
-            
-            # Generate self-signed certificate
-            openssl req -x509 -nodes -days 365 \
-                -newkey rsa:2048 \
-                -keyout "/etc/letsencrypt/live/$DOMAIN/privkey.pem" \
-                -out "/etc/letsencrypt/live/$DOMAIN/fullchain.pem" \
-                -subj "/C=AU/ST=Victoria/L=Melbourne/O=Org/CN=$DOMAIN" \
-                2>/dev/null || true
-            
-            echo "Self-signed certificate generated"
-        }
+# Generate certificate only if not skipped (public mode)
+if [ "$SKIP_CERT_GENERATION" = "false" ]; then
+    # Check if certificate exists, if not generate it
+    if [ ! -f "/etc/letsencrypt/live/$DOMAIN/fullchain.pem" ]; then
+        echo ""
+        echo "=== Obtaining Let's Encrypt Certificate ==="
+
+        # Ensure directory exists
+        mkdir -p "/etc/letsencrypt/live/$DOMAIN"
+
+        # Obtain certificate using standalone method
+        echo "Requesting certificate from Let's Encrypt for $DOMAIN..."
+        certbot certonly \
+            --standalone \
+            --preferred-challenges http \
+            --email "$EMAIL" \
+            --agree-tos \
+            --no-eff-email \
+            --non-interactive \
+            -d "$DOMAIN" \
+            || {
+                echo "Certbot failed. Generating self-signed certificate as fallback..."
+
+                # Ensure directory exists
+                mkdir -p "/etc/letsencrypt/live/$DOMAIN"
+
+                # Generate self-signed certificate
+                openssl req -x509 -nodes -days 365 \
+                    -newkey rsa:2048 \
+                    -keyout "/etc/letsencrypt/live/$DOMAIN/privkey.pem" \
+                    -out "/etc/letsencrypt/live/$DOMAIN/fullchain.pem" \
+                    -subj "/C=AU/ST=Victoria/L=Melbourne/O=Org/CN=$DOMAIN" \
+                    2>/dev/null || true
+
+                echo "Self-signed certificate generated"
+            }
+    else
+        echo ""
+        echo "Certificate found for $DOMAIN"
+    fi
 else
     echo ""
-    echo "Certificate found for $DOMAIN"
+    echo "=== Certificate Generation Skipped (Private Mode) ==="
+    # Ensure directory structure exists for private mode
+    mkdir -p "/etc/letsencrypt/live/$DOMAIN"
+
+    # Generate self-signed certificate for private mode
+    if [ ! -f "/etc/letsencrypt/live/$DOMAIN/fullchain.pem" ]; then
+        openssl req -x509 -nodes -days 365 \
+            -newkey rsa:2048 \
+            -keyout "/etc/letsencrypt/live/$DOMAIN/privkey.pem" \
+            -out "/etc/letsencrypt/live/$DOMAIN/fullchain.pem" \
+            -subj "/C=AU/ST=Victoria/L=Melbourne/O=Org/CN=$DOMAIN" \
+            2>/dev/null || true
+        echo "Self-signed certificate generated for private mode"
+    fi
 fi
 
-# Handle Emby subdomain if enabled
-if [ "${ENABLE_EMBY}" = "true" ]; then
+# Handle Emby subdomain if enabled (only in public mode)
+if [ "$SKIP_CERT_GENERATION" = "false" ] && [ "${ENABLE_EMBY}" = "true" ]; then
     # Use provided EMBY_DOMAIN or skip
     if [ -z "$EMBY_DOMAIN" ]; then
         echo "WARNING: ENABLE_EMBY=true but EMBY_DOMAIN not set. Skipping Emby subdomain setup."
@@ -290,7 +412,7 @@ if [ "${ENABLE_EMBY}" = "true" ]; then
         echo ""
         echo "=== Emby Subdomain Setup ==="
         echo "Emby domain: $EMBY_DOMAIN"
-        
+
         if [ ! -f "/etc/letsencrypt/live/$EMBY_DOMAIN/fullchain.pem" ]; then
             echo "Requesting certificate for $EMBY_DOMAIN..."
             certbot certonly \
@@ -336,8 +458,8 @@ if [ "${ENABLE_EMBY}" = "true" ]; then
     fi
 fi
 
-# Handle Plex subdomain if enabled
-if [ "${ENABLE_PLEX}" = "true" ]; then
+# Handle Plex subdomain if enabled (only in public mode)
+if [ "$SKIP_CERT_GENERATION" = "false" ] && [ "${ENABLE_PLEX}" = "true" ]; then
     # Use provided PLEX_DOMAIN or skip
     if [ -z "$PLEX_DOMAIN" ]; then
         echo "WARNING: ENABLE_PLEX=true but PLEX_DOMAIN not set. Skipping Plex subdomain setup."
@@ -345,7 +467,7 @@ if [ "${ENABLE_PLEX}" = "true" ]; then
         echo ""
         echo "=== Plex Subdomain Setup ==="
         echo "Plex domain: $PLEX_DOMAIN"
-        
+
         if [ ! -f "/etc/letsencrypt/live/$PLEX_DOMAIN/fullchain.pem" ]; then
             echo "Requesting certificate for $PLEX_DOMAIN..."
             certbot certonly \
@@ -423,7 +545,7 @@ apache2ctl configtest || {
 echo "=== Starting Apache ==="
 
 # Debug logging - save generated files
-DEBUG_DIR="/var/log/apache-reverse-proxy-debug/$(date +%Y%m%d-%H%M%S)"
+DEBUG_DIR="/var/log/apache2/reverse-proxy-debug/$(date +%Y%m%d-%H%M%S)"
 mkdir -p "$DEBUG_DIR"
 cp /etc/apache2/env.conf "$DEBUG_DIR/" 2>/dev/null || true
 cp /etc/apache2/sites-available/reverse-proxy.conf "$DEBUG_DIR/" 2>/dev/null || true

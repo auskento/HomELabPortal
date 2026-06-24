@@ -14,8 +14,8 @@
   <Icon>https://raw.githubusercontent.com/auskento/apache-reverse-proxy/main/apache-reverse-proxy-150.png</Icon>
   <PostArgs/>
   <CloudSync>false</CloudSync>
-  <Description>Apache Reverse Proxy with Let's Encrypt HTTPS, modular service proxying, and optional Office 365 OAuth2 authentication. Configure custom icons for each service via Advanced View.</Description>
-  <Overview>Apache Reverse Proxy for Media Services&#13;&#13;This container provides:&#13;- Automatic HTTPS with Let's Encrypt SSL certificates&#13;- Reverse proxy for up to 14 different services&#13;- Web dashboard with service icons and navigation&#13;- Optional Office 365/Azure AD authentication&#13;- Custom service icons via icon URLs&#13;&#13;Quick Start:&#13;1. Set Domain and Email (required for Let's Encrypt)&#13;2. Enable services by toggling each service switch&#13;3. Configure backend URLs for each enabled service&#13;4. (Optional) Enable Advanced View to set custom icons&#13;5. Container will auto-generate dashboard with enabled services&#13;&#13;Supported Services:&#13;SABnzbd, Deluge, Transmission, qBittorrent, Radarr, Sonarr, Whisparr, Prowlarr, Seerr, Lidarr, Emby, Plex, Jellyfin, Tautulli&#13;&#13;Icon Customization (Advanced View):&#13;Leave icon URLs blank to use bundled icons, or provide custom icon sources for each service.&#13;&#13;Authentication (Optional):&#13;Enable Office 365 OAuth2 to require login for all proxied services using Azure AD credentials.&#13;&#13;Documentation:&#13;https://github.com/auskento/apache-reverse-proxy</Overview>
+  <Description>Apache Reverse Proxy with Let's Encrypt HTTPS, modular service proxying, and three authentication methods: Basic Auth, Entra ID (Microsoft), or Google OAuth2.</Description>
+  <Overview>Apache Reverse Proxy for Media Services&#13;&#13;This container provides:&#13;- Automatic HTTPS with Let's Encrypt SSL certificates&#13;- Reverse proxy for up to 14 different services&#13;- Web dashboard with service icons and navigation&#13;- Three authentication options: Basic Auth, Entra ID (Microsoft), or Google OAuth2&#13;- Custom service icons via icon URLs&#13;&#13;Quick Start:&#13;1. Set Domain and Email (required for Let's Encrypt)&#13;2. Choose authentication method (AUTHTYPE: none, basic, entra, or google)&#13;3. Enable services by toggling each service switch&#13;4. Configure backend URLs for each enabled service&#13;5. Container will auto-generate dashboard with enabled services&#13;&#13;Supported Services:&#13;SABnzbd, Deluge, Transmission, qBittorrent, Radarr, Sonarr, Whisparr, Prowlarr, Seerr, Lidarr, Emby, Plex, Jellyfin, Tautulli&#13;&#13;Authentication Options:&#13;- Basic Auth: Simple username/password (forces classic interface)&#13;- Entra ID: Microsoft Azure AD authentication (modern dashboard)&#13;- Google: Google account/Workspace authentication (modern dashboard)&#13;- None: No authentication required&#13;&#13;Documentation:&#13;https://github.com/auskento/apache-reverse-proxy</Overview>
   <Networking>
     <Mode>bridge</Mode>
     <Publish>
@@ -89,7 +89,7 @@
     </Variable>
     <Variable>
       <Name>DASHBOARD_ICON</Name>
-      <Value>/icons/apache-reverse-proxy-logo.png</Value>
+      <Value>/icons/apache-reverse-proxy.png</Value>
     </Variable>
     <Variable>
       <Name>ENABLE_SABNZBD</Name>
@@ -268,31 +268,47 @@
       <Value/>
     </Variable>
     <Variable>
-      <Name>ENABLE_AUTH_OFFICE365</Name>
-      <Value>false</Value>
+      <Name>AUTHTYPE</Name>
+      <Value>none</Value>
     </Variable>
     <Variable>
-      <Name>OAUTH2_CLIENT_ID</Name>
+      <Name>BASIC_AUTH_CREDENTIALS</Name>
       <Value/>
     </Variable>
     <Variable>
-      <Name>OAUTH2_CLIENT_SECRET</Name>
+      <Name>ENTRA_CLIENT_ID</Name>
       <Value/>
     </Variable>
     <Variable>
-      <Name>OAUTH2_REDIRECT_URI</Name>
-      <Value>https://yourdomain.com/oauth2callback</Value>
-    </Variable>
-    <Variable>
-      <Name>OAUTH2_ALLOWED_DOMAINS</Name>
-      <Value>example.com</Value>
-    </Variable>
-    <Variable>
-      <Name>OAUTH2_CRYPTO_PASSPHRASE</Name>
+      <Name>ENTRA_CLIENT_SECRET</Name>
       <Value/>
     </Variable>
     <Variable>
-      <Name>OIDC_PROVIDER_METADATA_URL</Name>
+      <Name>ENTRA_REDIRECT_URI</Name>
+      <Value>https://yourdomain.com/auth/oauth2/callback</Value>
+    </Variable>
+    <Variable>
+      <Name>ENTRA_PROVIDER_METADATA_URL</Name>
+      <Value/>
+    </Variable>
+    <Variable>
+      <Name>ENTRA_CRYPTO_PASSPHRASE</Name>
+      <Value/>
+    </Variable>
+    <Variable>
+      <Name>GOOGLE_CLIENT_ID</Name>
+      <Value/>
+    </Variable>
+    <Variable>
+      <Name>GOOGLE_CLIENT_SECRET</Name>
+      <Value/>
+    </Variable>
+    <Variable>
+      <Name>GOOGLE_REDIRECT_URI</Name>
+      <Value>https://yourdomain.com</Value>
+    </Variable>
+    <Variable>
+      <Name>GOOGLE_CRYPTO_PASSPHRASE</Name>
       <Value/>
     </Variable>
     <Variable>
@@ -383,13 +399,24 @@
   <Config Name="Tautulli URL" Target="TAUTULLI_URL" Default="http://tautulli:8181" Mode="" Description="Backend URL" Type="Variable" Display="always" Required="false" Mask="false"/>
   <Config Name="Tautulli Icon URL" Target="ICON_URL_TAUTULLI" Default="" Mode="" Description="Icon URL (leave blank for auto-generated)" Type="Variable" Display="advanced" Required="false" Mask="false"/>
 
-  <!-- OFFICE 365 AUTH -->
-  <Config Name="Enable Office 365 Auth" Target="ENABLE_AUTH_OFFICE365" Default="false" Mode="" Description="Office 365/Azure AD Authentication" Type="Variable" Display="always" Required="false" Mask="false"/>
-  <Config Name="OAuth2 Client ID" Target="OAUTH2_CLIENT_ID" Default="" Mode="" Description="Azure AD Client ID" Type="Variable" Display="always" Required="false" Mask="false"/>
-  <Config Name="OAuth2 Client Secret" Target="OAUTH2_CLIENT_SECRET" Default="" Mode="" Description="Azure AD Client Secret" Type="Variable" Display="always" Required="false" Mask="true"/>
-  <Config Name="OAuth2 Redirect URI" Target="OAUTH2_REDIRECT_URI" Default="https://yourdomain.com/oauth2callback" Mode="" Description="Callback URL" Type="Variable" Display="always" Required="false" Mask="false"/>
-  <Config Name="OAuth2 Allowed Domains" Target="OAUTH2_ALLOWED_DOMAINS" Default="example.com" Mode="" Description="Allowed Domains (comma-separated)" Type="Variable" Display="always" Required="false" Mask="false"/>
-  <Config Name="OAuth2 Crypto Passphrase" Target="OAUTH2_CRYPTO_PASSPHRASE" Default="" Mode="" Description="Session Encryption Passphrase" Type="Variable" Display="always" Required="false" Mask="true"/>
+  <!-- AUTHENTICATION -->
+  <Config Name="Auth Type" Target="AUTHTYPE" Default="none" Mode="" Description="Authentication method: none, basic, entra, or google" Type="Variable" Display="always" Required="true" Mask="false"/>
+
+  <!-- BASIC AUTH -->
+  <Config Name="Basic Auth Credentials" Target="BASIC_AUTH_CREDENTIALS" Default="" Mode="" Description="For AUTHTYPE=basic. Format: user1:pass1|user2:pass2" Type="Variable" Display="always" Required="false" Mask="true"/>
+
+  <!-- ENTRA ID (MICROSOFT) -->
+  <Config Name="Entra Client ID" Target="ENTRA_CLIENT_ID" Default="" Mode="" Description="For AUTHTYPE=entra. Azure AD application ID" Type="Variable" Display="always" Required="false" Mask="false"/>
+  <Config Name="Entra Client Secret" Target="ENTRA_CLIENT_SECRET" Default="" Mode="" Description="For AUTHTYPE=entra. Azure AD application secret" Type="Variable" Display="always" Required="false" Mask="true"/>
+  <Config Name="Entra Redirect URI" Target="ENTRA_REDIRECT_URI" Default="https://yourdomain.com/auth/oauth2/callback" Mode="" Description="For AUTHTYPE=entra. Must match Azure AD configuration" Type="Variable" Display="always" Required="false" Mask="false"/>
+  <Config Name="Entra Provider Metadata URL" Target="ENTRA_PROVIDER_METADATA_URL" Default="" Mode="" Description="For AUTHTYPE=entra. e.g., https://login.microsoftonline.com/YOUR_TENANT_ID/v2.0/.well-known/openid-configuration" Type="Variable" Display="always" Required="false" Mask="false"/>
+  <Config Name="Entra Crypto Passphrase" Target="ENTRA_CRYPTO_PASSPHRASE" Default="" Mode="" Description="For AUTHTYPE=entra. Session encryption key (auto-generated if blank)" Type="Variable" Display="advanced" Required="false" Mask="true"/>
+
+  <!-- GOOGLE OAUTH -->
+  <Config Name="Google Client ID" Target="GOOGLE_CLIENT_ID" Default="" Mode="" Description="For AUTHTYPE=google. From Google Cloud Console" Type="Variable" Display="always" Required="false" Mask="false"/>
+  <Config Name="Google Client Secret" Target="GOOGLE_CLIENT_SECRET" Default="" Mode="" Description="For AUTHTYPE=google. From Google Cloud Console" Type="Variable" Display="always" Required="false" Mask="true"/>
+  <Config Name="Google Redirect URI" Target="GOOGLE_REDIRECT_URI" Default="https://yourdomain.com" Mode="" Description="For AUTHTYPE=google. Just the domain root (no path). Must match Google OAuth configuration" Type="Variable" Display="always" Required="false" Mask="false"/>
+  <Config Name="Google Crypto Passphrase" Target="GOOGLE_CRYPTO_PASSPHRASE" Default="" Mode="" Description="For AUTHTYPE=google. Session encryption key (auto-generated if blank)" Type="Variable" Display="advanced" Required="false" Mask="true"/>
   <Config Name="OIDC Provider Metadata URL" Target="OIDC_PROVIDER_METADATA_URL" Default="" Mode="" Description="Azure AD OIDC metadata URL (e.g., https://login.microsoftonline.com/{tenant-id}/v2.0/.well-known/openid-configuration)" Type="Variable" Display="always" Required="false" Mask="false"/>
   
   <!-- PORTS -->
