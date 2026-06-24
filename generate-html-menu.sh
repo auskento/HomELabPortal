@@ -477,44 +477,62 @@ calculate_icon_sizes() {
     echo "$icon_multiplier|$gap_multiplier|$logo_multiplier"
 }
 
-# Generate icons-only services array for dashboard2
+# Generate icons-only services array for dashboard2 (respects DASH_ORDER)
 generate_dashboard2_services_array() {
     local array=""
     local first=true
-    
-    for service_key in "${SERVICE_ORDER[@]}"; do
-        local enable_var="ENABLE_${service_key}"
-        local is_enabled="${!enable_var}"
-        
-        if [ "$is_enabled" != "true" ]; then
-            continue
-        fi
-        
-        IFS='|' read -r category name desc icon href accent <<< "${SERVICES[$service_key]}"
-        local id=$(echo "$service_key" | tr '[:upper:]' '[:lower:]')
-        
-        if [ "$href" = "SUBDOMAIN" ]; then
-            if [ "$service_key" = "EMBY" ]; then
-                [ -z "$EMBY_DOMAIN" ] && continue
-                href="https://$EMBY_DOMAIN/"
-            elif [ "$service_key" = "PLEX" ]; then
-                [ -z "$PLEX_DOMAIN" ] && continue
-                href="https://$PLEX_DOMAIN/"
-            fi
-        fi
-        
-        local popup="false"
-        [[ "$href" == http* ]] && popup="true"
-        
-        if [ "$first" = true ]; then
-            first=false
-        else
-            array+=","
-        fi
-        
-        array+="{ id: '${id}', name: '${name}', icon: '${icon}', href: '${href}', accent: '${accent}', popup: ${popup} }"
+
+    # Parse DASH_ORDER to get group ordering
+    local dash_order="${DASH_ORDER:-Downloads,Infra,Media}"
+    IFS=',' read -ra group_order <<< "$dash_order"
+
+    # Convert group names to uppercase for matching
+    for i in "${!group_order[@]}"; do
+        group_order[$i]=$(echo "${group_order[$i]}" | xargs | tr '[:lower:]' '[:upper:]')
     done
-    
+
+    # Process services in DASH_ORDER group order
+    for group in "${group_order[@]}"; do
+        for service_key in "${SERVICE_ORDER[@]}"; do
+            # Get service category
+            IFS='|' read -r category rest <<< "${SERVICES[$service_key]}"
+
+            # Skip if not in current group
+            [ "$category" != "$group" ] && continue
+
+            local enable_var="ENABLE_${service_key}"
+            local is_enabled="${!enable_var}"
+
+            if [ "$is_enabled" != "true" ]; then
+                continue
+            fi
+
+            IFS='|' read -r category name desc icon href accent <<< "${SERVICES[$service_key]}"
+            local id=$(echo "$service_key" | tr '[:upper:]' '[:lower:]')
+
+            if [ "$href" = "SUBDOMAIN" ]; then
+                if [ "$service_key" = "EMBY" ]; then
+                    [ -z "$EMBY_DOMAIN" ] && continue
+                    href="https://$EMBY_DOMAIN/"
+                elif [ "$service_key" = "PLEX" ]; then
+                    [ -z "$PLEX_DOMAIN" ] && continue
+                    href="https://$PLEX_DOMAIN/"
+                fi
+            fi
+
+            local popup="false"
+            [[ "$href" == http* ]] && popup="true"
+
+            if [ "$first" = true ]; then
+                first=false
+            else
+                array+=","
+            fi
+
+            array+="{ id: '${id}', name: '${name}', icon: '${icon}', href: '${href}', accent: '${accent}', popup: ${popup} }"
+        done
+    done
+
     echo "[$array]"
 }
 
