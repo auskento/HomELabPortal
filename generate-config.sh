@@ -155,6 +155,9 @@ if [ -n "$NZBGET_USER" ] && [ -n "$NZBGET_PASS" ]; then
     AUTH_BASIC=$(echo -n "$NZBGET_USER:$NZBGET_PASS" | base64)
     NZBGET_AUTH_HEADER="RequestHeader set Authorization \"Basic $AUTH_BASIC\""
     echo "NZBGet authentication header configured"
+else
+    # Use comment placeholder if no credentials provided
+    NZBGET_AUTH_HEADER="# NZBGet authentication not configured"
 fi
 
 # Generate custom backend include if enabled
