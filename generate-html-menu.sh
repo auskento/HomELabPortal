@@ -62,8 +62,7 @@ declare -A CATEGORY_LABEL=(
 # Generate group order from DASHBOARD_ORDER variable
 generate_group_order() {
     local dash_order="${DASHBOARD_ORDER:-DOWNLOADS,INFRA,MEDIA}"
-    local order_array=""
-    local first=true
+    local items=()
 
     # Split by comma and convert to uppercase
     IFS=',' read -ra groups <<< "$dash_order"
@@ -72,17 +71,12 @@ generate_group_order() {
         group=$(echo "$group" | xargs)
         # Convert to uppercase for category matching
         local cat_upper=$(echo "$group" | tr '[:lower:]' '[:upper:]')
-
-        if [ "$first" = true ]; then
-            first=false
-        else
-            order_array+="', '"
-        fi
-        order_array+="'$cat_upper"
+        items+=("'$cat_upper'")
     done
-    order_array+="'"
 
-    echo "['$order_array]"
+    # Join array with commas and output as JavaScript array literal
+    local IFS=', '
+    echo "[${items[*]}]"
 }
 
 # Generate menu items HTML respecting DASHBOARD_ORDER
