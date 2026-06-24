@@ -96,6 +96,10 @@
       <Value></Value>
     </Variable>
     <Variable>
+      <Name>DASH_ORDER</Name>
+      <Value>Downloads,Infra,Media</Value>
+    </Variable>
+    <Variable>
       <Name>AUTHTYPE</Name>
       <Value>none</Value>
     </Variable>
@@ -356,6 +360,7 @@
   <Config Name="Dashboard Name" Target="DASHBOARD_NAME" Default="Media Server" Mode="" Description="Custom dashboard title shown in header" Type="Variable" Display="always" Required="false" Mask="false"/>
   <Config Name="Dashboard Icon" Target="DASHBOARD_ICON" Default="/icons/apache-reverse-proxy.png" Mode="" Description="Dashboard icon path (place custom icons in html/icons directory)" Type="Variable" Display="always" Required="false" Mask="false"/>
   <Config Name="Landing Page" Target="LANDING" Default="" Mode="" Description="Default iframe page (e.g., sonarr/calendar or radarr). Leave blank for welcome screen" Type="Variable" Display="always" Required="false" Mask="false"/>
+  <Config Name="Dashboard Group Order" Target="DASH_ORDER" Default="Downloads,Infra,Media" Mode="" Description="Comma-separated group order (e.g., Downloads,Media,Infra or Media,Downloads,Infra)" Type="Variable" Display="always" Required="false" Mask="false"/>
   
   <!-- SABNZBD -->
   <Config Name="[1/14] Enable SABnzbd" Target="ENABLE_SABNZBD" Default="false" Mode="" Description="SABnzbd - Usenet Client" Type="Variable" Display="always" Required="false" Mask="false"/>

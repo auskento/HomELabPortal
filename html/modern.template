@@ -196,7 +196,7 @@ class Component extends DCLogic {
     ];
 
     const labels = { MEDIA: 'MEDIA', DOWNLOADS: 'DOWNLOADS', INFRA: 'INDEXERS & INFRA' };
-    const order = ['MEDIA', 'DOWNLOADS', 'INFRA'];
+    const order = @@DASH_ORDER@@;
 
     const mk = (app) => {
       const active = this.state.activeId === app.id;

@@ -86,6 +86,17 @@ For `ACCESS_MODE=public`, these **must** be set:
 - **Examples:** `sonarr/calendar`, `radarr`, `plex/web`
 - **Note:** Only used in modern, sleek, and minimal dashboard styles
 
+- **Variable:** `DASH_ORDER`
+- **Type:** String (comma-separated group names)
+- **Default:** `Downloads,Infra,Media`
+- **Description:** Order of service category groups in dashboard (modern style only)
+- **Examples:** 
+  - `Downloads,Infra,Media` (default: Downloads top, Media bottom)
+  - `Media,Downloads,Infra` (Media servers first)
+  - `Infra,Downloads,Media` (Indexers first)
+- **Valid Groups:** `Downloads`, `Infra`, `Media` (case-insensitive)
+- **Note:** Group names must be comma-separated with no extra spaces. Only affects the modern dashboard style.
+
 ### Authentication
 - **Variable:** `AUTHTYPE`
 - **Type:** String (none, basic, entra, or google)
@@ -100,7 +111,7 @@ For `ACCESS_MODE=public`, these **must** be set:
 
 ---
 
-## Service Configuration (15 Services)
+## Service Configuration (16 Services)
 
 ### Enable/Disable Services
 

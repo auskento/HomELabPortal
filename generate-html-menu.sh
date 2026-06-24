@@ -30,10 +30,10 @@ declare -A SERVICES=(
     # INFRA category (Indexers & Infrastructure)
     [RADARR]="INFRA|Radarr|Movies|/icons/radarr.png|/radarr/|#febc2e"
     [SONARR]="INFRA|Sonarr|TV shows|/icons/sonarr.png|/sonarr/calendar|#3aa0e0"
-    [WHISPARR]="INFRA|Whisparr|Adult content|/icons/whisparr.png|/whisparr/|#ef7e30"
     [PROWLARR]="INFRA|Prowlarr|Indexer manager|/icons/prowlarr.png|/prowlarr/|#e8810e"
     [SEERR]="INFRA|Seerr|Requests|/icons/seerr.png|/seerr/|#00a4dc"
     [LIDARR]="INFRA|Lidarr|Music|/icons/lidarr.png|/lidarr/|#2ecd6f"
+    [WHISPARR]="INFRA|Whisparr|Adult content|/icons/whisparr.png|/whisparr/|#ef7e30"
     
     # MEDIA category
     [EMBY]="MEDIA|Emby|Streaming|/icons/emby.png|SUBDOMAIN|#9146FF"
@@ -47,7 +47,7 @@ declare -a SERVICE_ORDER=(
     # DOWNLOADERS
     "SABNZBD" "DELUGE" "TRANSMISSION" "QBITTORRENT" "NZBGET" "NZBHYDRA"
     # INDEXERS
-    "RADARR" "SONARR" "WHISPARR" "PROWLARR" "SEERR" "LIDARR"
+    "RADARR" "SONARR" "PROWLARR" "SEERR" "LIDARR" "WHISPARR"
     # MEDIA SERVERS
     "EMBY" "PLEX" "JELLYFIN" "TAUTULLI"
 )
@@ -58,6 +58,32 @@ declare -A CATEGORY_LABEL=(
     [INDEXERS]="INDEXERS"
     [MEDIA]="MEDIA SERVERS"
 )
+
+# Generate group order from DASH_ORDER variable
+generate_group_order() {
+    local dash_order="${DASH_ORDER:-Downloads,Infra,Media}"
+    local order_array=""
+    local first=true
+
+    # Split by comma and convert to uppercase
+    IFS=',' read -ra groups <<< "$dash_order"
+    for group in "${groups[@]}"; do
+        # Trim whitespace
+        group=$(echo "$group" | xargs)
+        # Convert to uppercase for category matching
+        local cat_upper=$(echo "$group" | tr '[:lower:]' '[:upper:]')
+
+        if [ "$first" = true ]; then
+            first=false
+        else
+            order_array+="', '"
+        fi
+        order_array+="'$cat_upper"
+    done
+    order_array+="'"
+
+    echo "['$order_array]"
+}
 
 # Generate menu items HTML in category order (for simple menu)
 generate_menu_items() {
@@ -238,10 +264,12 @@ generate_style_dashboard() {
     elif [ "$STYLE" = "modern" ]; then
         # Modern dashboard uses React with full services array (with categories)
         local services_array=$(generate_services_array)
+        local dash_order=$(generate_group_order)
         local html_content=$(cat "$TEMPLATE_FILE")
         html_content="${html_content//@@SERVICES_ARRAY@@/$services_array}"
         html_content="${html_content//@@DASHBOARD_NAME@@/${DASHBOARD_NAME:-Media Server}}"
         html_content="${html_content//@@DASHBOARD_ICON@@/${DASHBOARD_ICON:-/icons/apache-reverse-proxy.png}}"
+        html_content="${html_content//@@DASH_ORDER@@/$dash_order}"
 
         if [ -z "$LANDING" ]; then
             html_content=$(echo "$html_content" | sed 's|src="/@@LANDING@@"||')
@@ -323,10 +351,12 @@ generate_all_styles() {
     # Generate Modern (always)
     if [ -f "$MODERN_TEMPLATE" ]; then
         local services_array=$(generate_services_array)
+        local dash_order=$(generate_group_order)
         local html_content=$(cat "$MODERN_TEMPLATE")
         html_content="${html_content//@@SERVICES_ARRAY@@/$services_array}"
         html_content="${html_content//@@DASHBOARD_NAME@@/${DASHBOARD_NAME:-Media Server}}"
         html_content="${html_content//@@DASHBOARD_ICON@@/${DASHBOARD_ICON:-/icons/apache-reverse-proxy.png}}"
+        html_content="${html_content//@@DASH_ORDER@@/$dash_order}"
         if [ -z "$LANDING" ]; then
             html_content=$(echo "$html_content" | sed 's|src="/@@LANDING@@"||')
         else
@@ -384,6 +414,7 @@ generate_react_dashboard() {
 
     # Generate services array
     local services_array=$(generate_services_array)
+    local dash_order=$(generate_group_order)
 
     # Set dashboard name, icon, and landing page
     local DASHBOARD_NAME="${DASHBOARD_NAME:-Media Server}"
@@ -395,6 +426,7 @@ generate_react_dashboard() {
     html_content="${html_content//@@SERVICES_ARRAY@@/$services_array}"
     html_content="${html_content//@@DASHBOARD_NAME@@/$DASHBOARD_NAME}"
     html_content="${html_content//@@DASHBOARD_ICON@@/$DASHBOARD_ICON}"
+    html_content="${html_content//@@DASH_ORDER@@/$dash_order}"
 
     # Only set iframe src if LANDING is provided
     if [ -z "$LANDING" ]; then

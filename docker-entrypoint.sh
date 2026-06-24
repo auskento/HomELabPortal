@@ -80,6 +80,7 @@ NZBGET_URL="${NZBGET_URL:-}"
 NZBHYDRA_URL="${NZBHYDRA_URL:-}"
 DASHBOARD_ICON="${DASHBOARD_ICON:-/icons/apache-reverse-proxy.png}"
 LANDING="${LANDING:-}"
+DASH_ORDER="${DASH_ORDER:-Downloads,Infra,Media}"
 ENVEOF
 
 echo ""
