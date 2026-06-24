@@ -238,6 +238,23 @@ ICON_URL_TAUTULLI=
 
 ---
 
+## Google OAuth Configuration
+
+### Important: Redirect URI Matching
+The `GOOGLE_REDIRECT_URI` **must exactly match** the authorized redirect URI configured in your Google Cloud Console OAuth 2.0 credentials. If they don't match, you'll get an `Error 400: redirect_uri_mismatch`.
+
+**Steps:**
+1. Go to Google Cloud Console → Credentials → Your OAuth 2.0 Client ID
+2. Find "Authorized redirect URIs" section
+3. Note the exact URI (with any path included)
+4. Set `GOOGLE_REDIRECT_URI` to match that exactly
+
+**Examples:**
+- If Google has: `https://example.com` → Use `GOOGLE_REDIRECT_URI=https://example.com`
+- If Google has: `https://example.com/oauth2callback` → Use `GOOGLE_REDIRECT_URI=https://example.com/oauth2callback`
+
+---
+
 ## Office 365 / Azure AD Authentication (Optional)
 
 ### Enable/Disable

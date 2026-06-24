@@ -141,6 +141,8 @@ services:
 
 ### Example 4: Google OAuth2
 
+**Important:** The `GOOGLE_REDIRECT_URI` must **exactly match** the authorized redirect URI configured in your Google Cloud Console. If they don't match, authentication will fail with `Error 400: redirect_uri_mismatch`.
+
 **docker-compose.yml:**
 ```yaml
 version: '3.8'
@@ -162,7 +164,7 @@ services:
       AUTHTYPE: google
       GOOGLE_CLIENT_ID: your-client-id.apps.googleusercontent.com
       GOOGLE_CLIENT_SECRET: your-client-secret
-      GOOGLE_REDIRECT_URI: https://services.example.com
+      GOOGLE_REDIRECT_URI: https://services.example.com  # Must match Google Cloud Console config
       ENABLE_SABNZBD: "true"
       SABNZBD_URL: http://sabnzbd:8080
       ENABLE_NZBGET: "true"

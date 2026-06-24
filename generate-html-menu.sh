@@ -185,21 +185,21 @@ generate_services_list() {
 generate_services_array() {
     local array=""
     local first=true
-    
+
     for service_key in "${SERVICE_ORDER[@]}"; do
         # Check if service is enabled
         local enable_var="ENABLE_${service_key}"
         local is_enabled="${!enable_var}"
-        
+
         # Skip disabled services
         if [ "$is_enabled" != "true" ]; then
             continue
         fi
-        
+
         # Parse service metadata (format: category|name|desc|icon|href|accent)
         IFS='|' read -r category name desc icon href accent <<< "${SERVICES[$service_key]}"
         local id=$(echo "$service_key" | tr '[:upper:]' '[:lower:]')
-        
+
         # Handle subdomain services
         if [ "$href" = "SUBDOMAIN" ]; then
             if [ "$service_key" = "EMBY" ]; then
@@ -210,22 +210,22 @@ generate_services_array() {
                 href="https://$PLEX_DOMAIN/"
             fi
         fi
-        
+
         # Determine if popup (external link)
         local popup="false"
         [[ "$href" == http* ]] && popup="true"
-        
-        # Add comma between items
+
+        # Add comma between items (with newline for readability)
         if [ "$first" = true ]; then
             first=false
         else
-            array+=",$newline"
+            array+=",$( printf '\n    ')"
         fi
-        
+
         # Add service object with correct accent color
         array+="{ cat: '$category', id: '$id', name: '$name', desc: '$desc', icon: '$icon', href: '$href', accent: '$accent', popup: $popup }"
     done
-    
+
     echo "$array"
 }
 
