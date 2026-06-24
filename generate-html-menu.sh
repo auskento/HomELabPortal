@@ -250,26 +250,27 @@ calculate_icon_sizes() {
 
     # Service count tiers determine scaling multipliers
     # Icons will scale responsively: base_unit * multiplier
+    # Larger multipliers for 2-column grid layout
     if [ "$service_count" -le 5 ]; then
-        icon_multiplier="1.3"
-        gap_multiplier="1.2"
-        logo_multiplier="1.25"
+        icon_multiplier="1.7"
+        gap_multiplier="1.4"
+        logo_multiplier="1.5"
     elif [ "$service_count" -le 8 ]; then
-        icon_multiplier="1.2"
-        gap_multiplier="1.0"
-        logo_multiplier="1.125"
+        icon_multiplier="1.6"
+        gap_multiplier="1.2"
+        logo_multiplier="1.375"
     elif [ "$service_count" -le 12 ]; then
-        icon_multiplier="1.1"
-        gap_multiplier="0.8"
-        logo_multiplier="1.0"
+        icon_multiplier="1.5"
+        gap_multiplier="1.0"
+        logo_multiplier="1.25"
     elif [ "$service_count" -le 15 ]; then
-        icon_multiplier="1.0"
-        gap_multiplier="0.6"
-        logo_multiplier="0.9375"
+        icon_multiplier="1.4"
+        gap_multiplier="0.8"
+        logo_multiplier="1.125"
     else
-        icon_multiplier="0.9"
-        gap_multiplier="0.5"
-        logo_multiplier="0.875"
+        icon_multiplier="1.2"
+        gap_multiplier="0.6"
+        logo_multiplier="1.0"
     fi
 
     echo "$icon_multiplier|$gap_multiplier|$logo_multiplier"
