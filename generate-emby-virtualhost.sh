@@ -41,27 +41,10 @@ cat << 'EOF'
     RequestHeader set X-Remote-User %{REMOTE_USER}s
 EOF
 
-# Add OIDC configuration if OAuth is enabled
-if [ "$ENABLE_OAUTH" = "true" ]; then
-    cat << 'EOF'
-    
-    # Office 365 OpenID Connect Configuration for Emby subdomain
-    OIDCSessionType server-cache
-    OIDCClientID @@OAUTH2_CLIENT_ID@@
-    OIDCClientSecret @@OAUTH2_CLIENT_SECRET@@
-    OIDCRedirectURI https://@@EMBY_DOMAIN@@/oauth2/callback
-    OIDCProviderMetadataURL @@OIDC_PROVIDER_METADATA_URL@@
-    OIDCScope "openid profile email"
-    OIDCSessionInactivityTimeout 3600
-    OIDCSessionMaxDuration 86400
-    OIDCClaimPrefix OIDC_
-    OIDCPassClaimsAs environment
-    OIDCCryptoPassphrase "@@OAUTH2_CRYPTO_PASSPHRASE@@"
-    OIDCSSLValidateServer On
-    OIDCClaimDelimiter ;
-    OIDCPassUserInfoAs json
-EOF
-fi
+# OIDC configuration NOT applied to subdomains
+# Subdomains don't require separate OIDC auth - users authenticate at main domain
+# Attempting to add OIDC here causes hostname mismatch errors with mod_auth_openidc
+# This is intentionally disabled for Emby subdomains
 
 cat << 'EOF'
     
