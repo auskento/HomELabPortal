@@ -2,7 +2,7 @@
 
 # Generate Plex Subdomain VirtualHost Configuration
 # Called with: domain [enable_oauth]
-# Requires OIDC env vars: OIDC_PROVIDER_METADATA_URL, OAUTH2_CLIENT_ID, OAUTH2_CLIENT_SECRET, OAUTH2_CRYPTO_PASSPHRASE
+# Requires OIDC env vars: OAUTH2_CLIENT_ID, OAUTH2_CLIENT_SECRET, OAUTH2_CRYPTO_PASSPHRASE
 
 PLEX_DOMAIN="${1:-plex.example.com}"
 ENABLE_OAUTH="${2:-false}"

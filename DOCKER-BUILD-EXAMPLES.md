@@ -163,7 +163,6 @@ services:
       GOOGLE_CLIENT_ID: your-client-id.apps.googleusercontent.com
       GOOGLE_CLIENT_SECRET: your-client-secret
       GOOGLE_REDIRECT_URI: https://services.example.com
-      GOOGLE_CRYPTO_PASSPHRASE: your-secure-passphrase
       ENABLE_SABNZBD: "true"
       SABNZBD_URL: http://sabnzbd:8080
       ENABLE_NZBGET: "true"

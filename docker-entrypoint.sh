@@ -59,7 +59,6 @@ ENTRA_CRYPTO_PASSPHRASE="${ENTRA_CRYPTO_PASSPHRASE:-}"
 GOOGLE_CLIENT_ID="${GOOGLE_CLIENT_ID:-}"
 GOOGLE_CLIENT_SECRET="${GOOGLE_CLIENT_SECRET:-}"
 GOOGLE_REDIRECT_URI="${GOOGLE_REDIRECT_URI:-}"
-GOOGLE_CRYPTO_PASSPHRASE="${GOOGLE_CRYPTO_PASSPHRASE:-}"
 SONARR_URL="${SONARR_URL:-}"
 RADARR_URL="${RADARR_URL:-}"
 WHISPARR_URL="${WHISPARR_URL:-}"
@@ -282,13 +281,10 @@ case "${AUTHTYPE}" in
             exit 1
         fi
 
-        # Generate crypto passphrase if not provided
-        if [ -z "$GOOGLE_CRYPTO_PASSPHRASE" ]; then
-            GOOGLE_CRYPTO_PASSPHRASE=$(openssl rand -base64 24)
-            echo "Generated random crypto passphrase"
-        fi
-
         # Configure Google OAuth2
+        # Generate random encryption passphrase for sessions (internal use only)
+        GOOGLE_CRYPTO_PASSPHRASE=$(openssl rand -base64 24)
+
         cat /etc/apache2/conf-available/oauth2-google.conf \
             | sed "s|@@GOOGLE_CLIENT_ID@@|$GOOGLE_CLIENT_ID|g" \
             | sed "s|@@GOOGLE_CLIENT_SECRET@@|$GOOGLE_CLIENT_SECRET|g" \
@@ -452,7 +448,6 @@ if [ "$SKIP_CERT_GENERATION" = "false" ] && [ "${ENABLE_EMBY}" = "true" ]; then
         EMBY_CONFIG="${EMBY_CONFIG//@@EMBY_PORT@@/$EMBY_PORT}"
         EMBY_CONFIG="${EMBY_CONFIG//@@OAUTH2_CLIENT_ID@@/$OAUTH2_CLIENT_ID}"
         EMBY_CONFIG="${EMBY_CONFIG//@@OAUTH2_CLIENT_SECRET@@/$OAUTH2_CLIENT_SECRET}"
-        EMBY_CONFIG="${EMBY_CONFIG//@@OIDC_PROVIDER_METADATA_URL@@/$OIDC_PROVIDER_METADATA_URL}"
         EMBY_CONFIG="${EMBY_CONFIG//@@OAUTH2_CRYPTO_PASSPHRASE@@/$OAUTH2_CRYPTO_PASSPHRASE}"
         echo "$EMBY_CONFIG" > /etc/apache2/sites-available/emby-subdomain.conf
         a2ensite emby-subdomain.conf 2>/dev/null || true
@@ -507,7 +502,6 @@ if [ "$SKIP_CERT_GENERATION" = "false" ] && [ "${ENABLE_PLEX}" = "true" ]; then
         PLEX_CONFIG="${PLEX_CONFIG//@@PLEX_PORT@@/$PLEX_PORT}"
         PLEX_CONFIG="${PLEX_CONFIG//@@OAUTH2_CLIENT_ID@@/$OAUTH2_CLIENT_ID}"
         PLEX_CONFIG="${PLEX_CONFIG//@@OAUTH2_CLIENT_SECRET@@/$OAUTH2_CLIENT_SECRET}"
-        PLEX_CONFIG="${PLEX_CONFIG//@@OIDC_PROVIDER_METADATA_URL@@/$OIDC_PROVIDER_METADATA_URL}"
         PLEX_CONFIG="${PLEX_CONFIG//@@OAUTH2_CRYPTO_PASSPHRASE@@/$OAUTH2_CRYPTO_PASSPHRASE}"
         echo "$PLEX_CONFIG" > /etc/apache2/sites-available/plex-subdomain.conf
         a2ensite plex-subdomain.conf 2>/dev/null || true
