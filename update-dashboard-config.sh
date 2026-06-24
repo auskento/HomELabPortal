@@ -97,15 +97,7 @@ if [ "$RELOAD" = true ]; then
     echo ""
     echo "Reloading dashboards..."
 
-    # Source the config file to get environment variables
-    source "$CONFIG_FILE"
-
-    # Source the entrypoint config
-    if [ -f "$ENTRYPOINT_CONFIG" ]; then
-        source "$ENTRYPOINT_CONFIG"
-    fi
-
-    # Update env.conf with new values if they were changed
+    # First, update env.conf with new values
     if [ -n "$STYLE" ] || [ -n "$LANDING" ]; then
         # Update STYLE in env.conf
         if [ -n "$STYLE" ]; then
@@ -118,7 +110,38 @@ if [ "$RELOAD" = true ]; then
         fi
     fi
 
-    # Regenerate dashboards
+    # Source the updated env.conf to get all environment variables
+    if [ -f "$ENTRYPOINT_CONFIG" ]; then
+        source "$ENTRYPOINT_CONFIG"
+    fi
+
+    # Export variables so generate-html-menu.sh can use them
+    export STYLE
+    export LANDING
+    export DASHBOARD_NAME
+    export DASHBOARD_ICON
+    export AUTHTYPE
+    export ENABLE_SONARR
+    export ENABLE_RADARR
+    export ENABLE_WHISPARR
+    export ENABLE_LIDARR
+    export ENABLE_READARR
+    export ENABLE_PROWLARR
+    export ENABLE_SEERR
+    export ENABLE_JELLYFIN
+    export ENABLE_EMBY
+    export ENABLE_PLEX
+    export ENABLE_TAUTULLI
+    export ENABLE_TRANSMISSION
+    export ENABLE_QBITTORRENT
+    export ENABLE_SABNZBD
+    export ENABLE_DELUGE
+    export DOMAIN
+    export EMAIL
+    export EMBY_DOMAIN
+    export PLEX_DOMAIN
+
+    # Regenerate dashboards with updated config
     if [ -x "/usr/local/bin/generate-html-menu.sh" ]; then
         /usr/local/bin/generate-html-menu.sh
         echo -e "${GREEN}✓ Dashboards regenerated${NC}"
