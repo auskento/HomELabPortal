@@ -149,15 +149,14 @@ case "$AUTHTYPE" in
 esac
 
 # Generate NZBGet authentication header if credentials provided
-NZBGET_AUTH_HEADER=""
 if [ -n "$NZBGET_USER" ] && [ -n "$NZBGET_PASS" ]; then
     # Base64 encode the username:password
     AUTH_BASIC=$(echo -n "$NZBGET_USER:$NZBGET_PASS" | base64)
-    NZBGET_AUTH_HEADER="RequestHeader set Authorization \"Basic $AUTH_BASIC\""
+    NZBGET_AUTH_HEADER_LINE="RequestHeader set Authorization \"Basic $AUTH_BASIC\""
     echo "NZBGet authentication header configured"
 else
     # Use comment placeholder if no credentials provided
-    NZBGET_AUTH_HEADER="# NZBGet authentication not configured"
+    NZBGET_AUTH_HEADER_LINE="# NZBGet authentication not configured"
 fi
 
 # Generate custom backend include if enabled
@@ -229,8 +228,9 @@ CONFIG="${CONFIG//@@INCLUDE_NZBGET@@/$NZBGET_INCLUDE}"
 CONFIG="${CONFIG//@@INCLUDE_NZBHYDRA@@/$NZBHYDRA_INCLUDE}"
 CONFIG="${CONFIG//@@INCLUDE_CUSTOM_BACKEND@@/$CUSTOM_BACKEND_INCLUDE}"
 
-# Replace service-specific auth headers
-CONFIG="${CONFIG//@@NZBGET_AUTH_HEADER@@/$NZBGET_AUTH_HEADER}"
+# Replace service-specific auth headers (use sed with escaped special characters)
+NZBGET_AUTH_HEADER_LINE_ESCAPED=$(printf '%s\n' "$NZBGET_AUTH_HEADER_LINE" | sed -e 's/[\/&]/\\&/g')
+CONFIG=$(echo "$CONFIG" | sed "s|@@NZBGET_AUTH_HEADER@@|$NZBGET_AUTH_HEADER_LINE_ESCAPED|g")
 
 # Replace auth includes
 CONFIG="${CONFIG//@@INCLUDE_AUTH_ENTRA@@/$AUTH_ENTRA_INCLUDE}"
