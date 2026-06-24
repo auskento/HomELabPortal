@@ -23,7 +23,7 @@ chmod 777 /var/log/apache2/reverse-proxy-debug || {
 if [ -f /etc/apache2/dashboard.conf ]; then
     echo "Loading persistent dashboard configuration..."
     source /etc/apache2/dashboard.conf
-    echo "DEBUG: Loaded STYLE=$STYLE, LANDING=$LANDING"
+    echo "DEBUG: Loaded STYLE=$STYLE, DASHBOARD_LANDING=$DASHBOARD_LANDING"
 fi
 
 # Write environment variables to config file for scripts to source
@@ -79,8 +79,8 @@ DELUGE_URL="${DELUGE_URL:-}"
 NZBGET_URL="${NZBGET_URL:-}"
 NZBHYDRA_URL="${NZBHYDRA_URL:-}"
 DASHBOARD_ICON="${DASHBOARD_ICON:-/icons/apache-reverse-proxy.png}"
-LANDING="${LANDING:-}"
-DASH_ORDER="${DASH_ORDER:-DOWNLOADS,INFRA,MEDIA}"
+DASHBOARD_LANDING="${DASHBOARD_LANDING:-}"
+DASHBOARD_ORDER="${DASHBOARD_ORDER:-DOWNLOADS,INFRA,MEDIA}"
 ENVEOF
 
 echo ""

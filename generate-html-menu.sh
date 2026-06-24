@@ -59,9 +59,9 @@ declare -A CATEGORY_LABEL=(
     [MEDIA]="MEDIA SERVERS"
 )
 
-# Generate group order from DASH_ORDER variable
+# Generate group order from DASHBOARD_ORDER variable
 generate_group_order() {
-    local dash_order="${DASH_ORDER:-DOWNLOADS,INFRA,MEDIA}"
+    local dash_order="${DASHBOARD_ORDER:-DOWNLOADS,INFRA,MEDIA}"
     local order_array=""
     local first=true
 
@@ -85,12 +85,12 @@ generate_group_order() {
     echo "['$order_array]"
 }
 
-# Generate menu items HTML respecting DASH_ORDER
+# Generate menu items HTML respecting DASHBOARD_ORDER
 generate_menu_items() {
     local menu_html=""
 
-    # Parse DASH_ORDER to get group ordering
-    local dash_order="${DASH_ORDER:-DOWNLOADS,INFRA,MEDIA}"
+    # Parse DASHBOARD_ORDER to get group ordering
+    local dash_order="${DASHBOARD_ORDER:-DOWNLOADS,INFRA,MEDIA}"
     IFS=',' read -ra group_order <<< "$dash_order"
 
     # Convert group names to uppercase for matching
@@ -98,7 +98,7 @@ generate_menu_items() {
         group_order[$i]=$(echo "${group_order[$i]}" | xargs | tr '[:lower:]' '[:upper:]')
     done
 
-    # Process services in DASH_ORDER group order
+    # Process services in DASHBOARD_ORDER group order
     for group in "${group_order[@]}"; do
         for service_key in "${SERVICE_ORDER[@]}"; do
             # Get service category
@@ -271,10 +271,10 @@ generate_style_dashboard() {
         html_content="${html_content//@@DASHBOARD_NAME@@/${DASHBOARD_NAME:-Media Server}}"
         html_content="${html_content//@@DASHBOARD_ICON@@/${DASHBOARD_ICON:-/icons/apache-reverse-proxy.png}}"
 
-        if [ -z "$LANDING" ]; then
-            html_content=$(echo "$html_content" | sed 's|src="/@@LANDING@@"|src="about:blank"|')
+        if [ -z "$DASHBOARD_LANDING" ]; then
+            html_content=$(echo "$html_content" | sed 's|src="/@@DASHBOARD_LANDING@@"|src="about:blank"|')
         else
-            html_content="${html_content//@@LANDING@@/$LANDING}"
+            html_content="${html_content//@@DASHBOARD_LANDING@@/$DASHBOARD_LANDING}"
         fi
 
         echo "$html_content" > "$OUTPUT_FILE"
@@ -286,12 +286,12 @@ generate_style_dashboard() {
         html_content="${html_content//@@SERVICES_ARRAY@@/$services_array}"
         html_content="${html_content//@@DASHBOARD_NAME@@/${DASHBOARD_NAME:-Media Server}}"
         html_content="${html_content//@@DASHBOARD_ICON@@/${DASHBOARD_ICON:-/icons/apache-reverse-proxy.png}}"
-        html_content="${html_content//@@DASH_ORDER@@/$dash_order}"
+        html_content="${html_content//@@DASHBOARD_ORDER@@/$dash_order}"
 
-        if [ -z "$LANDING" ]; then
-            html_content=$(echo "$html_content" | sed 's|src="/@@LANDING@@"||')
+        if [ -z "$DASHBOARD_LANDING" ]; then
+            html_content=$(echo "$html_content" | sed 's|src="/@@DASHBOARD_LANDING@@"||')
         else
-            html_content="${html_content//@@LANDING@@/$LANDING}"
+            html_content="${html_content//@@DASHBOARD_LANDING@@/$DASHBOARD_LANDING}"
         fi
 
         echo "$html_content" > "$OUTPUT_FILE"
@@ -316,10 +316,10 @@ generate_style_dashboard() {
         html_content="${html_content//@@DASHBOARD_NAME@@/${DASHBOARD_NAME:-Media Server}}"
         html_content="${html_content//@@DASHBOARD_ICON@@/${DASHBOARD_ICON:-/icons/apache-reverse-proxy.png}}"
 
-        if [ -z "$LANDING" ]; then
-            html_content=$(echo "$html_content" | sed 's|src="/@@LANDING@@"||')
+        if [ -z "$DASHBOARD_LANDING" ]; then
+            html_content=$(echo "$html_content" | sed 's|src="/@@DASHBOARD_LANDING@@"||')
         else
-            html_content="${html_content//@@LANDING@@/$LANDING}"
+            html_content="${html_content//@@DASHBOARD_LANDING@@/$DASHBOARD_LANDING}"
         fi
 
         html_content="${html_content//@@ICON_SIZE@@/$ICON_SIZE}"
@@ -357,10 +357,10 @@ generate_all_styles() {
         html_content="${html_content//@@ENABLED_SERVICES_LIST@@/$services_list}"
         html_content="${html_content//@@DASHBOARD_NAME@@/${DASHBOARD_NAME:-Media Server}}"
         html_content="${html_content//@@DASHBOARD_ICON@@/${DASHBOARD_ICON:-/icons/apache-reverse-proxy.png}}"
-        if [ -z "$LANDING" ]; then
-            html_content=$(echo "$html_content" | sed 's|src="/@@LANDING@@"|src="about:blank"|')
+        if [ -z "$DASHBOARD_LANDING" ]; then
+            html_content=$(echo "$html_content" | sed 's|src="/@@DASHBOARD_LANDING@@"|src="about:blank"|')
         else
-            html_content="${html_content//@@LANDING@@/$LANDING}"
+            html_content="${html_content//@@DASHBOARD_LANDING@@/$DASHBOARD_LANDING}"
         fi
         echo "$html_content" > "/var/www/html/classic.html"
     fi
@@ -373,11 +373,11 @@ generate_all_styles() {
         html_content="${html_content//@@SERVICES_ARRAY@@/$services_array}"
         html_content="${html_content//@@DASHBOARD_NAME@@/${DASHBOARD_NAME:-Media Server}}"
         html_content="${html_content//@@DASHBOARD_ICON@@/${DASHBOARD_ICON:-/icons/apache-reverse-proxy.png}}"
-        html_content="${html_content//@@DASH_ORDER@@/$dash_order}"
-        if [ -z "$LANDING" ]; then
-            html_content=$(echo "$html_content" | sed 's|src="/@@LANDING@@"||')
+        html_content="${html_content//@@DASHBOARD_ORDER@@/$dash_order}"
+        if [ -z "$DASHBOARD_LANDING" ]; then
+            html_content=$(echo "$html_content" | sed 's|src="/@@DASHBOARD_LANDING@@"||')
         else
-            html_content="${html_content//@@LANDING@@/$LANDING}"
+            html_content="${html_content//@@DASHBOARD_LANDING@@/$DASHBOARD_LANDING}"
         fi
         echo "$html_content" > "/var/www/html/modern.html"
     fi
@@ -389,10 +389,10 @@ generate_all_styles() {
         html_content="${html_content//@@SERVICES_ARRAY@@/$services_array}"
         html_content="${html_content//@@DASHBOARD_NAME@@/${DASHBOARD_NAME:-Media Server}}"
         html_content="${html_content//@@DASHBOARD_ICON@@/${DASHBOARD_ICON:-/icons/apache-reverse-proxy.png}}"
-        if [ -z "$LANDING" ]; then
-            html_content=$(echo "$html_content" | sed 's|src="/@@LANDING@@"||')
+        if [ -z "$DASHBOARD_LANDING" ]; then
+            html_content=$(echo "$html_content" | sed 's|src="/@@DASHBOARD_LANDING@@"||')
         else
-            html_content="${html_content//@@LANDING@@/$LANDING}"
+            html_content="${html_content//@@DASHBOARD_LANDING@@/$DASHBOARD_LANDING}"
         fi
         html_content="${html_content//@@ICON_SIZE@@/$ICON_SIZE}"
         html_content="${html_content//@@ICON_GAP@@/$ICON_GAP}"
@@ -407,10 +407,10 @@ generate_all_styles() {
         html_content="${html_content//@@SERVICES_ARRAY@@/$services_array}"
         html_content="${html_content//@@DASHBOARD_NAME@@/${DASHBOARD_NAME:-Media Server}}"
         html_content="${html_content//@@DASHBOARD_ICON@@/${DASHBOARD_ICON:-/icons/apache-reverse-proxy.png}}"
-        if [ -z "$LANDING" ]; then
-            html_content=$(echo "$html_content" | sed 's|src="/@@LANDING@@"||')
+        if [ -z "$DASHBOARD_LANDING" ]; then
+            html_content=$(echo "$html_content" | sed 's|src="/@@DASHBOARD_LANDING@@"||')
         else
-            html_content="${html_content//@@LANDING@@/$LANDING}"
+            html_content="${html_content//@@DASHBOARD_LANDING@@/$DASHBOARD_LANDING}"
         fi
         html_content="${html_content//@@ICON_SIZE@@/$ICON_SIZE}"
         html_content="${html_content//@@ICON_GAP@@/$ICON_GAP}"
@@ -436,20 +436,20 @@ generate_react_dashboard() {
     # Set dashboard name, icon, and landing page
     local DASHBOARD_NAME="${DASHBOARD_NAME:-Media Server}"
     local DASHBOARD_ICON="${DASHBOARD_ICON:-/icons/apache-reverse-proxy.png}"
-    local LANDING="${LANDING:-}"
+    local DASHBOARD_LANDING="${DASHBOARD_LANDING:-}"
 
     # Read template and replace placeholders
     local html_content=$(cat "$DASHBOARD_TEMPLATE")
     html_content="${html_content//@@SERVICES_ARRAY@@/$services_array}"
     html_content="${html_content//@@DASHBOARD_NAME@@/$DASHBOARD_NAME}"
     html_content="${html_content//@@DASHBOARD_ICON@@/$DASHBOARD_ICON}"
-    html_content="${html_content//@@DASH_ORDER@@/$dash_order}"
+    html_content="${html_content//@@DASHBOARD_ORDER@@/$dash_order}"
 
-    # Only set iframe src if LANDING is provided
-    if [ -z "$LANDING" ]; then
-        html_content=$(echo "$html_content" | sed 's|src="/@@LANDING@@"||')
+    # Only set iframe src if DASHBOARD_LANDING is provided
+    if [ -z "$DASHBOARD_LANDING" ]; then
+        html_content=$(echo "$html_content" | sed 's|src="/@@DASHBOARD_LANDING@@"||')
     else
-        html_content="${html_content//@@LANDING@@/$LANDING}"
+        html_content="${html_content//@@DASHBOARD_LANDING@@/$DASHBOARD_LANDING}"
     fi
 
     # Write output file
@@ -494,13 +494,13 @@ calculate_icon_sizes() {
     echo "$icon_multiplier|$gap_multiplier|$logo_multiplier"
 }
 
-# Generate icons-only services array for dashboard2 (respects DASH_ORDER)
+# Generate icons-only services array for dashboard2 (respects DASHBOARD_ORDER)
 generate_dashboard2_services_array() {
     local array=""
     local first=true
 
-    # Parse DASH_ORDER to get group ordering
-    local dash_order="${DASH_ORDER:-DOWNLOADS,INFRA,MEDIA}"
+    # Parse DASHBOARD_ORDER to get group ordering
+    local dash_order="${DASHBOARD_ORDER:-DOWNLOADS,INFRA,MEDIA}"
     IFS=',' read -ra group_order <<< "$dash_order"
 
     # Convert group names to uppercase for matching
@@ -508,7 +508,7 @@ generate_dashboard2_services_array() {
         group_order[$i]=$(echo "${group_order[$i]}" | xargs | tr '[:lower:]' '[:upper:]')
     done
 
-    # Process services in DASH_ORDER group order
+    # Process services in DASHBOARD_ORDER group order
     for group in "${group_order[@]}"; do
         for service_key in "${SERVICE_ORDER[@]}"; do
             # Get service category
@@ -585,7 +585,7 @@ generate_dashboard_for_auth() {
     # Set dashboard name, icon, and landing page
     local DASHBOARD_NAME="${DASHBOARD_NAME:-Media Server}"
     local DASHBOARD_ICON="${DASHBOARD_ICON:-/icons/apache-reverse-proxy.png}"
-    local LANDING="${LANDING:-}"
+    local DASHBOARD_LANDING="${DASHBOARD_LANDING:-}"
 
     # Calculate dynamic icon sizes
     local sizes=$(calculate_icon_sizes "$service_count")
@@ -598,11 +598,11 @@ generate_dashboard_for_auth() {
     html_content="${html_content//@@DASHBOARD_NAME@@/$DASHBOARD_NAME}"
     html_content="${html_content//@@DASHBOARD_ICON@@/$DASHBOARD_ICON}"
 
-    # Only set iframe src if LANDING is provided; otherwise remove src attribute to show welcome screen
-    if [ -z "$LANDING" ]; then
-        html_content=$(echo "$html_content" | sed 's|src="/@@LANDING@@"||')
+    # Only set iframe src if DASHBOARD_LANDING is provided; otherwise remove src attribute to show welcome screen
+    if [ -z "$DASHBOARD_LANDING" ]; then
+        html_content=$(echo "$html_content" | sed 's|src="/@@DASHBOARD_LANDING@@"||')
     else
-        html_content="${html_content//@@LANDING@@/$LANDING}"
+        html_content="${html_content//@@DASHBOARD_LANDING@@/$DASHBOARD_LANDING}"
     fi
 
     html_content="${html_content//@@ICON_SIZE@@/$ICON_SIZE}"
@@ -647,7 +647,7 @@ generate_dashboard3() {
     # Set dashboard name, icon, and landing page
     local DASHBOARD_NAME="${DASHBOARD_NAME:-Media Server}"
     local DASHBOARD_ICON="${DASHBOARD_ICON:-/icons/apache-reverse-proxy.png}"
-    local LANDING="${LANDING:-}"
+    local DASHBOARD_LANDING="${DASHBOARD_LANDING:-}"
 
     # Calculate dynamic icon sizes
     local sizes=$(calculate_icon_sizes "$service_count")
@@ -660,11 +660,11 @@ generate_dashboard3() {
     html_content="${html_content//@@DASHBOARD_NAME@@/$DASHBOARD_NAME}"
     html_content="${html_content//@@DASHBOARD_ICON@@/$DASHBOARD_ICON}"
 
-    # Only set iframe src if LANDING is provided; otherwise remove src attribute to show welcome screen
-    if [ -z "$LANDING" ]; then
-        html_content=$(echo "$html_content" | sed 's|src="/@@LANDING@@"||')
+    # Only set iframe src if DASHBOARD_LANDING is provided; otherwise remove src attribute to show welcome screen
+    if [ -z "$DASHBOARD_LANDING" ]; then
+        html_content=$(echo "$html_content" | sed 's|src="/@@DASHBOARD_LANDING@@"||')
     else
-        html_content="${html_content//@@LANDING@@/$LANDING}"
+        html_content="${html_content//@@DASHBOARD_LANDING@@/$DASHBOARD_LANDING}"
     fi
 
     html_content="${html_content//@@ICON_SIZE@@/$ICON_SIZE}"

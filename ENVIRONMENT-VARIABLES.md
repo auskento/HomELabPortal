@@ -79,14 +79,14 @@ For `ACCESS_MODE=public`, these **must** be set:
 - **Examples:** `/icons/my-logo.png`, `https://example.com/logo.png`
 - **Note:** Place custom icon files in the `html/icons/` directory
 
-- **Variable:** `LANDING`
+- **Variable:** `DASHBOARD_LANDING`
 - **Type:** String (service path or empty)
 - **Default:** Empty (shows welcome screen)
 - **Description:** Default page to load in dashboard iframe on startup
 - **Examples:** `sonarr/calendar`, `radarr`, `plex/web`
 - **Note:** Only used in modern, sleek, and minimal dashboard styles
 
-- **Variable:** `DASH_ORDER`
+- **Variable:** `DASHBOARD_ORDER`
 - **Type:** String (comma-separated group names)
 - **Default:** `DOWNLOADS,INFRA,MEDIA`
 - **Description:** Order of service category groups in dashboard
@@ -115,7 +115,7 @@ For `ACCESS_MODE=public`, these **must** be set:
 
 ### Enable/Disable Services
 
-For each service, use `ENABLE_*` variables (grouped by DASH_ORDER category):
+For each service, use `ENABLE_*` variables (grouped by DASHBOARD_ORDER category):
 
 **DOWNLOADS Category:**
 ```
@@ -293,7 +293,7 @@ environment:
   STYLE: modern
   DASHBOARD_NAME: My Homelab
   DASHBOARD_ICON: /icons/apache-reverse-proxy.png
-  LANDING: sonarr/calendar
+  DASHBOARD_LANDING: sonarr/calendar
   
   # Authentication
   AUTHTYPE: basic
@@ -331,7 +331,7 @@ environment:
   STYLE: modern
   DASHBOARD_NAME: Family Media
   DASHBOARD_ICON: /icons/apache-reverse-proxy.png
-  LANDING: ""
+  DASHBOARD_LANDING: ""
   
   # Authentication - only none or basic allowed in private mode
   AUTHTYPE: basic
@@ -360,7 +360,7 @@ TZ=Australia/Melbourne
 STYLE=modern
 DASHBOARD_NAME=My Homelab
 DASHBOARD_ICON=/icons/apache-reverse-proxy.png
-LANDING=sonarr/calendar
+DASHBOARD_LANDING=sonarr/calendar
 
 # Authentication
 AUTHTYPE=basic
