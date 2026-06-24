@@ -111,6 +111,10 @@
     # Logging
     ErrorLog ${APACHE_LOG_DIR}/error.log
     CustomLog ${APACHE_LOG_DIR}/access.log combined
+
+    # Debug logging with detailed information
+    LogLevel warn
+    CustomLog "|/usr/local/bin/apache-log-rotator.sh" combined env=!nolog
     
     # Health check endpoint
     <Location /health>
