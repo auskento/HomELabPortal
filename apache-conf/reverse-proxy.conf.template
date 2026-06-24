@@ -98,6 +98,8 @@
     @@INCLUDE_QBITTORRENT@@
     @@INCLUDE_SABNZBD@@
     @@INCLUDE_DELUGE@@
+    @@INCLUDE_NZBGET@@
+    @@INCLUDE_NZBHYDRA@@
     @@INCLUDE_CUSTOM_BACKEND@@
     
     # ============================================

@@ -41,7 +41,7 @@ process_service_config() {
 
     # If no path, default to the service name (except services that proxy to root)
     if [ -z "$service_path" ]; then
-        if [ "$service_name" = "deluge" ] || [ "$service_name" = "qbittorrent" ] || [ "$service_name" = "seerr" ]; then
+        if [ "$service_name" = "deluge" ] || [ "$service_name" = "qbittorrent" ] || [ "$service_name" = "seerr" ] || [ "$service_name" = "nzbget" ] || [ "$service_name" = "nzbhydra" ]; then
             service_path="/"
         else
             service_path="/$service_name"
@@ -50,7 +50,7 @@ process_service_config() {
 
     # Replace ProxyPass URLs, preserving the path
     # Special handling for services that proxy to root (/)
-    if [ "$service_name" = "deluge" ] || [ "$service_name" = "qbittorrent" ] || [ "$service_name" = "seerr" ]; then
+    if [ "$service_name" = "deluge" ] || [ "$service_name" = "qbittorrent" ] || [ "$service_name" = "seerr" ] || [ "$service_name" = "nzbget" ] || [ "$service_name" = "nzbhydra" ]; then
         sed -i "s|http://${service_name}:${template_port}|http://${service_host_with_port}|g" "$service_file"
         sed -i "s|ws://${service_name}:${template_port}|ws://${service_host_with_port}|g" "$service_file"
     else
@@ -82,6 +82,8 @@ process_service_config() {
 [ "$ENABLE_QBITTORRENT" = "true" ] && process_service_config "qbittorrent" "8080"
 [ "$ENABLE_SABNZBD" = "true" ] && process_service_config "sabnzbd" "8080"
 [ "$ENABLE_DELUGE" = "true" ] && process_service_config "deluge" "8112"
+[ "$ENABLE_NZBGET" = "true" ] && process_service_config "nzbget" "6789"
+[ "$ENABLE_NZBHYDRA" = "true" ] && process_service_config "nzbhydra" "5076"
 
 
 # Function to generate include directive (output ONLY the Include line)
@@ -127,6 +129,8 @@ TRANSMISSION_INCLUDE=$(generate_include "transmission" "$ENABLE_TRANSMISSION")
 QBITTORRENT_INCLUDE=$(generate_include "qbittorrent" "$ENABLE_QBITTORRENT")
 SABNZBD_INCLUDE=$(generate_include "sabnzbd" "$ENABLE_SABNZBD")
 DELUGE_INCLUDE=$(generate_include "deluge" "$ENABLE_DELUGE")
+NZBGET_INCLUDE=$(generate_include "nzbget" "$ENABLE_NZBGET")
+NZBHYDRA_INCLUDE=$(generate_include "nzbhydra" "$ENABLE_NZBHYDRA")
 
 # Generate auth includes based on AUTHTYPE (mutually exclusive)
 AUTH_ENTRA_INCLUDE=""
@@ -209,6 +213,8 @@ CONFIG="${CONFIG//@@INCLUDE_TRANSMISSION@@/$TRANSMISSION_INCLUDE}"
 CONFIG="${CONFIG//@@INCLUDE_QBITTORRENT@@/$QBITTORRENT_INCLUDE}"
 CONFIG="${CONFIG//@@INCLUDE_SABNZBD@@/$SABNZBD_INCLUDE}"
 CONFIG="${CONFIG//@@INCLUDE_DELUGE@@/$DELUGE_INCLUDE}"
+CONFIG="${CONFIG//@@INCLUDE_NZBGET@@/$NZBGET_INCLUDE}"
+CONFIG="${CONFIG//@@INCLUDE_NZBHYDRA@@/$NZBHYDRA_INCLUDE}"
 CONFIG="${CONFIG//@@INCLUDE_CUSTOM_BACKEND@@/$CUSTOM_BACKEND_INCLUDE}"
 
 # Replace auth includes
