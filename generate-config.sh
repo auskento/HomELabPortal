@@ -148,6 +148,15 @@ case "$AUTHTYPE" in
         ;;
 esac
 
+# Generate NZBGet authentication header if credentials provided
+NZBGET_AUTH_HEADER=""
+if [ -n "$NZBGET_USER" ] && [ -n "$NZBGET_PASS" ]; then
+    # Base64 encode the username:password
+    AUTH_BASIC=$(echo -n "$NZBGET_USER:$NZBGET_PASS" | base64)
+    NZBGET_AUTH_HEADER="RequestHeader set Authorization \"Basic $AUTH_BASIC\""
+    echo "NZBGet authentication header configured"
+fi
+
 # Generate custom backend include if enabled
 CUSTOM_BACKEND_INCLUDE=""
 if [ "$ENABLE_CUSTOM_BACKEND" = "true" ]; then
@@ -216,6 +225,9 @@ CONFIG="${CONFIG//@@INCLUDE_DELUGE@@/$DELUGE_INCLUDE}"
 CONFIG="${CONFIG//@@INCLUDE_NZBGET@@/$NZBGET_INCLUDE}"
 CONFIG="${CONFIG//@@INCLUDE_NZBHYDRA@@/$NZBHYDRA_INCLUDE}"
 CONFIG="${CONFIG//@@INCLUDE_CUSTOM_BACKEND@@/$CUSTOM_BACKEND_INCLUDE}"
+
+# Replace service-specific auth headers
+CONFIG="${CONFIG//@@NZBGET_AUTH_HEADER@@/$NZBGET_AUTH_HEADER}"
 
 # Replace auth includes
 CONFIG="${CONFIG//@@INCLUDE_AUTH_ENTRA@@/$AUTH_ENTRA_INCLUDE}"
