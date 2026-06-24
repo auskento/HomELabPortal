@@ -11,7 +11,9 @@
   <aside style="display:flex;flex-direction:column;align-items:center;gap:12px;padding:20px 15px;flex:none;width:200px;border-right:1px solid rgba(255,255,255,.05);overflow-y:hidden">
 
     <div style="display:flex;flex-direction:column;align-items:center;gap:3px;flex-shrink:0">
-      <img src="@@DASHBOARD_ICON@@" alt="Dashboard" style="width:var(--base-logo);height:var(--base-logo);object-fit:contain;filter:drop-shadow(0 4px 16px rgba(58,160,224,.4));transition:width .3s,height .3s">
+      <a href="/" style="display:flex;align-items:center;justify-content:center;text-decoration:none;cursor:pointer">
+        <img src="@@DASHBOARD_ICON@@" alt="Dashboard" style="width:var(--base-logo);height:var(--base-logo);object-fit:contain;filter:drop-shadow(0 4px 16px rgba(58,160,224,.4));transition:width .3s,height .3s">
+      </a>
       <div style="text-align:center">
         <div style="font-size:10px;color:#6b7385;letter-spacing:.05em;word-break:break-word;max-width:80px">@@DASHBOARD_NAME@@</div>
       </div>

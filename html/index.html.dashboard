@@ -29,10 +29,10 @@
   <aside style="width:320px;flex:none;height:100%;display:flex;flex-direction:column;background:linear-gradient(180deg,rgba(20,23,30,.72),rgba(12,14,19,.72));backdrop-filter:blur(18px);border-right:1px solid rgba(255,255,255,.07)">
 
     <div style="padding:26px 26px 20px 26px;border-bottom:1px solid rgba(255,255,255,.06)">
-      <div style="display:flex;align-items:center;gap:11px;margin-bottom:22px">
+      <a href="/" style="display:flex;align-items:center;gap:11px;margin-bottom:22px;text-decoration:none;cursor:pointer">
         <img src="@@DASHBOARD_ICON@@" alt="Dashboard" style="width:34px;height:34px;border-radius:9px;object-fit:contain;box-shadow:0 4px 16px rgba(58,160,224,.4)">
         <div style="font-family:'Space Grotesk',sans-serif;font-weight:600;letter-spacing:.14em;font-size:13px;color:#cdd3dd">@@DASHBOARD_NAME@@</div>
-      </div>
+      </a>
       <div style="font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:25px;line-height:1.15;letter-spacing:-.01em;color:#f4f6fa">{{ greeting }}</div>
       <div style="display:flex;align-items:baseline;gap:10px;margin-top:7px">
         <div style="font-family:'Space Grotesk',sans-serif;font-weight:500;font-size:15px;color:#8b93a3;font-variant-numeric:tabular-nums">{{ clock }}</div>
@@ -83,7 +83,9 @@
 
     <sc-if value="{{ showWelcome }}" hint-placeholder-val="{{ true }}">
       <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:40px;background:radial-gradient(900px 600px at 50% 30%,rgba(58,160,224,.08),transparent 60%),#0b0d11">
-        <img src="@@DASHBOARD_ICON@@" alt="Dashboard" style="width:80px;height:80px;margin-bottom:26px;object-fit:contain;filter:drop-shadow(0 4px 16px rgba(58,160,224,.3))">
+        <a href="/" style="display:flex;align-items:center;justify-content:center;text-decoration:none;cursor:pointer">
+          <img src="@@DASHBOARD_ICON@@" alt="Dashboard" style="width:80px;height:80px;margin-bottom:26px;object-fit:contain;filter:drop-shadow(0 4px 16px rgba(58,160,224,.3))">
+        </a>
         <div style="font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:27px;color:#f4f6fa;letter-spacing:-.01em">Welcome back</div>
         <div style="font-size:15px;color:#828b9c;margin-top:10px;max-width:380px;line-height:1.55">Pick a service from the sidebar to open it here. Your library, downloads and indexers — all in one place.</div>
       </div>
