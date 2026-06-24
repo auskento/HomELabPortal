@@ -29,7 +29,6 @@ fi
 # Write environment variables to config file for scripts to source
 cat > /etc/apache2/env.conf << ENVEOF
 ACCESS_MODE="${ACCESS_MODE:-public}"
-SKIP_CERT_GENERATION="${SKIP_CERT_GENERATION:-false}"
 DOMAIN="${DOMAIN:-example.com}"
 EMAIL="${EMAIL:-admin@example.com}"
 STYLE="${STYLE:-classic}"
@@ -100,41 +99,35 @@ sed -i "s/^STYLE=.*/STYLE=\"${STYLE}\"/" /etc/apache2/env.conf
 
 # Configuration
 ACCESS_MODE=$(echo "${ACCESS_MODE}" | tr '[:upper:]' '[:lower:]' | sed "s/'//g" | sed 's/"//g' | xargs)
-SKIP_CERT_GENERATION=$(echo "${SKIP_CERT_GENERATION}" | tr '[:upper:]' '[:lower:]' | sed "s/'//g" | sed 's/"//g' | xargs)
 DOMAIN="${DOMAIN:-example.com}"
 EMAIL="${EMAIL:-admin@example.com}"
 CERTBOT_WEBROOT="${CERTBOT_WEBROOT:-/var/www/letsencrypt}"
 
 echo "=== Deployment Mode Setup ==="
-echo "Skip Certificate Generation: $SKIP_CERT_GENERATION"
+echo "Access Mode: $ACCESS_MODE"
 
-# Determine deployment mode based on SKIP_CERT_GENERATION
-if [ "$SKIP_CERT_GENERATION" = "true" ]; then
-    echo "✓ Internal deployment mode - Certificate generation disabled"
+# Determine deployment mode and set SKIP_CERT_GENERATION accordingly
+if [ "$ACCESS_MODE" = "private" ]; then
+    echo "✓ Private mode - Internal dashboard only"
+    SKIP_CERT_GENERATION=true
 
-    # Validate that only none or basic auth are used in internal mode
+    # Validate that only none or basic auth are used in private mode
     if [ "$AUTHTYPE" != "none" ] && [ "$AUTHTYPE" != "basic" ]; then
-        echo "ERROR: Internal deployments only support 'none' or 'basic' authentication"
+        echo "ERROR: Private mode only supports 'none' or 'basic' authentication"
         echo "Provided AUTHTYPE: $AUTHTYPE"
         exit 1
     fi
 
     echo "Domain: $DOMAIN (not used for certificates)"
-elif [ "$SKIP_CERT_GENERATION" = "false" ]; then
-    echo "✓ Public deployment mode - Certificate generation enabled"
+elif [ "$ACCESS_MODE" = "public" ]; then
+    echo "✓ Public mode - Full features enabled"
+    SKIP_CERT_GENERATION=false
     echo "Domain: $DOMAIN"
     echo "Email: $EMAIL"
 else
-    echo "ERROR: Invalid SKIP_CERT_GENERATION value: $SKIP_CERT_GENERATION"
-    echo "Valid options: true, false"
+    echo "ERROR: Invalid ACCESS_MODE: $ACCESS_MODE"
+    echo "Valid options: private, public"
     exit 1
-fi
-
-# For backward compatibility, also support ACCESS_MODE variable
-if [ "$ACCESS_MODE" = "private" ]; then
-    SKIP_CERT_GENERATION=true
-elif [ "$ACCESS_MODE" != "public" ] && [ "$ACCESS_MODE" != "private" ]; then
-    echo "WARNING: Invalid ACCESS_MODE: $ACCESS_MODE (use SKIP_CERT_GENERATION instead)"
 fi
 
 echo ""

@@ -2,17 +2,28 @@
 
 Complete reference guide for all environment variables supported by the Apache Reverse Proxy.
 
-## Required Variables (Public Deployments)
+## Deployment Mode
 
-For external/internet-facing deployments, these **must** be set:
+### ACCESS_MODE
+- **Type:** String (public or private)
+- **Default:** `public`
+- **Description:** Deployment mode that determines certificate generation and feature availability
+- **Options:**
+  - `public`: Internet-facing deployment with Let's Encrypt HTTPS (requires DOMAIN and EMAIL)
+  - `private`: Internal-only deployment without certificates (DOMAIN/EMAIL still in config but not used)
+- **Note:** In private mode, only `none` or `basic` authentication types are supported
+
+## Required Variables (Public Mode Only)
+
+For `ACCESS_MODE=public`, these **must** be set:
 
 ### DOMAIN
 - **Type:** String
 - **Example:** `yourdomain.com`
 - **Description:** Your domain name for Let's Encrypt SSL certificate
-- **Default:** `example.com` (will fail if not changed)
+- **Default:** `example.com`
 - **Note:** Must be a valid registered domain with DNS pointing to your server
-- **Only required for:** Public deployments (SKIP_CERT_GENERATION=false)
+- **Required for:** `ACCESS_MODE=public` only
 
 ### EMAIL
 - **Type:** String
@@ -20,7 +31,7 @@ For external/internet-facing deployments, these **must** be set:
 - **Description:** Email address for Let's Encrypt certificate notifications
 - **Default:** `admin@example.com`
 - **Note:** You'll receive renewal notifications at this email
-- **Only required for:** Public deployments (SKIP_CERT_GENERATION=false)
+- **Required for:** `ACCESS_MODE=public` only
 
 ---
 
@@ -32,14 +43,6 @@ For external/internet-facing deployments, these **must** be set:
 - **Default:** `Australia/Melbourne`
 - **Example:** `Australia/Sydney`, `UTC`, `US/Eastern`
 - **Description:** Container timezone for logs and cron jobs
-
-### Certificate Generation
-- **Variable:** `SKIP_CERT_GENERATION`
-- **Type:** Boolean (`true` or `false`)
-- **Default:** `false`
-- **Description:** Set to `true` for internal-only deployments to skip Let's Encrypt certificate generation
-- **Use case:** When running on internal networks without public domain/DNS
-- **Note:** DOMAIN and EMAIL variables are still required in the config, but not used if this is `true`
 
 ### SSL/Security
 - **Variable:** `SSL_PROTOCOLS`
@@ -237,17 +240,18 @@ ICON_URL_DELUGE=
 ### docker-compose.yml (Public Deployment)
 ```yaml
 environment:
-  # Required for Let's Encrypt HTTPS
+  # Deployment mode
+  ACCESS_MODE: public
+  
+  # Required for Let's Encrypt HTTPS (public mode only)
   DOMAIN: yourdomain.com
   EMAIL: admin@yourdomain.com
   
-  # Optional - Timezone and dashboard
+  # Optional - Timezone and dashboard customization
   TZ: Australia/Melbourne
   STYLE: modern
   DASHBOARD_NAME: My Homelab
   DASHBOARD_ICON: /icons/apache-reverse-proxy.png
-  
-  # Optional - Default landing page (e.g., sonarr/calendar)
   LANDING: sonarr/calendar
   
   # Authentication
@@ -271,37 +275,42 @@ environment:
   ICON_URL_JELLYFIN: ""
 ```
 
-### docker-compose.yml (Internal/Private Deployment)
+### docker-compose.yml (Private/Internal Deployment)
 ```yaml
 environment:
-  # Not required - skip certificate generation
+  # Deployment mode - private disables certificate generation
+  ACCESS_MODE: private
+  
+  # DOMAIN and EMAIL required in config but not used for certificates
   DOMAIN: internal-proxy
   EMAIL: admin@local
-  SKIP_CERT_GENERATION: "true"
   
-  # Dashboard
+  # Dashboard customization
   TZ: Australia/Melbourne
   STYLE: modern
   DASHBOARD_NAME: Family Media
   DASHBOARD_ICON: /icons/apache-reverse-proxy.png
   LANDING: ""
   
-  # Authentication - only none or basic allowed
-  AUTHTYPE: none
+  # Authentication - only none or basic allowed in private mode
+  AUTHTYPE: basic
+  BASIC_AUTH_CREDENTIALS: "user1:password1"
   
-  # Services enabled (same as public)
+  # Services enabled (same as public mode)
   ENABLE_SONARR: "true"
   SONARR_URL: http://sonarr:8989
+  ENABLE_RADARR: "true"
+  RADARR_URL: http://radarr:7878
 ```
 
 ### .env File
 ```bash
+# Deployment mode (public or private)
+ACCESS_MODE=public
+
 # Required for public deployments
 DOMAIN=yourdomain.com
 EMAIL=admin@yourdomain.com
-
-# For internal deployments, skip certs:
-SKIP_CERT_GENERATION=false
 
 # Timezone
 TZ=Australia/Melbourne

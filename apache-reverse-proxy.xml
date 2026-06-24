@@ -14,8 +14,8 @@
   <Icon>https://raw.githubusercontent.com/auskento/apache-reverse-proxy/main/apache-reverse-proxy-150.png</Icon>
   <PostArgs/>
   <CloudSync>false</CloudSync>
-  <Description>Apache Reverse Proxy with optional Let's Encrypt HTTPS, 14 media services, customizable dashboards (4 styles), and flexible authentication (None, Basic, Entra ID, Google OAuth).</Description>
-  <Overview>Apache Reverse Proxy for Media Services&#13;&#13;This container provides:&#13;- Optional automatic HTTPS with Let's Encrypt SSL certificates (or use internally without certs)&#13;- Reverse proxy for up to 14 different services&#13;- Responsive web dashboard with 4 customizable styles: classic, modern, sleek, minimal&#13;- Dashboard customization: custom title, icon, and default landing page&#13;- Four authentication options: None, Basic Auth, Entra ID (Microsoft), or Google OAuth2&#13;- Custom service icons and smart icon management&#13;- Service health monitoring&#13;&#13;Quick Start (Public Deployment):&#13;1. Set DOMAIN and EMAIL (required for Let's Encrypt)&#13;2. Choose AUTHTYPE (none, basic, entra, or google)&#13;3. Enable services and configure backend URLs&#13;4. (Optional) Customize dashboard STYLE, DASHBOARD_NAME, DASHBOARD_ICON, LANDING&#13;&#13;Quick Start (Internal Deployment):&#13;1. Set SKIP_CERT_GENERATION=true&#13;2. Choose AUTHTYPE (none or basic only)&#13;3. Enable services and configure backend URLs&#13;&#13;Supported Services (14):&#13;SABnzbd, Deluge, Transmission, qBittorrent, Radarr, Sonarr, Whisparr, Prowlarr, Seerr, Lidarr, Emby, Plex, Jellyfin, Tautulli&#13;&#13;Dashboard Styles:&#13;- Classic: Traditional sidebar menu&#13;- Modern: React-based with full features (recommended)&#13;- Sleek: Compact sidebar with gradient styling&#13;- Minimal: Single-column minimal design&#13;&#13;Documentation:&#13;https://github.com/auskento/apache-reverse-proxy</Overview>
+  <Description>Apache Reverse Proxy with flexible deployment modes, 14 media services, customizable dashboards (4 styles), and authentication options (None, Basic, Entra ID, Google OAuth).</Description>
+  <Overview>Apache Reverse Proxy for Media Services&#13;&#13;This container provides:&#13;- Public mode: Automatic HTTPS with Let's Encrypt SSL certificates&#13;- Private mode: Internal-only deployment without certificate generation&#13;- Reverse proxy for up to 14 different services&#13;- Responsive web dashboard with 4 customizable styles: classic, modern, sleek, minimal&#13;- Dashboard customization: custom title, icon, and default landing page&#13;- Four authentication options: None, Basic Auth, Entra ID (Microsoft), or Google OAuth2&#13;- Custom service icons and smart icon management&#13;- Service health monitoring&#13;&#13;Quick Start (Public Deployment - ACCESS_MODE=public):&#13;1. Set DOMAIN and EMAIL (required for Let's Encrypt)&#13;2. Choose AUTHTYPE (none, basic, entra, or google)&#13;3. Enable services and configure backend URLs&#13;4. (Optional) Customize dashboard STYLE, DASHBOARD_NAME, DASHBOARD_ICON, LANDING&#13;&#13;Quick Start (Private Deployment - ACCESS_MODE=private):&#13;1. Set ACCESS_MODE=private&#13;2. Choose AUTHTYPE (none or basic only - Entra/Google not available)&#13;3. Enable services and configure backend URLs&#13;4. DOMAIN and EMAIL still required in config but not used for certificates&#13;&#13;Supported Services (14):&#13;SABnzbd, Deluge, Transmission, qBittorrent, Radarr, Sonarr, Whisparr, Prowlarr, Seerr, Lidarr, Emby, Plex, Jellyfin, Tautulli&#13;&#13;Dashboard Styles:&#13;- Classic: Traditional sidebar menu&#13;- Modern: React-based with full features (recommended)&#13;- Sleek: Compact sidebar with gradient styling&#13;- Minimal: Single-column minimal design&#13;&#13;Documentation:&#13;https://github.com/auskento/apache-reverse-proxy</Overview>
   <Networking>
     <Mode>bridge</Mode>
     <Publish>
@@ -94,10 +94,6 @@
     <Variable>
       <Name>LANDING</Name>
       <Value></Value>
-    </Variable>
-    <Variable>
-      <Name>SKIP_CERT_GENERATION</Name>
-      <Value>false</Value>
     </Variable>
     <Variable>
       <Name>AUTHTYPE</Name>
@@ -331,11 +327,11 @@
   <Config Name="DOMAIN" Target="DOMAIN" Default="yourdomain.com" Mode="" Description="Domain Name (REQUIRED - e.g., example.com)" Type="Variable" Display="always" Required="true" Mask="false"/>
   <Config Name="EMAIL" Target="EMAIL" Default="admin@example.com" Mode="" Description="Email for Let's Encrypt (REQUIRED)" Type="Variable" Display="always" Required="true" Mask="false"/>
   <Config Name="Timezone" Target="TZ" Default="Australia/Melbourne" Mode="" Description="Timezone" Type="Variable" Display="always" Required="false" Mask="false"/>
+  <Config Name="Access Mode" Target="ACCESS_MODE" Default="public" Mode="" Description="Deployment mode: public (with Let's Encrypt HTTPS) or private (internal only, no certs)" Type="Variable" Display="always" Required="true" Mask="false"/>
   <Config Name="Dashboard Style" Target="STYLE" Default="modern" Mode="" Description="Dashboard style: classic, modern, sleek, or minimal" Type="Variable" Display="always" Required="false" Mask="false"/>
   <Config Name="Dashboard Name" Target="DASHBOARD_NAME" Default="Media Server" Mode="" Description="Custom dashboard title shown in header" Type="Variable" Display="always" Required="false" Mask="false"/>
   <Config Name="Dashboard Icon" Target="DASHBOARD_ICON" Default="/icons/apache-reverse-proxy.png" Mode="" Description="Dashboard icon path (place custom icons in html/icons directory)" Type="Variable" Display="always" Required="false" Mask="false"/>
   <Config Name="Landing Page" Target="LANDING" Default="" Mode="" Description="Default iframe page (e.g., sonarr/calendar or radarr). Leave blank for welcome screen" Type="Variable" Display="always" Required="false" Mask="false"/>
-  <Config Name="Skip Certificate Generation" Target="SKIP_CERT_GENERATION" Default="false" Mode="" Description="Set to true for internal/private deployments (skips Let's Encrypt)" Type="Variable" Display="always" Required="false" Mask="false"/>
   
   <!-- SABNZBD -->
   <Config Name="[1/14] Enable SABnzbd" Target="ENABLE_SABNZBD" Default="false" Mode="" Description="SABnzbd - Usenet Client" Type="Variable" Display="always" Required="false" Mask="false"/>
