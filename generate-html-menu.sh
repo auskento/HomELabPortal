@@ -283,6 +283,7 @@ generate_style_dashboard() {
         html_content="${html_content//@@ENABLED_SERVICES_LIST@@/$services_list}"
         html_content="${html_content//@@DASHBOARD_NAME@@/${DASHBOARD_NAME:-Media Server}}"
         html_content="${html_content//@@DASHBOARD_ICON@@/${DASHBOARD_ICON:-/icons/apache-reverse-proxy.png}}"
+        html_content="${html_content//@@DASHBOARD_THEME@@/${DASHBOARD_THEME:-dark}}"
 
         if [ -z "$DASHBOARD_LANDING" ]; then
             html_content=$(echo "$html_content" | sed 's|src="/@@DASHBOARD_LANDING@@"|src="about:blank"|')
@@ -300,6 +301,7 @@ generate_style_dashboard() {
         html_content="${html_content//@@DASHBOARD_NAME@@/${DASHBOARD_NAME:-Media Server}}"
         html_content="${html_content//@@DASHBOARD_ICON@@/${DASHBOARD_ICON:-/icons/apache-reverse-proxy.png}}"
         html_content="${html_content//@@DASHBOARD_ORDER@@/$dash_order}"
+        html_content="${html_content//@@DASHBOARD_THEME@@/${DASHBOARD_THEME:-dark}}"
 
         if [ -z "$DASHBOARD_LANDING" ]; then
             html_content=$(echo "$html_content" | sed 's|src="/@@DASHBOARD_LANDING@@"||')
@@ -328,6 +330,7 @@ generate_style_dashboard() {
         html_content="${html_content//@@SERVICES_ARRAY@@/$services_array}"
         html_content="${html_content//@@DASHBOARD_NAME@@/${DASHBOARD_NAME:-Media Server}}"
         html_content="${html_content//@@DASHBOARD_ICON@@/${DASHBOARD_ICON:-/icons/apache-reverse-proxy.png}}"
+        html_content="${html_content//@@DASHBOARD_THEME@@/${DASHBOARD_THEME:-dark}}"
 
         if [ -z "$DASHBOARD_LANDING" ]; then
             html_content=$(echo "$html_content" | sed 's|src="/@@DASHBOARD_LANDING@@"||')
