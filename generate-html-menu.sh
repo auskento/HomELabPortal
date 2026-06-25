@@ -670,6 +670,27 @@ generate_dashboard3() {
     echo "✓ Grid dashboard generated (auto-fit columns): $DASHBOARD_OUTPUT"
 }
 
+# Generate basic standalone dashboard
+generate_basic() {
+    if [ ! -f "/var/www/html/basic.template" ]; then
+        return
+    fi
+
+    local menu_items=$(generate_menu_items)
+    local html_content=$(cat "/var/www/html/basic.template")
+    html_content="${html_content//@@MENU_ITEMS@@/$menu_items}"
+    html_content="${html_content//@@DASHBOARD_NAME@@/${DASHBOARD_NAME:-Media Server}}"
+
+    if [ -z "$DASHBOARD_LANDING" ]; then
+        html_content=$(echo "$html_content" | sed 's|/@@DASHBOARD_LANDING@@|/index.html|')
+    else
+        html_content="${html_content//@@DASHBOARD_LANDING@@/$DASHBOARD_LANDING}"
+    fi
+
+    echo "$html_content" > "/var/www/html/basic.html"
+    echo "✓ Basic dashboard generated: /basic.html"
+}
+
 # Main generation function
 generate_html() {
     echo "Generating dashboards for STYLE=$STYLE..."
@@ -689,6 +710,9 @@ generate_html() {
 
     # Generate all alternate styles for switching between any style
     generate_all_styles
+
+    # Generate basic standalone dashboard (not referenced elsewhere)
+    generate_basic
 
     echo ""
     echo "✓ Dashboards generated with $count enabled service(s)"
