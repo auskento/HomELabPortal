@@ -28,7 +28,8 @@ Before starting, decide which services you want to proxy. Common combinations:
 ENABLE_SONARR: "true"      # TV shows
 ENABLE_RADARR: "true"      # Movies
 ENABLE_PROWLARR: "true"    # Indexer management
-ENABLE_OVERSEERR: "true"   # Request management
+ENABLE_SEERR: "true"       # Request management
+ENABLE_BAZARR: "true"      # Subtitle management
 ENABLE_QBITTORRENT: "true" # Torrents
 ```
 
@@ -37,7 +38,8 @@ ENABLE_QBITTORRENT: "true" # Torrents
 ENABLE_SONARR: "true"
 ENABLE_RADARR: "true"
 ENABLE_JELLYFIN: "true"    # Media playback
-ENABLE_OVERSEERR: "true"
+ENABLE_SEERR: "true"
+ENABLE_BAZARR: "true"
 ENABLE_QBITTORRENT: "true"
 ```
 
