@@ -128,7 +128,7 @@ generate_menu_items() {
             fi
 
             # Add menu item - NO label span!
-            menu_html+="<td class='menu-item'><a href='$href' target='content' title='$service_name'><img src='$icon_path' alt='$service_name' /></a></td>"
+            menu_html+="<td class='menu-item'><a href='$href' target='Main' title='$service_name'><img src='$icon_path' alt='$service_name' /></a></td>"
         done
     done
 
