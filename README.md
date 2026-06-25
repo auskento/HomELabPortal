@@ -1,6 +1,6 @@
-# Apache Reverse Proxy - Media Server Edition
+# HomELabPortal (HeLP) - Unified Media Server Dashboard
 
-A production-ready Apache reverse proxy system for managing 17+ media server applications with automatic HTTPS, flexible authentication, and customizable dashboards.
+A production-ready reverse proxy system for managing 17+ homelab applications with automatic HTTPS, flexible authentication, and customizable dashboards.
 
 **Perfect for:** Sonarr, Radarr, Jellyfin, Plex, qBittorrent, Bazarr, and more!
 
@@ -466,8 +466,9 @@ ENABLE_JELLYFIN: "true"
 
 ---
 
-## 📦 Version Info
+## 📦 Version Info - HomELabPortal (HeLP)
 
+- **Project**: HomELabPortal (HeLP) - Unified Media Server Dashboard
 - **Current Version**: 2.1.0
 - **Release Date**: 2026-06-25
 - **Services**: 17 total
@@ -484,7 +485,7 @@ MIT License - See LICENSE file for details
 
 ---
 
-## 🚀 Getting Started
+## 🚀 Getting Started with HeLP
 
 1. **Read**: [QUICKSTART.md](QUICKSTART.md) (5 min)
 2. **Configure**: Edit `.env` with your settings
@@ -492,4 +493,4 @@ MIT License - See LICENSE file for details
 4. **Access**: `https://yourdomain.com`
 5. **Troubleshoot**: [TROUBLESHOOTING.md](TROUBLESHOOTING.md) if needed
 
-**You're ready to proxy!** 🎉
+**You're ready to deploy HomELabPortal (HeLP)!** 🎉

@@ -1,4 +1,4 @@
-# Complete Feature Summary - Apache Reverse Proxy v2.1
+# Complete Feature Summary - HomELabPortal (HeLP) v2.1
 
 ## 🚀 Everything You Have Now
 
@@ -395,7 +395,7 @@ openssl rand -base64 24  # For ENTRA_CRYPTO_PASSPHRASE
 
 ---
 
-**You now have a production-ready reverse proxy with 17 services, flexible authentication, and customizable dashboards!** 🎉
+**You now have HomELabPortal (HeLP) - a production-ready unified media server dashboard with 17 services, flexible authentication, and customizable dashboards!** 🎉
 
 **Key Capabilities:**
 ✅ 17 services available  
@@ -406,4 +406,4 @@ openssl rand -base64 24  # For ENTRA_CRYPTO_PASSPHRASE
 ✅ Easy configuration  
 ✅ Zero manual Apache editing  
 
-**Ready to deploy!** 🚀
+**Ready to deploy with HeLP!** 🚀
