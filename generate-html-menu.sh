@@ -224,9 +224,10 @@ generate_services_array() {
             fi
         fi
 
-        # Determine if popup (external link)
+        # Determine if popup (external link or qBittorrent)
         local popup="false"
         [[ "$href" == http* ]] && popup="true"
+        [[ "$service_key" == "QBITTORRENT" ]] && popup="true"
 
         # Add comma between items (with newline for readability)
         if [ "$first" = true ]; then
@@ -555,6 +556,7 @@ generate_dashboard2_services_array() {
 
             local popup="false"
             [[ "$href" == http* ]] && popup="true"
+            [[ "$service_key" == "QBITTORRENT" ]] && popup="true"
 
             if [ "$first" = true ]; then
                 first=false
