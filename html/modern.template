@@ -134,13 +134,22 @@ class Component extends DCLogic {
       // Hide welcome screen when iframe loads successfully
       this._frame.addEventListener('load', () => {
         this.setState({ showWelcome: false });
-        // Inject iframe compatibility stubs for services like qBittorrent
+        // Inject iframe compatibility stubs and error handler for services like qBittorrent
         try {
           const iframeWin = this._frame.contentWindow;
           if (iframeWin) {
+            // Define compatibility stubs
             iframeWin.getCoordinates = function() { return { x: 0, y: 0, width: 0, height: 0 }; };
-            iframeWin.ClientData = iframeWin.ClientData || {};
-            iframeWin.ClientData.update = function() {};
+            iframeWin.ClientData = { update: function() {} };
+
+            // Suppress harmless errors from embedded applications
+            const originalError = iframeWin.onerror;
+            iframeWin.onerror = function(msg, url, line, col, error) {
+              if (msg && (msg.includes('ClientData') || msg.includes('getCoordinates'))) {
+                return true; // Suppress error
+              }
+              return originalError ? originalError(msg, url, line, col, error) : false;
+            };
           }
         } catch(e) {}
       });
