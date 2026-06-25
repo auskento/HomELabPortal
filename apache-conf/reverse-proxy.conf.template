@@ -36,7 +36,14 @@
     ProxyRequests Off
     ProxyPreserveHost On
     ProxyVia Off
-    
+
+    # Proxy access control
+    <Proxy *>
+        Order deny,allow
+        Allow from all
+        Satisfy Any
+    </Proxy>
+
     # Default timeout settings
     ProxyTimeout 300
     Timeout 300
