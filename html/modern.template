@@ -111,7 +111,7 @@ if (typeof window !== 'undefined' && window.parent && window.parent !== window) 
           <span style="font-size:11px;color:#ff9999;padding-left:15px">{{ offlineList }}</span>
         </sc-if>
       </div>
-      <div style="font-size:11px;text-align:center;padding:8px 0;border-top:1px solid rgba(255,255,255,.06);display:flex;gap:6px;justify-content:center;flex-wrap:wrap">
+      <div style="font-size:11px;text-align:center;padding:8px 0;border-top:1px solid rgba(255,255,255,.06);display:flex;gap:6px;justify-content:center;flex-wrap:wrap;align-items:center">
         <a href="/classic.html" style="color:#4a9eff;text-decoration:none;transition:color 0.2s">Classic</a>
         <span style="color:#5d6575">|</span>
         <a href="/modern.html" style="color:#4a9eff;text-decoration:none;transition:color 0.2s">Modern</a>
@@ -119,6 +119,8 @@ if (typeof window !== 'undefined' && window.parent && window.parent !== window) 
         <a href="/sleek.html" style="color:#4a9eff;text-decoration:none;transition:color 0.2s">Sleek</a>
         <span style="color:#5d6575">|</span>
         <a href="/minimal.html" style="color:#4a9eff;text-decoration:none;transition:color 0.2s">Minimal</a>
+        <span style="color:#5d6575">|</span>
+        <button id="theme-toggle-modern" style="background:none;border:none;cursor:pointer;font-size:11px;padding:0;color:#4a9eff;transition:color 0.2s" title="Toggle theme">☀️</button>
       </div>
     </div>
   </aside>
@@ -306,52 +308,18 @@ class Component extends DCLogic {
     const savedTheme = localStorage.getItem('theme') || defaultTheme;
     document.documentElement.setAttribute('data-theme', savedTheme);
 
-    // Add theme toggle button
-    const style = document.createElement('style');
-    style.textContent = `
-      .theme-toggle {
-        position: fixed;
-        bottom: 20px;
-        right: 20px;
-        z-index: 10000;
-        background: var(--bg-tertiary);
-        border: 1px solid var(--border-light);
-        border-radius: 8px;
-        width: 44px;
-        height: 44px;
-        cursor: pointer;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 20px;
-        transition: all 0.3s ease;
-        color: var(--text-primary);
-      }
-      .theme-toggle:hover {
-        background: rgba(255, 255, 255, 0.15);
-        transform: scale(1.05);
-      }
-      [data-theme="light"] .theme-toggle:hover {
-        background: rgba(0, 0, 0, 0.08);
-      }
-    `;
-    document.head.appendChild(style);
-
-    const button = document.createElement('button');
-    button.className = 'theme-toggle';
-    button.setAttribute('aria-label', 'Toggle theme');
-    button.textContent = savedTheme === 'dark' ? '☀️' : '🌙';
-
-    button.addEventListener('click', function() {
-      const current = document.documentElement.getAttribute('data-theme');
-      const next = current === 'dark' ? 'light' : 'dark';
-      document.documentElement.setAttribute('data-theme', next);
-      localStorage.setItem('theme', next);
-      button.textContent = next === 'dark' ? '☀️' : '🌙';
-    });
-
-    document.body.appendChild(button);
-  })();
+    const themeButton = document.getElementById('theme-toggle-modern');
+    if (themeButton) {
+      themeButton.textContent = savedTheme === 'dark' ? '☀️' : '🌙';
+      themeButton.addEventListener('click', function() {
+        const current = document.documentElement.getAttribute('data-theme');
+        const next = current === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        localStorage.setItem('theme', next);
+        themeButton.textContent = next === 'dark' ? '☀️' : '🌙';
+      });
+    }
+  });
 </script>
 </body>
 </html>
