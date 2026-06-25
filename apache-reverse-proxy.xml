@@ -92,7 +92,7 @@
     </Variable>
     <Variable>
       <Name>DASHBOARD_ORDER</Name>
-      <Value>DOWNLOADS,INFRA,MEDIA</Value>
+      <Value>CONTENT,SEARCH,USENET,TORRENTS,MEDIA</Value>
     </Variable>
     <Variable>
       <Name>AUTHTYPE</Name>
@@ -360,7 +360,7 @@
   <Config Name="Dashboard Name" Target="DASHBOARD_NAME" Default="Media Server" Mode="" Description="Custom dashboard title shown in header" Type="Variable" Display="always" Required="false" Mask="false"/>
   <Config Name="Dashboard Icon" Target="DASHBOARD_ICON" Default="/icons/apache-reverse-proxy.png" Mode="" Description="Dashboard icon path (place custom icons in html/icons directory)" Type="Variable" Display="always" Required="false" Mask="false"/>
   <Config Name="Dashboard Landing" Target="DASHBOARD_LANDING" Default="" Mode="" Description="Default iframe page (examples: radarr, sonarr/calendar, plex/web). Leave blank for welcome screen" Type="Variable" Display="always" Required="false" Mask="false"/>
-  <Config Name="Dashboard Order" Target="DASHBOARD_ORDER" Default="DOWNLOADS,INFRA,MEDIA" Mode="" Description="Service group display order. Categories: DOWNLOADS (SABnzbd, NZBGet, NZBHydra, Deluge, Transmission, qBittorrent), INFRA (Radarr, Sonarr, Prowlarr, Seerr, Lidarr, Whisparr), MEDIA (Emby, Plex, Jellyfin, Tautulli). Example: MEDIA,DOWNLOADS,INFRA" Type="Variable" Display="always" Required="false" Mask="false"/>
+  <Config Name="Dashboard Order" Target="DASHBOARD_ORDER" Default="CONTENT,SEARCH,USENET,TORRENTS,MEDIA" Mode="" Description="Service group display order. Categories: CONTENT (Sonarr, Radarr, Lidarr, Whisparr), SEARCH (Seerr, Prowlarr), USENET (SABnzbd, NZBGet, NZBHydra), TORRENTS (Deluge, Transmission, qBittorrent), MEDIA (Emby, Plex, Jellyfin, Tautulli). Example: MEDIA,USENET,TORRENTS,CONTENT,SEARCH" Type="Variable" Display="always" Required="false" Mask="false"/>
   
   <!-- DOWNLOADS SERVICES -->
   <Config Name="[1/16] Enable SABnzbd" Target="ENABLE_SABNZBD" Default="false" Mode="" Description="SABnzbd - Usenet Client" Type="Variable" Display="always" Required="false" Mask="false"/>

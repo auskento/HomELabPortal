@@ -88,13 +88,19 @@ For `ACCESS_MODE=public`, these **must** be set:
 
 - **Variable:** `DASHBOARD_ORDER`
 - **Type:** String (comma-separated group names)
-- **Default:** `DOWNLOADS,INFRA,MEDIA`
+- **Default:** `CONTENT,SEARCH,USENET,TORRENTS,MEDIA`
 - **Description:** Order of service category groups in dashboard
+- **Service Groups:**
+  - `CONTENT`: Sonarr, Radarr, Lidarr, Whisparr
+  - `SEARCH`: Seerr, Prowlarr
+  - `USENET`: SABnzbd, NZBGet, NZBHydra
+  - `TORRENTS`: Deluge, Transmission, qBittorrent
+  - `MEDIA`: Emby, Plex, Jellyfin, Tautulli
 - **Examples:** 
-  - `DOWNLOADS,INFRA,MEDIA` (default: Downloads top, Media bottom)
-  - `MEDIA,DOWNLOADS,INFRA` (Media servers first)
-  - `INFRA,DOWNLOADS,MEDIA` (Indexers first)
-- **Valid Groups:** `DOWNLOADS`, `INFRA`, `MEDIA` (case-insensitive)
+  - `CONTENT,SEARCH,USENET,TORRENTS,MEDIA` (default order)
+  - `MEDIA,CONTENT,USENET,TORRENTS,SEARCH` (Media servers first)
+  - `USENET,TORRENTS,CONTENT,SEARCH,MEDIA` (Downloads first)
+- **Valid Groups:** `CONTENT`, `SEARCH`, `USENET`, `TORRENTS`, `MEDIA` (case-insensitive)
 - **Note:** Group names must be comma-separated with no extra spaces. Applies to all dashboard styles (modern, sleek, minimal, classic).
 
 ### Authentication

@@ -17,24 +17,28 @@ DASHBOARD_OAUTH_TEMPLATE="/var/www/html/dashboard-oauth.html.template"
 
 # Define all available services with metadata
 # Format: SERVICE_KEY="Category|Name|Description|Icon|Href|Accent"
-# Categories MUST be: DOWNLOADS, INFRA, MEDIA (to match dashboard)
+# Categories: USENET, TORRENTS, CONTENT, SEARCH, MEDIA
 declare -A SERVICES=(
-    # DOWNLOADS category
-    [SABNZBD]="DOWNLOADS|SABnzbd|Usenet downloads|/icons/sabnzbd.png|/sabnzbd/|#f5c20f"
-    [DELUGE]="DOWNLOADS|Deluge|Torrent client|/icons/deluge.png|/deluge/|#3aa3e0"
-    [TRANSMISSION]="DOWNLOADS|Transmission|Torrents|/icons/transmission.png|/transmission/|#343434"
-    [QBITTORRENT]="DOWNLOADS|qBittorrent|Torrent client|/icons/qbittorrent.png|/qbittorrent/|#3683b6"
-    [NZBGET]="DOWNLOADS|NZBGet|Usenet downloads|/icons/nzbget.png|/nzbget/|#3da7e0"
-    [NZBHYDRA]="DOWNLOADS|NZBHydra|NZB indexer|/icons/nzbhydra.png|/nzbhydra/|#3e9c7d"
+    # USENET category
+    [SABNZBD]="USENET|SABnzbd|Usenet downloads|/icons/sabnzbd.png|/sabnzbd/|#f5c20f"
+    [NZBGET]="USENET|NZBGet|Usenet downloads|/icons/nzbget.png|/nzbget/|#3da7e0"
+    [NZBHYDRA]="USENET|NZBHydra|NZB indexer|/icons/nzbhydra.png|/nzbhydra/|#3e9c7d"
 
-    # INFRA category (Indexers & Infrastructure)
-    [RADARR]="INFRA|Radarr|Movies|/icons/radarr.png|/radarr/|#febc2e"
-    [SONARR]="INFRA|Sonarr|TV shows|/icons/sonarr.png|/sonarr/calendar|#3aa0e0"
-    [PROWLARR]="INFRA|Prowlarr|Indexer manager|/icons/prowlarr.png|/prowlarr/|#e8810e"
-    [SEERR]="INFRA|Seerr|Requests|/icons/seerr.png|/seerr/|#00a4dc"
-    [LIDARR]="INFRA|Lidarr|Music|/icons/lidarr.png|/lidarr/|#2ecd6f"
-    [WHISPARR]="INFRA|Whisparr|Adult content|/icons/whisparr.png|/whisparr/|#ef7e30"
-    
+    # TORRENTS category
+    [DELUGE]="TORRENTS|Deluge|Torrent client|/icons/deluge.png|/deluge/|#3aa3e0"
+    [TRANSMISSION]="TORRENTS|Transmission|Torrents|/icons/transmission.png|/transmission/|#343434"
+    [QBITTORRENT]="TORRENTS|qBittorrent|Torrent client|/icons/qbittorrent.png|/qbittorrent/|#3683b6"
+
+    # CONTENT category
+    [SONARR]="CONTENT|Sonarr|TV shows|/icons/sonarr.png|/sonarr/calendar|#3aa0e0"
+    [RADARR]="CONTENT|Radarr|Movies|/icons/radarr.png|/radarr/|#febc2e"
+    [LIDARR]="CONTENT|Lidarr|Music|/icons/lidarr.png|/lidarr/|#2ecd6f"
+    [WHISPARR]="CONTENT|Whisparr|Adult content|/icons/whisparr.png|/whisparr/|#ef7e30"
+
+    # SEARCH category
+    [SEERR]="SEARCH|Seerr|Requests|/icons/seerr.png|/seerr/|#00a4dc"
+    [PROWLARR]="SEARCH|Prowlarr|Indexer manager|/icons/prowlarr.png|/prowlarr/|#e8810e"
+
     # MEDIA category
     [EMBY]="MEDIA|Emby|Streaming|/icons/emby.png|SUBDOMAIN|#9146FF"
     [PLEX]="MEDIA|Plex|Streaming|/icons/plex.png|SUBDOMAIN|#e5a00d"
@@ -44,24 +48,30 @@ declare -A SERVICES=(
 
 # Service display order (same order for both menus)
 declare -a SERVICE_ORDER=(
-    # DOWNLOADERS
-    "SABNZBD" "DELUGE" "TRANSMISSION" "QBITTORRENT" "NZBGET" "NZBHYDRA"
-    # INDEXERS
-    "RADARR" "SONARR" "PROWLARR" "SEERR" "LIDARR" "WHISPARR"
-    # MEDIA SERVERS
+    # USENET
+    "SABNZBD" "NZBGET" "NZBHYDRA"
+    # TORRENTS
+    "DELUGE" "TRANSMISSION" "QBITTORRENT"
+    # CONTENT
+    "SONARR" "RADARR" "LIDARR" "WHISPARR"
+    # SEARCH
+    "SEERR" "PROWLARR"
+    # MEDIA
     "EMBY" "PLEX" "JELLYFIN" "TAUTULLI"
 )
 
 # Category labels
 declare -A CATEGORY_LABEL=(
-    [DOWNLOADERS]="DOWNLOADERS"
-    [INDEXERS]="INDEXERS"
-    [MEDIA]="MEDIA SERVERS"
+    [USENET]="USENET"
+    [TORRENTS]="TORRENTS"
+    [CONTENT]="CONTENT"
+    [SEARCH]="SEARCH"
+    [MEDIA]="MEDIA"
 )
 
 # Generate group order from DASHBOARD_ORDER variable
 generate_group_order() {
-    local dash_order="${DASHBOARD_ORDER:-DOWNLOADS,INFRA,MEDIA}"
+    local dash_order="${DASHBOARD_ORDER:-CONTENT,SEARCH,USENET,TORRENTS,MEDIA}"
     local items=()
 
     # Split by comma and convert to uppercase
@@ -84,7 +94,7 @@ generate_menu_items() {
     local menu_html=""
 
     # Parse DASHBOARD_ORDER to get group ordering
-    local dash_order="${DASHBOARD_ORDER:-DOWNLOADS,INFRA,MEDIA}"
+    local dash_order="${DASHBOARD_ORDER:-CONTENT,SEARCH,USENET,TORRENTS,MEDIA}"
     IFS=',' read -ra group_order <<< "$dash_order"
 
     # Convert group names to uppercase for matching
@@ -502,7 +512,7 @@ generate_dashboard2_services_array() {
     local first=true
 
     # Parse DASHBOARD_ORDER to get group ordering
-    local dash_order="${DASHBOARD_ORDER:-DOWNLOADS,INFRA,MEDIA}"
+    local dash_order="${DASHBOARD_ORDER:-CONTENT,SEARCH,USENET,TORRENTS,MEDIA}"
     IFS=',' read -ra group_order <<< "$dash_order"
 
     # Convert group names to uppercase for matching

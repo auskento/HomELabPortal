@@ -43,7 +43,7 @@ services:
       DASHBOARD_NAME: My Homelab
       DASHBOARD_ICON: /icons/apache-reverse-proxy.png
       DASHBOARD_LANDING: radarr
-      DASHBOARD_ORDER: DOWNLOADS,INFRA,MEDIA
+      DASHBOARD_ORDER: CONTENT,SEARCH,USENET,TORRENTS,MEDIA
       AUTHTYPE: basic
       BASIC_AUTH_CREDENTIALS: "admin:securepassword|user:password"
       ENABLE_RADARR: "true"
@@ -83,7 +83,7 @@ services:
       STYLE: sleek
       DASHBOARD_NAME: Family Media
       DASHBOARD_LANDING: ""
-      DASHBOARD_ORDER: MEDIA,DOWNLOADS,INFRA
+      DASHBOARD_ORDER: MEDIA,USENET,TORRENTS,CONTENT,SEARCH
       AUTHTYPE: basic
       BASIC_AUTH_CREDENTIALS: "user:password"
       ENABLE_PLEX: "true"
@@ -118,7 +118,7 @@ services:
       STYLE: modern
       DASHBOARD_NAME: Company Services
       DASHBOARD_LANDING: radarr/calendar
-      DASHBOARD_ORDER: INFRA,DOWNLOADS,MEDIA
+      DASHBOARD_ORDER: CONTENT,SEARCH,USENET,TORRENTS,MEDIA
       AUTHTYPE: entra
       ENTRA_CLIENT_ID: your-azure-app-id
       ENTRA_CLIENT_SECRET: your-azure-app-secret
@@ -160,7 +160,7 @@ services:
       STYLE: minimal
       DASHBOARD_NAME: Dashboard
       DASHBOARD_LANDING: ""
-      DASHBOARD_ORDER: DOWNLOADS,INFRA,MEDIA
+      DASHBOARD_ORDER: CONTENT,SEARCH,USENET,TORRENTS,MEDIA
       AUTHTYPE: google
       GOOGLE_CLIENT_ID: your-client-id.apps.googleusercontent.com
       GOOGLE_CLIENT_SECRET: your-client-secret
@@ -234,7 +234,7 @@ STYLE=modern
 DASHBOARD_NAME=Services Dashboard
 DASHBOARD_ICON=/icons/apache-reverse-proxy.png
 DASHBOARD_LANDING=radarr
-DASHBOARD_ORDER=DOWNLOADS,INFRA,MEDIA
+DASHBOARD_ORDER=USENET,TORRENTS,CONTENT,SEARCH,MEDIA
 AUTHTYPE=basic
 BASIC_AUTH_CREDENTIALS=admin:password123
 ENABLE_RADARR=true
@@ -252,13 +252,13 @@ JELLYFIN_URL=http://jellyfin:8096
 **Custom Media-First Order:**
 ```yaml
 environment:
-  DASHBOARD_ORDER: MEDIA,DOWNLOADS,INFRA
+  DASHBOARD_ORDER: MEDIA,USENET,TORRENTS,CONTENT,SEARCH
 ```
 
 **Infrastructure-First Order:**
 ```yaml
 environment:
-  DASHBOARD_ORDER: INFRA,DOWNLOADS,MEDIA
+  DASHBOARD_ORDER: CONTENT,SEARCH,USENET,TORRENTS,MEDIA
 ```
 
 **Downloads-Only Visible First:**
