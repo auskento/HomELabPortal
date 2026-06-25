@@ -289,7 +289,7 @@
     </div>
 </div>
 
-<iframe name="content" class="content" src="/@@DASHBOARD_LANDING@@" frameborder="0" scrolling="yes">
+<iframe name="Main" class="content" src="/@@DASHBOARD_LANDING@@" frameborder="0" scrolling="yes">
     <!-- Fallback content if iframe fails -->
     <div class="welcome-screen">
         <h1>🎬 Media Server Dashboard</h1>
