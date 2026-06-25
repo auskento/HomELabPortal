@@ -84,6 +84,7 @@ process_service_config() {
 [ "$ENABLE_DELUGE" = "true" ] && process_service_config "deluge" "8112"
 [ "$ENABLE_NZBGET" = "true" ] && process_service_config "nzbget" "6789"
 [ "$ENABLE_NZBHYDRA" = "true" ] && process_service_config "nzbhydra" "5076"
+[ "$ENABLE_BAZARR" = "true" ] && process_service_config "bazarr" "6767"
 
 
 # Function to generate include directive (output ONLY the Include line)
@@ -131,6 +132,7 @@ SABNZBD_INCLUDE=$(generate_include "sabnzbd" "$ENABLE_SABNZBD")
 DELUGE_INCLUDE=$(generate_include "deluge" "$ENABLE_DELUGE")
 NZBGET_INCLUDE=$(generate_include "nzbget" "$ENABLE_NZBGET")
 NZBHYDRA_INCLUDE=$(generate_include "nzbhydra" "$ENABLE_NZBHYDRA")
+BAZARR_INCLUDE=$(generate_include "bazarr" "$ENABLE_BAZARR")
 
 # Generate auth includes based on AUTHTYPE (mutually exclusive)
 AUTH_ENTRA_INCLUDE=""
@@ -238,6 +240,7 @@ CONFIG="${CONFIG//@@INCLUDE_SABNZBD@@/$SABNZBD_INCLUDE}"
 CONFIG="${CONFIG//@@INCLUDE_DELUGE@@/$DELUGE_INCLUDE}"
 CONFIG="${CONFIG//@@INCLUDE_NZBGET@@/$NZBGET_INCLUDE}"
 CONFIG="${CONFIG//@@INCLUDE_NZBHYDRA@@/$NZBHYDRA_INCLUDE}"
+CONFIG="${CONFIG//@@INCLUDE_BAZARR@@/$BAZARR_INCLUDE}"
 CONFIG="${CONFIG//@@INCLUDE_CUSTOM_BACKEND@@/$CUSTOM_BACKEND_INCLUDE}"
 
 # Replace auth includes

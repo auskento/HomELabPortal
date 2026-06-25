@@ -1,304 +1,495 @@
-# Apache Reverse Proxy with Let's Encrypt
+# Apache Reverse Proxy - Media Server Edition
 
-A complete Docker setup for an Apache reverse proxy with automatic SSL/TLS certificate management via Let's Encrypt, supporting multiple backend servers and custom HTML error pages.
+A production-ready Apache reverse proxy system for managing 17+ media server applications with automatic HTTPS, flexible authentication, and customizable dashboards.
 
-## Features
+**Perfect for:** Sonarr, Radarr, Jellyfin, Plex, qBittorrent, Bazarr, and more!
 
-- **Apache 2 Reverse Proxy** - Route traffic to multiple backend servers
-- **Let's Encrypt Integration** - Automatic HTTPS with Certbot
-- **Auto-Renewal** - Certificates automatically renew via cron (daily at 3 AM)
-- **Load Balancing** - Round-robin load distribution across backends
-- **Security Headers** - HSTS, X-Frame-Options, CSP, etc.
-- **Custom Error Pages** - Beautiful 502 and 503 error pages
-- **Health Checks** - Built-in Docker health checks
-- **Multi-backend Support** - Route different paths to different backends
+## ⭐ Key Features
 
-## Project Structure
+### Services (17 Total)
+- **CONTENT**: Sonarr, Radarr, Lidarr, Whisparr
+- **SEARCH**: Seerr, Prowlarr, Bazarr ⭐ NEW
+- **USENET**: SABnzbd, NZBGet, NZBHydra
+- **TORRENTS**: Transmission, qBittorrent, Deluge
+- **MEDIA**: Jellyfin, Emby, Plex, Tautulli
 
-```
-.
-├── Dockerfile                          # Docker image definition
-├── docker-compose.yml                  # Docker Compose configuration
-├── docker-entrypoint.sh               # Startup script (cert init & renewal setup)
-├── cert-renewal-cron                  # Cron job for certificate renewal
-├── apache-conf/
-│   ├── reverse-proxy.conf             # Main Apache reverse proxy config
-│   └── ssl-config.conf                # SSL/TLS security parameters
-└── html/
-    ├── index.html                     # Home page
-    └── error-pages/
-        ├── 502.html                   # Bad Gateway error page
-        └── 503.html                   # Service Unavailable error page
-```
+### Core Capabilities
+- ✅ **HTTPS/TLS** - Automatic via Let's Encrypt
+- ✅ **Authentication** - 4 methods (none, basic, Entra ID, Google OAuth)
+- ✅ **Dashboard** - 4 themes (modern, classic, sleek, minimal)
+- ✅ **Service Ordering** - Customize category order
+- ✅ **Auto-Renewal** - Daily certificate renewal
+- ✅ **WebSocket Support** - Real-time updates for services
+- ✅ **Security Headers** - HSTS, X-Frame-Options, and more
 
-## Quick Start
+---
+
+## 🚀 Quick Start (5 minutes)
 
 ### Prerequisites
+- Docker & Docker Compose
+- A registered domain (for HTTPS)
+- Port 80 and 443 accessible
 
-- Docker & Docker Compose installed
-- A registered domain name (for Let's Encrypt)
-- Port 80 and 443 available on your host
+### Step 1: Clone & Configure
 
-### 1. Configure Your Domain
+```bash
+git clone https://github.com/auskento/apache-reverse-proxy.git
+cd apache-reverse-proxy
 
-Edit `docker-compose.yml` and set your domain and email:
+# Copy example configuration
+cp .env.example .env
+nano .env  # Edit with your settings
+```
+
+### Step 2: Set Basic Variables
+
+```bash
+DOMAIN=yourdomain.com
+EMAIL=admin@yourdomain.com
+ACCESS_MODE=public
+
+# Enable services you want
+ENABLE_SONARR=true
+ENABLE_RADARR=true
+ENABLE_JELLYFIN=true
+ENABLE_BAZARR=true
+ENABLE_QBITTORRENT=true
+```
+
+### Step 3: Deploy
+
+```bash
+docker-compose build
+docker-compose up -d
+```
+
+### Step 4: Verify
+
+```bash
+# Check logs
+docker-compose logs -f apache-reverse-proxy
+
+# Access dashboard
+https://yourdomain.com
+
+# Access individual services
+https://yourdomain.com/sonarr
+https://yourdomain.com/radarr
+https://yourdomain.com/jellyfin
+https://yourdomain.com/bazarr
+```
+
+---
+
+## 📋 Common Configurations
+
+### Minimal TV/Movie Setup
 
 ```yaml
-environment:
-  DOMAIN: yourdomain.com
-  EMAIL: your-email@example.com
+ENABLE_SONARR: "true"
+ENABLE_RADARR: "true"
+ENABLE_JELLYFIN: "true"
+ENABLE_QBITTORRENT: "true"
 ```
 
-### 2. Update Apache Configuration
+### Complete Media Stack
 
-Edit `apache-conf/reverse-proxy.conf` with your backend server addresses:
+```yaml
+# CONTENT Category
+ENABLE_SONARR: "true"
+ENABLE_RADARR: "true"
+ENABLE_LIDARR: "true"
+ENABLE_WHISPARR: "true"
 
-```apache
+# SEARCH Category
+ENABLE_PROWLARR: "true"
+ENABLE_SEERR: "true"
+ENABLE_BAZARR: "true"
+
+# USENET Category
+ENABLE_SABNZBD: "true"
+
+# TORRENTS Category
+ENABLE_QBITTORRENT: "true"
+
+# MEDIA Category
+ENABLE_JELLYFIN: "true"
+ENABLE_PLEX: "true"
+ENABLE_TAUTULLI: "true"
 ```
 
-Update the `ServerName` and `ServerAlias` directives as well:
+### With Basic Authentication
 
-```apache
-ServerName yourdomain.com
-ServerAlias www.yourdomain.com
+```yaml
+AUTHTYPE: basic
+BASIC_AUTH_CREDENTIALS: "user1:password1|user2:password2"
+
+# Services enabled above...
 ```
 
-### 3. Build and Start
+### With Entra ID (Azure AD)
+
+```yaml
+AUTHTYPE: entra
+ENTRA_CLIENT_ID: "your-app-id"
+ENTRA_CLIENT_SECRET: "your-app-secret"
+ENTRA_REDIRECT_URI: "https://yourdomain.com/auth/oauth2/callback"
+ENTRA_PROVIDER_METADATA_URL: "https://login.microsoftonline.com/your-tenant/v2.0/.well-known/openid-configuration"
+
+# Services enabled above...
+```
+
+---
+
+## 🎨 Dashboard Customization
+
+### Change Theme
+
+```yaml
+STYLE: modern      # Recommended: React-based, feature-rich
+STYLE: classic     # Original sidebar layout
+STYLE: sleek       # Compact with gradient
+STYLE: minimal     # Single-column design
+```
+
+### Custom Dashboard Name & Icon
+
+```yaml
+DASHBOARD_NAME: "My Homelab"
+DASHBOARD_ICON: "/icons/apache-reverse-proxy.png"
+```
+
+### Custom Landing Page
+
+```yaml
+# Load Sonarr calendar on startup
+DASHBOARD_LANDING: "sonarr/calendar"
+
+# Or load Radarr
+DASHBOARD_LANDING: "radarr"
+
+# Or load Jellyfin
+DASHBOARD_LANDING: "jellyfin"
+```
+
+### Reorder Service Categories
+
+```yaml
+# Default order
+DASHBOARD_ORDER: CONTENT,SEARCH,USENET,TORRENTS,MEDIA
+
+# Media servers first
+DASHBOARD_ORDER: MEDIA,CONTENT,SEARCH,USENET,TORRENTS
+
+# Downloads first
+DASHBOARD_ORDER: USENET,TORRENTS,CONTENT,SEARCH,MEDIA
+```
+
+---
+
+## 📁 Project Structure
+
+```
+apache-reverse-proxy/
+├── 📚 Documentation
+│   ├── README.md                      # This file
+│   ├── ENVIRONMENT-VARIABLES.md       # All variables explained
+│   ├── SERVICES.md                    # Service details
+│   ├── SERVICE-URLS.md                # Backend URL setup
+│   ├── AUTHENTICATION-SETUP.md        # Auth configuration
+│   ├── QUICKSTART.md                  # Quick start guide
+│   ├── TROUBLESHOOTING.md             # Problem solving
+│   ├── COMPLETE-FEATURES.md           # Feature overview
+│   └── CHANGELOG.md                   # Version history
+│
+├── 🐳 Docker
+│   ├── Dockerfile
+│   ├── docker-compose.yml
+│   ├── docker-entrypoint.sh           # Startup configuration
+│   ├── generate-config.sh             # Apache config generator
+│   ├── generate-html-menu.sh          # Dashboard menu generator
+│   └── .env.example                   # Configuration template
+│
+├── 🔧 Apache Configuration
+│   ├── apache-conf/
+│   │   ├── reverse-proxy.conf.template
+│   │   ├── services/                  # Individual service configs
+│   │   │   ├── sonarr.conf
+│   │   │   ├── radarr.conf
+│   │   │   ├── bazarr.conf
+│   │   │   ├── jellyfin.conf
+│   │   │   └── ... (13 more)
+│   │   ├── auth-basic.conf
+│   │   ├── auth-entra-protect.conf
+│   │   └── auth-google-protect.conf
+│
+└── 🎨 Web Assets (Generated at runtime)
+    └── html/
+        ├── dashboard.html             (Modern theme)
+        ├── classic.template
+        ├── sleek.template
+        ├── minimal.template
+        └── icons/
+            └── (service icons)
+```
+
+---
+
+## 🔐 Authentication Methods
+
+### Method 1: No Authentication (Default)
+
+```yaml
+AUTHTYPE: none
+```
+Everyone can access all services.
+
+### Method 2: Basic Authentication
+
+```yaml
+AUTHTYPE: basic
+BASIC_AUTH_CREDENTIALS: "user1:pass1|user2:pass2"
+```
+Simple username/password authentication.
+
+### Method 3: Entra ID (Azure AD / Office 365)
+
+```yaml
+AUTHTYPE: entra
+ENTRA_CLIENT_ID: "..."
+ENTRA_CLIENT_SECRET: "..."
+ENTRA_REDIRECT_URI: "https://yourdomain.com/auth/oauth2/callback"
+ENTRA_PROVIDER_METADATA_URL: "https://login.microsoftonline.com/{tenant-id}/v2.0/.well-known/openid-configuration"
+```
+Enterprise SSO via Microsoft.
+
+### Method 4: Google OAuth
+
+```yaml
+AUTHTYPE: google
+GOOGLE_CLIENT_ID: "..."
+GOOGLE_CLIENT_SECRET: "..."
+GOOGLE_REDIRECT_URI: "https://yourdomain.com"
+```
+Personal access via Google accounts.
+
+---
+
+## 🔧 Configuration Reference
+
+### Essential Variables
+
+```yaml
+# Domain & Email (required for public deployments)
+DOMAIN: yourdomain.com
+EMAIL: admin@yourdomain.com
+ACCESS_MODE: public              # public or private
+
+# Dashboard
+STYLE: modern                     # modern, classic, sleek, minimal
+DASHBOARD_NAME: "My Media Server"
+DASHBOARD_LANDING: ""             # Default service on startup
+DASHBOARD_ORDER: "CONTENT,SEARCH,USENET,TORRENTS,MEDIA"
+
+# Authentication
+AUTHTYPE: none                    # none, basic, entra, google
+```
+
+### Enable Services
+
+For each service you want to proxy:
+
+```yaml
+ENABLE_SONARR: "true"
+SONARR_URL: "http://sonarr:8989"
+```
+
+Available services:
+- `ENABLE_SONARR`, `ENABLE_RADARR`, `ENABLE_LIDARR`, `ENABLE_WHISPARR`
+- `ENABLE_PROWLARR`, `ENABLE_SEERR`, `ENABLE_BAZARR`
+- `ENABLE_SABNZBD`, `ENABLE_NZBGET`, `ENABLE_NZBHYDRA`
+- `ENABLE_TRANSMISSION`, `ENABLE_QBITTORRENT`, `ENABLE_DELUGE`
+- `ENABLE_JELLYFIN`, `ENABLE_EMBY`, `ENABLE_PLEX`, `ENABLE_TAUTULLI`
+
+**See ENVIRONMENT-VARIABLES.md for complete reference**
+
+---
+
+## 🧪 Testing & Troubleshooting
+
+### Check Service Connectivity
 
 ```bash
-# Build the Docker image
-docker-compose build
-
-# Start the services
-docker-compose up -d
-
-# View logs
-docker-compose logs -f apache-reverse-proxy
+docker-compose exec apache-reverse-proxy curl -I http://sonarr:8989
+# Should return 200 or 401 (if service requires auth)
 ```
 
-The container will:
-1. Check if certificates exist
-2. Request new certificates from Let's Encrypt if needed
-3. Set up automatic renewal
-4. Start Apache
-
-## Configuration Details
-
-### SSL/TLS Configuration
-
-The setup uses modern, secure TLS settings:
-- **Minimum TLS version**: 1.2
-- **Ciphers**: ECDHE and DHE based (perfect forward secrecy)
-- **HSTS**: Enabled with 1-year max age
-
-### Reverse Proxy Behavior
-
-The proxy configuration includes:
-- **Preserve Host Header**: Backend receives original Host header
-- **Keep-Alive**: Persistent connections to backends
-- **Load Balancing**: Round-robin by default
-- **Timeouts**:
-  - Connect: 30 seconds
-  - Total: 300 seconds
-  - Buffer Size: 4KB
-
-### Certificate Auto-Renewal
-
-Certificates are renewed daily at 3 AM UTC via cron:
+### View Generated Apache Config
 
 ```bash
-0 3 * * * /usr/bin/certbot renew --quiet --agree-tos && /usr/sbin/apache2ctl graceful
+docker-compose exec apache-reverse-proxy cat /etc/apache2/sites-available/reverse-proxy.conf
 ```
 
-If you need to manually renew:
+### Check Logs
 
 ```bash
-docker-compose exec apache-reverse-proxy certbot renew
+# Apache error logs
+docker-compose logs -f apache-reverse-proxy | grep error
+
+# Service health check logs
+docker-compose logs -f apache-reverse-proxy | grep -E "(502|503|FAIL)"
+
+# Auth logs
+docker-compose logs -f apache-reverse-proxy | grep -i auth
 ```
 
-## Advanced Configuration
-
-### Using with Multiple Path-Based Backends
-
-To route different paths to different backends:
-
-```apache
-
-<Location /api>
-</Location>
-```
-
-### Customizing HTML Files
-
-Edit files in the `html/` directory:
-- `html/index.html` - Home page
-- `html/error-pages/502.html` - Bad gateway errors
-- `html/error-pages/503.html` - Service unavailable
-
-Changes are picked up automatically after container restart.
-
-### Enabling Additional Apache Modules
-
-Add to the `RUN a2enmod` line in Dockerfile:
-
-```dockerfile
-RUN a2enmod rewrite \
-    && a2enmod proxy \
-    && a2enmod proxy_http \
-    && a2enmod ssl \
-    && a2enmod headers \
-    && a2enmod your_module_here
-```
-
-## Logging
-
-### Apache Logs
-
-Access logs:
-```bash
-docker-compose exec apache-reverse-proxy tail -f /var/log/apache2/access.log
-```
-
-Error logs:
-```bash
-docker-compose exec apache-reverse-proxy tail -f /var/log/apache2/error.log
-```
-
-### Certificate Renewal Logs
+### Test Configuration Syntax
 
 ```bash
-docker-compose exec apache-reverse-proxy tail -f /var/log/certbot-renewal.log
-```
-
-## Troubleshooting
-
-### Certificate not obtaining
-
-1. **Ensure port 80 is accessible**:
-   ```bash
-   curl -I http://yourdomain.com/.well-known/acme-challenge/test
-   ```
-
-2. **Check DNS resolution**:
-   ```bash
-   docker-compose exec apache-reverse-proxy nslookup yourdomain.com
-   ```
-
-3. **View detailed logs**:
-   ```bash
-   docker-compose exec apache-reverse-proxy certbot -v renew
-   ```
-
-### 502 Bad Gateway Errors
-
-- Check backend servers are running and accessible
-- Verify backend addresses in `reverse-proxy.conf`
-- Check backend logs for errors
-- Increase timeouts if backends are slow
-
-### Apache won't start
-
-```bash
-# Test configuration
 docker-compose exec apache-reverse-proxy apache2ctl configtest
-
-# View startup errors
-docker-compose logs apache-reverse-proxy
+# Should show: Syntax OK
 ```
 
-## Performance Tuning
+### Service Not Responding (502 Bad Gateway)
 
-### Increase Worker Threads
+1. **Verify service is running:**
+   ```bash
+   docker-compose ps sonarr  # replace with service name
+   ```
 
-Edit Dockerfile and add before the CMD:
+2. **Check service URL is correct:**
+   - Verify in `.env` file
+   - Check service is accessible: `curl http://sonarr:8989`
 
-```dockerfile
-RUN echo "ServerLimit 256" >> /etc/apache2/mods-available/mpm_prefork.conf
-RUN echo "MaxRequestWorkers 256" >> /etc/apache2/mods-available/mpm_prefork.conf
+3. **Check Apache logs:**
+   ```bash
+   docker-compose logs apache-reverse-proxy | tail -100
+   ```
+
+See **TROUBLESHOOTING.md** for more solutions.
+
+---
+
+## 📊 Deployment Scenarios
+
+### Home Server (Single User)
+```yaml
+ACCESS_MODE: private
+AUTHTYPE: none
+ENABLE_SONARR: "true"
+ENABLE_RADARR: "true"
+ENABLE_JELLYFIN: "true"
+ENABLE_BAZARR: "true"
 ```
 
-### Use Event MPM (Production)
-
-Replace in Dockerfile:
-
-```dockerfile
-RUN a2dismod mpm_prefork && a2enmod mpm_event
+### Family (Multiple Users)
+```yaml
+ACCESS_MODE: public
+AUTHTYPE: basic
+BASIC_AUTH_CREDENTIALS: "dad:password1|mom:password2|kid:password3"
+ENABLE_JELLYFIN: "true"
+ENABLE_PLEX: "true"
 ```
 
-## Backup & Restore
-
-### Backup Certificates
-
-```bash
-docker cp apache-reverse-proxy:/etc/letsencrypt ./letsencrypt-backup
+### Enterprise (Company Network)
+```yaml
+ACCESS_MODE: public
+AUTHTYPE: entra
+ENTRA_CLIENT_ID: "..."  # Azure app ID
+ENTRA_CLIENT_SECRET: "..."
+# Services enabled...
 ```
 
-### Restore Certificates
-
-```bash
-docker cp ./letsencrypt-backup apache-reverse-proxy:/etc/letsencrypt
+### Content Creator (Full Stack)
+```yaml
+ACCESS_MODE: public
+AUTHTYPE: google
+GOOGLE_CLIENT_ID: "..."
+GOOGLE_CLIENT_SECRET: "..."
+# All services enabled
+ENABLE_SONARR: "true"
+ENABLE_RADARR: "true"
+ENABLE_LIDARR: "true"
+ENABLE_PROWLARR: "true"
+ENABLE_SEERR: "true"
+ENABLE_BAZARR: "true"
+ENABLE_SABNZBD: "true"
+ENABLE_JELLYFIN: "true"
 ```
 
-## Monitoring
+---
 
-### Health Check Status
+## 🔒 Security Best Practices
 
-```bash
-docker-compose ps
-```
+✅ **HTTPS Only** - All traffic encrypted via Let's Encrypt  
+✅ **Automatic Renewal** - Certificates renew daily  
+✅ **Security Headers** - HSTS, X-Frame-Options enabled  
+✅ **Path Protection** - Services only accessible through proxy  
+✅ **Authentication** - Choose method appropriate for your use case  
+✅ **Internal Network** - Services communicate via Docker network  
+✅ **Exposed Ports** - Only 80/443 open, service ports internal  
 
-Should show `(healthy)` status.
+---
 
-### Certificate Expiry
+## 📖 Documentation Index
 
-```bash
-docker-compose exec apache-reverse-proxy certbot certificates
-```
+| Document | Purpose |
+|----------|---------|
+| **QUICKSTART.md** | 5-minute setup guide |
+| **ENVIRONMENT-VARIABLES.md** | All configuration options |
+| **SERVICES.md** | Details on 17 supported services |
+| **SERVICE-URLS.md** | Backend URL configuration |
+| **AUTHENTICATION-SETUP.md** | Auth method setup guides |
+| **TROUBLESHOOTING.md** | Problem solving |
+| **COMPLETE-FEATURES.md** | Feature overview |
+| **CHANGELOG.md** | Version history |
 
-## Security Considerations
+---
 
-1. **Keep Docker images updated**: Regularly rebuild to get latest security patches
-2. **Use strong Let's Encrypt email**: Use an email you actively monitor
-3. **Restrict backend access**: Backends should only accept connections from proxy
-4. **Monitor logs**: Watch for suspicious activity in access logs
-5. **Firewall rules**: Only expose ports 80/443 to public, backend ports only to proxy
+## 🆘 Need Help?
 
-## Production Deployment
+### Configuration Issues
+→ Check **ENVIRONMENT-VARIABLES.md**
 
-### Recommended Changes
+### Service Won't Proxy
+→ See **SERVICE-URLS.md** and **TROUBLESHOOTING.md**
 
-1. Use a more robust process manager (supervisord)
-2. Separate certificate renewal from main container
-3. Use Docker secrets for sensitive data
-4. Enable read-only root filesystem
-5. Run as non-root user
-6. Use external certificate storage (e.g., AWS Secrets Manager)
+### Authentication Problems
+→ Read **AUTHENTICATION-SETUP.md**
 
-Example production-ready additions to Dockerfile:
+### General Questions
+→ Start with **QUICKSTART.md**
 
-```dockerfile
-RUN useradd -m -s /sbin/nologin apache-user
-USER apache-user
-RUN sed -i 's/Listen 80/Listen 8080/' /etc/apache2/ports.conf
-EXPOSE 8080 8443
-```
+### Docker/Technical Help
+→ Check container logs: `docker-compose logs apache-reverse-proxy`
 
-## Contributing
+---
 
-Feel free to customize:
-- Backend addresses and routing rules
-- CSS styling of error pages
-- Apache modules and configuration
-- Cron schedule for certificate renewal
+## 📦 Version Info
 
-## License
+- **Current Version**: 2.1.0
+- **Release Date**: 2026-06-25
+- **Services**: 17 total
+- **Categories**: 5 (CONTENT, SEARCH, USENET, TORRENTS, MEDIA)
+- **Docker Image**: Apache 2.4 + Certbot + mod_proxy
 
-Free to use and modify for your needs.
+**See CHANGELOG.md for complete version history**
 
-## Support
+---
 
-For issues:
-1. Check the troubleshooting section
-2. Review Apache error logs
-3. Verify Docker network connectivity
-4. Test Let's Encrypt directly with certbot
+## 📝 License
+
+MIT License - See LICENSE file for details
+
+---
+
+## 🚀 Getting Started
+
+1. **Read**: [QUICKSTART.md](QUICKSTART.md) (5 min)
+2. **Configure**: Edit `.env` with your settings
+3. **Deploy**: `docker-compose up -d`
+4. **Access**: `https://yourdomain.com`
+5. **Troubleshoot**: [TROUBLESHOOTING.md](TROUBLESHOOTING.md) if needed
+
+**You're ready to proxy!** 🎉

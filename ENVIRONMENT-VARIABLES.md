@@ -92,7 +92,7 @@ For `ACCESS_MODE=public`, these **must** be set:
 - **Description:** Order of service category groups in dashboard
 - **Service Groups:**
   - `CONTENT`: Sonarr, Radarr, Lidarr, Whisparr
-  - `SEARCH`: Seerr, Prowlarr
+  - `SEARCH`: Seerr, Prowlarr, Bazarr
   - `USENET`: SABnzbd, NZBGet, NZBHydra
   - `TORRENTS`: Deluge, Transmission, qBittorrent
   - `MEDIA`: Emby, Plex, Jellyfin, Tautulli
@@ -123,27 +123,36 @@ For `ACCESS_MODE=public`, these **must** be set:
 
 For each service, use `ENABLE_*` variables (grouped by DASHBOARD_ORDER category):
 
-**DOWNLOADS Category:**
+**USENET Category:**
 ```
 ENABLE_SABNZBD=true/false
 ENABLE_NZBGET=true/false
 ENABLE_NZBHYDRA=true/false
+```
+
+**TORRENTS Category:**
+```
 ENABLE_DELUGE=true/false
 ENABLE_TRANSMISSION=true/false
 ENABLE_QBITTORRENT=true/false
 ```
 
-**INFRA Category (Indexers & Infrastructure):**
+**CONTENT Category:**
 ```
-ENABLE_RADARR=true/false
 ENABLE_SONARR=true/false
-ENABLE_PROWLARR=true/false
-ENABLE_SEERR=true/false
+ENABLE_RADARR=true/false
 ENABLE_LIDARR=true/false
 ENABLE_WHISPARR=true/false
 ```
 
-**MEDIA Category (Media Servers):**
+**SEARCH Category:**
+```
+ENABLE_SEERR=true/false
+ENABLE_PROWLARR=true/false
+ENABLE_BAZARR=true/false
+```
+
+**MEDIA Category:**
 ```
 ENABLE_EMBY=true/false
 ENABLE_PLEX=true/false
@@ -161,24 +170,33 @@ ENABLE_TAUTULLI=true/false
 
 For each enabled service, specify the backend address (grouped by category):
 
-**DOWNLOADS Category:**
+**USENET Category:**
 ```
 SABNZBD_URL=http://sabnzbd:8080
 NZBGET_URL=http://nzbget:6789
 NZBHYDRA_URL=http://nzbhydra:5076
+```
+
+**TORRENTS Category:**
+```
 DELUGE_URL=http://deluge:8112
 TRANSMISSION_URL=http://transmission:6969
 QBITTORRENT_URL=http://qbittorrent:8080
 ```
 
-**INFRA Category:**
+**CONTENT Category:**
 ```
-RADARR_URL=http://radarr:7878
 SONARR_URL=http://sonarr:8989
-PROWLARR_URL=http://prowlarr:9696
-SEERR_URL=http://seerr:5055
+RADARR_URL=http://radarr:7878
 LIDARR_URL=http://lidarr:8686
 WHISPARR_URL=http://whisparr:6969
+```
+
+**SEARCH Category:**
+```
+SEERR_URL=http://seerr:5055
+PROWLARR_URL=http://prowlarr:9696
+BAZARR_URL=http://bazarr:6767
 ```
 
 **MEDIA Category:**
@@ -202,24 +220,33 @@ TAUTULLI_URL=http://tautulli:8181
 
 Customize icons for each service (grouped by category):
 
-**DOWNLOADS Category:**
+**USENET Category:**
 ```
 ICON_URL_SABNZBD=
 ICON_URL_NZBGET=
 ICON_URL_NZBHYDRA=
+```
+
+**TORRENTS Category:**
+```
 ICON_URL_DELUGE=
 ICON_URL_TRANSMISSION=
 ICON_URL_QBITTORRENT=
 ```
 
-**INFRA Category:**
+**CONTENT Category:**
 ```
-ICON_URL_RADARR=
 ICON_URL_SONARR=
-ICON_URL_PROWLARR=
-ICON_URL_SEERR=
+ICON_URL_RADARR=
 ICON_URL_LIDARR=
 ICON_URL_WHISPARR=
+```
+
+**SEARCH Category:**
+```
+ICON_URL_SEERR=
+ICON_URL_PROWLARR=
+ICON_URL_BAZARR=
 ```
 
 **MEDIA Category:**

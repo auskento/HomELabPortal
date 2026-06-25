@@ -12,13 +12,55 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Planned
 - Authelia authentication support
 - LDAP / Active Directory integration
-- Basic Auth (htpasswd) support
-- Generic OAuth2 support (Google, GitHub)
 - Web-based configuration UI
 - Service health checks dashboard
 - Rate limiting per service
 - Request logging and analytics
 - Automatic service discovery
+
+---
+
+## [2.1.0] - 2026-06-25
+
+### Added
+- **New Service** ⭐
+  - Bazarr (Subtitle management) in SEARCH category
+  - Total services now: 17
+
+- **Service Reorganization**
+  - Restructured categories: CONTENT, SEARCH, USENET, TORRENTS, MEDIA
+  - Added USENET category: SABnzbd, NZBGet, NZBHydra
+  - Added TORRENTS category: Deluge, Transmission, qBittorrent
+  - Added CONTENT category: Sonarr, Radarr, Lidarr, Whisparr
+  - Added SEARCH category: Seerr, Prowlarr, Bazarr
+  - Added MEDIA category: Emby, Plex, Jellyfin, Tautulli
+
+- **NZBGet Authentication**
+  - HTTP Basic Auth support for NZBGet with NZBGET_USER/NZBGET_PASS
+  - Automatic Base64 encoding of credentials
+
+- **Dashboard Improvements**
+  - Custom service grouping via DASHBOARD_ORDER
+  - Multiple dashboard styles: modern, classic, sleek, minimal
+  - Configurable landing page via DASHBOARD_LANDING
+
+### Changed
+- Environment variable naming: LANDING → DASHBOARD_LANDING, DASH_ORDER → DASHBOARD_ORDER
+- Unraid template network mode: bridge → br0
+- Environment variable organization in templates and scripts
+- Documentation structure to reflect new category organization
+
+### Removed
+- Readarr service (no longer supported)
+- Overseerr service (replaced with Seerr)
+- CUSTOM_HTML mount point (HTML generated inside container)
+- Unused Crypto Passphrase variables
+
+### Fixed
+- Modern dashboard React library loading
+- qBittorrent proxy path handling (trailing slash fixes)
+- Menu item targeting across all dashboard styles
+- Jellyfin WebSocket configuration
 
 ---
 

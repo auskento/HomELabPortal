@@ -38,6 +38,7 @@ declare -A SERVICES=(
     # SEARCH category
     [SEERR]="SEARCH|Seerr|Requests|/icons/seerr.png|/seerr/|#00a4dc"
     [PROWLARR]="SEARCH|Prowlarr|Indexer manager|/icons/prowlarr.png|/prowlarr/|#e8810e"
+    [BAZARR]="SEARCH|Bazarr|Subtitles|/icons/bazarr.png|/bazarr/|#e91e63"
 
     # MEDIA category
     [EMBY]="MEDIA|Emby|Streaming|/icons/emby.png|SUBDOMAIN|#9146FF"
@@ -55,7 +56,7 @@ declare -a SERVICE_ORDER=(
     # CONTENT
     "SONARR" "RADARR" "LIDARR" "WHISPARR"
     # SEARCH
-    "SEERR" "PROWLARR"
+    "SEERR" "PROWLARR" "BAZARR"
     # MEDIA
     "EMBY" "PLEX" "JELLYFIN" "TAUTULLI"
 )

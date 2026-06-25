@@ -35,6 +35,7 @@ html/icons/
 ├── radarr.png          # Icon for Radarr
 ├── jellyfin.png        # Icon for Jellyfin
 ├── prowlarr.png        # Icon for Prowlarr
+├── bazarr.png          # Icon for Bazarr
 ├── radarr.jpg          # JPG also works
 └── plex.svg            # SVG also works
 ```
@@ -56,16 +57,20 @@ Each service has a specific filename pattern. Use **lowercase** service names:
 | Sonarr | `sonarr.png` or `sonarr.jpg` or `sonarr.svg` |
 | Radarr | `radarr.png` or `radarr.jpg` or `radarr.svg` |
 | Whisparr | `whisparr.png` or `whisparr.jpg` or `whisparr.svg` |
+| Lidarr | `lidarr.png` or `lidarr.jpg` or `lidarr.svg` |
+| Prowlarr | `prowlarr.png` or `prowlarr.jpg` or `prowlarr.svg` |
+| Seerr | `seerr.png` or `seerr.jpg` or `seerr.svg` |
+| Bazarr | `bazarr.png` or `bazarr.jpg` or `bazarr.svg` |
 | Jellyfin | `jellyfin.png` or `jellyfin.jpg` or `jellyfin.svg` |
+| Emby | `emby.png` or `emby.jpg` or `emby.svg` |
 | Plex | `plex.png` or `plex.jpg` or `plex.svg` |
+| Tautulli | `tautulli.png` or `tautulli.jpg` or `tautulli.svg` |
+| SABnzbd | `sabnzbd.png` or `sabnzbd.jpg` or `sabnzbd.svg` |
+| NZBGet | `nzbget.png` or `nzbget.jpg` or `nzbget.svg` |
+| NZBHydra | `nzbhydra.png` or `nzbhydra.jpg` or `nzbhydra.svg` |
 | Transmission | `transmission.png` or `transmission.jpg` or `transmission.svg` |
 | qBittorrent | `qbittorrent.png` or `qbittorrent.jpg` or `qbittorrent.svg` |
-| Prowlarr | `prowlarr.png` or `prowlarr.jpg` or `prowlarr.svg` |
-| Lidarr | `lidarr.png` or `lidarr.jpg` or `lidarr.svg` |
-| Readarr | `readarr.png` or `readarr.jpg` or `readarr.svg` |
-| Overseerr | `overseerr.png` or `overseerr.jpg` or `overseerr.svg` |
-| Emby | `emby.png` or `emby.jpg` or `emby.svg` |
-| Tautulli | `tautulli.png` or `tautulli.jpg` or `tautulli.svg` |
+| Deluge | `deluge.png` or `deluge.jpg` or `deluge.svg` |
 
 ## Icon Sources
 

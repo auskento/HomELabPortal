@@ -126,13 +126,22 @@ whisparr:
   - Shared across all *arr apps
   - Health monitoring
 
-#### Overseerr - Request Manager
-- **URL Path**: `/overseerr`
+#### Seerr - Request Manager
+- **URL Path**: `/seerr`
 - **Port**: 5055
-- **Enable**: `ENABLE_OVERSEERR=true`
+- **Enable**: `ENABLE_SEERR=true`
 - **Features**:
   - User request management
   - Approval workflows
+  - Integration with Sonarr/Radarr
+
+#### Bazarr - Subtitle Management
+- **URL Path**: `/bazarr`
+- **Port**: 6767
+- **Enable**: `ENABLE_BAZARR=true`
+- **Features**:
+  - Automatic subtitle downloads
+  - Multiple language support
   - Integration with Sonarr/Radarr
 
 ### Media Centers

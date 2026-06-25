@@ -253,6 +253,18 @@
       <Value/>
     </Variable>
     <Variable>
+      <Name>ENABLE_BAZARR</Name>
+      <Value>false</Value>
+    </Variable>
+    <Variable>
+      <Name>BAZARR_URL</Name>
+      <Value>http://bazarr:6767</Value>
+    </Variable>
+    <Variable>
+      <Name>ICON_URL_BAZARR</Name>
+      <Value/>
+    </Variable>
+    <Variable>
       <Name>ENABLE_SEERR</Name>
       <Value>false</Value>
     </Variable>
@@ -401,6 +413,9 @@
   <Config Name="[9/16] Enable Prowlarr" Target="ENABLE_PROWLARR" Default="false" Mode="" Description="Prowlarr - Indexer Manager" Type="Variable" Display="always" Required="false" Mask="false"/>
   <Config Name="Prowlarr URL" Target="PROWLARR_URL" Default="http://prowlarr:9696" Mode="" Description="Backend URL" Type="Variable" Display="always" Required="false" Mask="false"/>
   <Config Name="Prowlarr Icon URL" Target="ICON_URL_PROWLARR" Default="" Mode="" Description="Icon URL (leave blank for auto-generated)" Type="Variable" Display="advanced" Required="false" Mask="false"/>
+  <Config Name="[10/16] Enable Bazarr" Target="ENABLE_BAZARR" Default="false" Mode="" Description="Bazarr - Subtitle Management" Type="Variable" Display="always" Required="false" Mask="false"/>
+  <Config Name="Bazarr URL" Target="BAZARR_URL" Default="http://bazarr:6767" Mode="" Description="Backend URL" Type="Variable" Display="always" Required="false" Mask="false"/>
+  <Config Name="Bazarr Icon URL" Target="ICON_URL_BAZARR" Default="" Mode="" Description="Icon URL (leave blank for auto-generated)" Type="Variable" Display="advanced" Required="false" Mask="false"/>
 
   <Config Name="[10/16] Enable Seerr" Target="ENABLE_SEERR" Default="false" Mode="" Description="Seerr - Request Manager" Type="Variable" Display="always" Required="false" Mask="false"/>
   <Config Name="Seerr URL" Target="SEERR_URL" Default="http://seerr:5055" Mode="" Description="Backend URL" Type="Variable" Display="always" Required="false" Mask="false"/>

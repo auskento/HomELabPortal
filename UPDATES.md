@@ -1,319 +1,255 @@
-# What's New: Whisparr + Custom HTML Support
+# What's New in v2.1
 
-## ✨ New Features Added
+## ✨ Major Updates
 
-### 1. Whisparr Support
-
-**Whisparr** is now fully integrated! It's a comic and manga automation tool similar to Sonarr/Radarr.
+### 1. Bazarr - Subtitle Management ⭐
+Automatic subtitle downloads for your media library!
 
 **Quick Enable:**
 ```yaml
-ENABLE_WHISPARR: "true"
+ENABLE_BAZARR: "true"
+BAZARR_URL: "http://bazarr:6767"
 ```
 
-**Access at:** `https://yourdomain.com/whisparr`
+**Access at:** `https://yourdomain.com/bazarr`
 
-**Port:** 6969
-
-**What it does:**
-- Automate comic book collection
-- Track manga series
-- Manage digital collections
-- Integration with download clients
-
-**docker-compose service included:**
-```yaml
-whisparr:
-  image: lscr.io/linuxserver/whisparr:latest
-  container_name: whisparr
-  ports:
-    - "6969:6969"
-  volumes:
-    - /path/to/whisparr/config:/config
-    - /path/to/media:/media
-```
-
-### 2. Custom HTML Support
-
-You can now use your own custom HTML files for the reverse proxy layout!
-
-**Three ways to customize:**
-
-#### Option 1: Edit Existing Files (Simplest)
-Just edit the HTML files in the `html/` directory:
-- `html/index.html` - Home page
-- `html/error-pages/502.html` - Bad gateway error
-- `html/error-pages/503.html` - Unavailable error
-
-Changes apply on restart.
-
-#### Option 2: Volume Mount (For Development)
-In `docker-compose.yml`, add a volume mount:
-```yaml
-volumes:
-  - ./html:/var/www/html
-```
-
-Now changes are live without rebuilding!
-
-#### Option 3: Replace Entire Directory
-Point to your custom HTML directory:
-```yaml
-volumes:
-  - /path/to/your/custom/html:/var/www/html
-```
-
-**New Documentation:**
-→ Read `CUSTOM-HTML.md` for complete guide with examples
+**Features:**
+- Automatic subtitle downloads
+- Multiple language support
+- Integration with Sonarr and Radarr
+- Web-based interface
 
 ---
 
-## Files Updated
+### 2. Service Reorganization
+Services are now organized into 5 clear categories:
 
-### Configuration
-- ✅ `docker-compose.yml` - Added Whisparr service and environment variable
-- ✅ `apache-conf/services/whisparr.conf` - New Whisparr proxy config
-- ✅ `apache-conf/reverse-proxy.conf.template` - Added Whisparr placeholder
-- ✅ `generate-config.sh` - Added Whisparr logic
-- ✅ `.env.example` - Added ENABLE_WHISPARR option
+- **CONTENT** - Sonarr, Radarr, Lidarr, Whisparr
+- **SEARCH** - Seerr, Prowlarr, Bazarr ⭐ NEW!
+- **USENET** - SABnzbd, NZBGet, NZBHydra
+- **TORRENTS** - Transmission, qBittorrent, Deluge
+- **MEDIA** - Jellyfin, Emby, Plex, Tautulli
+
+**Customize order:**
+```yaml
+DASHBOARD_ORDER: MEDIA,CONTENT,SEARCH,USENET,TORRENTS
+```
+
+---
+
+### 3. Enhanced NZBGet Support
+NZBGet authentication is now fully supported!
+
+**With Authentication:**
+```yaml
+ENABLE_NZBGET: "true"
+NZBGET_URL: "http://nzbget:6789"
+NZBGET_USER: "your_username"
+NZBGET_PASS: "your_password"
+```
+
+The proxy automatically:
+- Encodes credentials in Base64
+- Injects authentication header
+- Passes through to NZBGet backend
+
+---
+
+### 4. Dashboard Improvements
+
+#### Multiple Themes
+Choose your preferred dashboard style:
+- **modern** - React-based with full features (recommended)
+- **classic** - Original sidebar layout
+- **sleek** - Compact with gradient styling
+- **minimal** - Single-column design
+
+**Set theme:**
+```yaml
+STYLE: modern
+```
+
+#### Custom Dashboard Names
+```yaml
+DASHBOARD_NAME: "My Homelab"
+DASHBOARD_ICON: "/icons/apache-reverse-proxy.png"
+```
+
+#### Custom Landing Pages
+Set which service loads on startup:
+```yaml
+DASHBOARD_LANDING: "sonarr/calendar"
+```
+
+---
+
+### 5. Updated Variable Naming
+For consistency, variables were renamed:
+
+| Old Name | New Name |
+|----------|----------|
+| `LANDING` | `DASHBOARD_LANDING` |
+| `DASH_ORDER` | `DASHBOARD_ORDER` |
+
+Update your `.env` file to use new names.
+
+---
+
+## 🔧 Files Updated
+
+### Configuration Scripts
+- ✅ `docker-entrypoint.sh` - Added Bazarr, reorganized variables
+- ✅ `generate-config.sh` - NZBGet auth support, Bazarr service
+- ✅ `generate-html-menu.sh` - New category structure, Bazarr integration
+- ✅ `.env.example` - All 17 services, organized by category
+
+### Apache Configuration
+- ✅ `apache-conf/services/bazarr.conf` - NEW! Bazarr proxy config
+- ✅ `apache-conf/reverse-proxy.conf.template` - Updated placeholders
+- ✅ Updated all service configs with proper Location blocks
+
+### Unraid Template
+- ✅ `apache-reverse-proxy.xml` - Updated service list, new variables
 
 ### Documentation
-- ✅ `CUSTOM-HTML.md` - NEW! Complete HTML customization guide
-- ✅ `SERVICES.md` - Updated with Whisparr details
-- ✅ `INDEX.md` - Updated service count (13→14) and service list
+- ✅ `ENVIRONMENT-VARIABLES.md` - Reorganized by category
+- ✅ `SERVICES.md` - Added Bazarr, updated Seerr (was Overseerr)
+- ✅ `SERVICE-URLS.md` - All 17 services documented
+- ✅ `ICON-URLS.md` - Complete icon reference
+- ✅ `ICONS.md` - Icon naming conventions
+- ✅ `QUICKSTART-SERVICES.md` - Updated examples with Bazarr
+- ✅ `COMPLETE-FEATURES.md` - Rewritten for v2.1
 
 ---
 
-## Quick Examples
+## 📊 Version Comparison
 
-### TV/Movie/Comic Automation Stack
-```yaml
-ENABLE_SONARR: "true"
-ENABLE_RADARR: "true"
-ENABLE_WHISPARR: "true"
-ENABLE_PROWLARR: "true"
-ENABLE_OVERSEERR: "true"
-ENABLE_QBITTORRENT: "true"
-```
-
-Access:
-- `https://yourdomain.com/sonarr` - TV shows
-- `https://yourdomain.com/radarr` - Movies
-- `https://yourdomain.com/whisparr` - Comics/Manga
-- `https://yourdomain.com/prowlarr` - Indexer management
-- `https://yourdomain.com/overseerr` - Requests
-- `https://yourdomain.com/qbittorrent` - Torrents
-
-### With Custom HTML
-1. Create your custom `html/index.html` with links to all services
-2. Use volume mount for live editing
-3. Restart proxy to apply
-
-Example HTML template provided in `CUSTOM-HTML.md`!
+| Feature | v2.0 | v2.1 |
+|---------|------|------|
+| Services | 15 | 17 ⭐ |
+| Categories | 3 | 5 ⭐ |
+| Dashboard Themes | 1 | 4 ⭐ |
+| Authentication Methods | 1 | 4 ⭐ |
+| Custom Ordering | No | Yes ⭐ |
+| NZBGet Auth | No | Yes ⭐ |
+| Subtitle Management | No | Yes (Bazarr) ⭐ |
 
 ---
 
-## What Changed
+## 🚀 Quick Update Path
 
-### Whisparr Integration
-The modular system now automatically includes Whisparr when `ENABLE_WHISPARR: "true"` is set.
+### If you're on v2.0.0
 
-**How it works:**
-1. You set `ENABLE_WHISPARR: "true"` in docker-compose.yml
-2. Container starts
-3. `generate-config.sh` reads environment variables
-4. Whisparr config automatically included in Apache
-5. Accessible immediately at `/whisparr`
+1. **Update your environment variables:**
+   - Rename `LANDING` → `DASHBOARD_LANDING`
+   - Rename `DASH_ORDER` → `DASHBOARD_ORDER`
 
-### Custom HTML System
-The `html/` directory is completely customizable:
+2. **Add new services (optional):**
+   ```yaml
+   ENABLE_BAZARR: "true"
+   BAZARR_URL: "http://bazarr:6767"
+   ```
 
-**Option A (Live Editing):**
-```yaml
-volumes:
-  - ./html:/var/www/html
-```
-Edit files and refresh browser - changes are instant!
+3. **Rebuild and restart:**
+   ```bash
+   docker-compose build
+   docker-compose up -d
+   ```
 
-**Option B (Build-time):**
-Copy your HTML into `html/` directory, rebuild, deploy.
-
-**Option C (External Directory):**
-Point to external directory via volume mount.
-
-All files in the `html/` directory are served from `/` (root path).
+4. **Verify:**
+   - Check dashboard loads: `https://yourdomain.com`
+   - Test Bazarr: `https://yourdomain.com/bazarr`
 
 ---
 
-## File Structure (Updated)
+## 💡 New Features Explained
 
-```
-outputs/
-├── 📄 Documentation
-│   ├── CUSTOM-HTML.md              ← NEW! How to customize HTML
-│   ├── QUICKSTART-SERVICES.md
-│   ├── SERVICES.md                 ← Updated with Whisparr
-│   ├── README.md
-│   ├── INDEX.md                    ← Updated service count
-│   └── TROUBLESHOOTING.md
-│
-├── 🐳 Docker & Configuration
-│   ├── Dockerfile
-│   ├── docker-compose.yml          ← Added Whisparr service
-│   ├── docker-entrypoint.sh
-│   ├── generate-config.sh          ← Added Whisparr logic
-│   ├── cert-renewal-cron
-│   └── .env.example                ← Added ENABLE_WHISPARR
-│
-├── 🔧 Apache Configuration
-│   ├── apache-conf/
-│   │   ├── reverse-proxy.conf.template  ← Added @@INCLUDE_WHISPARR@@
-│   │   ├── ssl-config.conf
-│   │   └── services/
-│   │       ├── whisparr.conf            ← NEW!
-│   │       ├── sonarr.conf
-│   │       ├── radarr.conf
-│   │       └── ... (10+ others)
-│
-└── 🎨 Web Assets
-    └── html/
-        ├── index.html              ← Fully customizable!
-        └── error-pages/
-            ├── 502.html            ← Fully customizable!
-            └── 503.html            ← Fully customizable!
-```
-
----
-
-## Updated Environment Variables
-
+### Bazarr Subtitle Management
+Perfect for automating subtitle downloads:
 ```bash
-# New in this release
-ENABLE_WHISPARR: "true"  # Comic & Manga automation
+# Automatically download subtitles for Sonarr/Radarr content
+# Supports 60+ languages
+# Works with most common subtitle providers
 ```
 
-All other services remain the same:
-```bash
-ENABLE_SONARR: "true"
-ENABLE_RADARR: "true"
-ENABLE_LIDARR: "false"
-ENABLE_READARR: "false"
-ENABLE_PROWLARR: "false"
-ENABLE_OVERSEERR: "false"
-ENABLE_JELLYFIN: "false"
-ENABLE_EMBY: "false"
-ENABLE_PLEX: "false"
-ENABLE_TAUTULLI: "false"
-ENABLE_TRANSMISSION: "false"
-ENABLE_QBITTORRENT: "false"
-```
-
----
-
-## Using Whisparr
-
-### 1. Enable in docker-compose.yml
+### Service Category Ordering
+Reorder service groups without code changes:
 ```yaml
-environment:
-  ENABLE_WHISPARR: "true"
+# Default order
+DASHBOARD_ORDER: CONTENT,SEARCH,USENET,TORRENTS,MEDIA
+
+# Or put media servers first
+DASHBOARD_ORDER: MEDIA,CONTENT,SEARCH,USENET,TORRENTS
+
+# Or downloads first
+DASHBOARD_ORDER: USENET,TORRENTS,CONTENT,SEARCH,MEDIA
 ```
 
-### 2. Uncomment the service (or add your own)
+### Theme Selection
 ```yaml
-whisparr:
-  image: lscr.io/linuxserver/whisparr:latest
-  container_name: whisparr
-  volumes:
-    - /path/to/whisparr/config:/config
-    - /path/to/media:/media
-  ports:
-    - "6969:6969"
-  networks:
-    - proxy-network
+STYLE: modern      # React-based, feature-rich
+STYLE: classic     # Original sidebar layout
+STYLE: sleek       # Compact with styling
+STYLE: minimal     # Simple single-column
 ```
 
-### 3. Restart the proxy
-```bash
-docker-compose restart apache-reverse-proxy
-```
-
-### 4. Access at
-`https://yourdomain.com/whisparr`
-
----
-
-## Custom HTML Guide
-
-**See `CUSTOM-HTML.md` for:**
-- How to provide your own HTML files
-- CSS styling and theming
-- Custom error pages
-- Dashboard examples
-- Responsive design tips
-- JavaScript integration
-- Asset management (CSS, JS, images)
-
-**Quick Start:**
-1. Create `html/index.html` with your custom content
-2. Add volume mount to docker-compose.yml
-3. Changes are live instantly!
-
----
-
-## All 14 Services Now Available
-
-1. **Sonarr** - TV shows
-2. **Radarr** - Movies
-3. **Whisparr** - Comics/Manga ⭐ NEW
-4. **Lidarr** - Music
-5. **Readarr** - Books
-6. **Prowlarr** - Indexer manager
-7. **Overseerr** - Request manager
-8. **Jellyfin** - Media playback
-9. **Emby** - Premium media center
-10. **Plex** - Cloud sync media
-11. **Tautulli** - Plex monitoring
-12. **Transmission** - Torrent client
-13. **qBittorrent** - Advanced torrents
-14. **Custom Backend** - Any service via custom config
-
----
-
-## Recommended Setups
-
-### Complete Media Automation + Comics
+### NZBGet Authentication
+If your NZBGet requires credentials:
 ```yaml
-ENABLE_SONARR: "true"
-ENABLE_RADARR: "true"
-ENABLE_WHISPARR: "true"      # ← New!
-ENABLE_PROWLARR: "true"
-ENABLE_OVERSEERR: "true"
-ENABLE_QBITTORRENT: "true"
-```
-
-### Media Server with Comics
-```yaml
-ENABLE_SONARR: "true"
-ENABLE_RADARR: "true"
-ENABLE_WHISPARR: "true"      # ← New!
-ENABLE_JELLYFIN: "true"
-ENABLE_QBITTORRENT: "true"
-ENABLE_TAUTULLI: "true"
+NZBGET_USER: "nzbget"
+NZBGET_PASS: "your_secure_password"
+# Proxy automatically authenticates requests
 ```
 
 ---
 
-## Next Steps
+## 🔐 Security Notes
 
-1. **Update docker-compose.yml** with `ENABLE_WHISPARR: "true"`
-2. **Create custom HTML** (see `CUSTOM-HTML.md`)
-3. **Restart the proxy**: `docker-compose up -d`
-4. **Access services:**
-   - `https://yourdomain.com/` - Your custom HTML
-   - `https://yourdomain.com/sonarr` - TV shows
-   - `https://yourdomain.com/radarr` - Movies
-   - `https://yourdomain.com/whisparr` - Comics/Manga ⭐
+✅ All updates maintain security standards:
+- HTTPS enforcement (Let's Encrypt)
+- Secure credential handling (Base64 encoding)
+- Proper authentication header injection
+- No exposed service ports
 
 ---
 
-**Questions?** Check `SERVICES.md` for service details or `CUSTOM-HTML.md` for HTML customization! 🚀
+## 📖 Next Steps
+
+1. **Read the updated docs:**
+   - `ENVIRONMENT-VARIABLES.md` - All variables explained
+   - `SERVICES.md` - Details on each service
+   - `COMPLETE-FEATURES.md` - Feature overview
+
+2. **Update your configuration:**
+   ```bash
+   cp .env.example .env
+   nano .env  # Apply your settings
+   ```
+
+3. **Deploy v2.1:**
+   ```bash
+   docker-compose build
+   docker-compose up -d
+   ```
+
+4. **Verify everything works:**
+   - Dashboard: `https://yourdomain.com`
+   - Each enabled service
+   - Log checking: `docker-compose logs -f apache-reverse-proxy`
+
+---
+
+## 🆘 Need Help?
+
+**Variable questions?**
+→ See `ENVIRONMENT-VARIABLES.md`
+
+**Service not working?**
+→ Check `TROUBLESHOOTING.md`
+
+**Want to customize?**
+→ Read `COMPLETE-FEATURES.md`
+
+---
+
+**Enjoy the improvements!** 🎉

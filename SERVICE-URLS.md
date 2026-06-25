@@ -1,6 +1,6 @@
 # Service Backend URL Configuration
 
-Guide for configuring backend URLs for your 15 supported services.
+Guide for configuring backend URLs for your 17 supported services.
 
 ## Overview
 
@@ -8,7 +8,7 @@ Each service needs two variables:
 1. **`ENABLE_*`** - Turn service on/off (`true`/`false`)
 2. **`*_URL`** - Where the service is located
 
-## All 15 Services
+## All 17 Services
 
 ### Automation Services
 
@@ -48,15 +48,6 @@ LIDARR_URL: "http://lidarr:8686"
 - **Docker Container Name:** `lidarr`
 - **Path on Dashboard:** `/lidarr/`
 
-#### Readarr (Books)
-```yaml
-ENABLE_READARR: "true"
-READARR_URL: "http://readarr:8787"
-```
-- **Default Port:** 8787
-- **Docker Container Name:** `readarr`
-- **Path on Dashboard:** `/readarr/`
-
 #### Prowlarr (Indexer Manager)
 ```yaml
 ENABLE_PROWLARR: "true"
@@ -66,18 +57,23 @@ PROWLARR_URL: "http://prowlarr:9696"
 - **Docker Container Name:** `prowlarr`
 - **Path on Dashboard:** `/prowlarr/`
 
----
-
-### Management Services
-
-#### Overseerr (Request Manager)
+#### Seerr (Request Manager)
 ```yaml
-ENABLE_OVERSEERR: "true"
-OVERSEERR_URL: "http://overseerr:5055"
+ENABLE_SEERR: "true"
+SEERR_URL: "http://seerr:5055"
 ```
 - **Default Port:** 5055
-- **Docker Container Name:** `overseerr`
-- **Path on Dashboard:** `/overseerr/`
+- **Docker Container Name:** `seerr`
+- **Path on Dashboard:** `/seerr/`
+
+#### Bazarr (Subtitle Management)
+```yaml
+ENABLE_BAZARR: "true"
+BAZARR_URL: "http://bazarr:6767"
+```
+- **Default Port:** 6767
+- **Docker Container Name:** `bazarr`
+- **Path on Dashboard:** `/bazarr/`
 
 ---
 
@@ -157,6 +153,24 @@ SABNZBD_URL: "http://sabnzbd:8080"
 - **Docker Container Name:** `sabnzbd`
 - **Path on Dashboard:** `/sabnzbd/`
 - **Note:** Can't run qBittorrent AND SABnzbd on same port
+
+#### NZBGet (Usenet Client)
+```yaml
+ENABLE_NZBGET: "true"
+NZBGET_URL: "http://nzbget:6789"
+```
+- **Default Port:** 6789
+- **Docker Container Name:** `nzbget`
+- **Path on Dashboard:** `/nzbget/`
+
+#### NZBHydra (NZB Indexer)
+```yaml
+ENABLE_NZBHYDRA: "true"
+NZBHYDRA_URL: "http://nzbhydra:5076"
+```
+- **Default Port:** 5076
+- **Docker Container Name:** `nzbhydra`
+- **Path on Dashboard:** `/nzbhydra/`
 
 #### Deluge (Torrent Client)
 ```yaml
@@ -240,13 +254,16 @@ services:
       
       # All others disabled by default
       ENABLE_LIDARR: "false"
-      ENABLE_READARR: "false"
+      ENABLE_WHISPARR: "false"
       ENABLE_PROWLARR: "false"
-      ENABLE_OVERSEERR: "false"
+      ENABLE_SEERR: "false"
+      ENABLE_BAZARR: "false"
       ENABLE_EMBY: "false"
       ENABLE_TAUTULLI: "false"
       ENABLE_TRANSMISSION: "false"
       ENABLE_DELUGE: "false"
+      ENABLE_NZBGET: "false"
+      ENABLE_NZBHYDRA: "false"
 ```
 
 ---

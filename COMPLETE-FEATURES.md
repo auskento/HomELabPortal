@@ -1,380 +1,409 @@
-# Complete Feature Summary - All Updates
+# Complete Feature Summary - Apache Reverse Proxy v2.1
 
 ## 🚀 Everything You Have Now
 
-Your Apache reverse proxy system now includes **THREE major features**:
+Your Apache reverse proxy system includes **17 pre-configured services** organized into 5 categories with flexible authentication and customizable dashboard styling.
 
-### 1️⃣ Modular Service Management (Original)
-- Enable/disable 14 services with environment variables
+### Core Features
+
+#### 1️⃣ Modular Service Management
+- **17 pre-configured services** - Enable/disable with environment variables
+- **5 service categories** - CONTENT, SEARCH, USENET, TORRENTS, MEDIA
 - Zero manual Apache config editing
-- Supports Sonarr, Radarr, Jellyfin, qBittorrent, and more
-- Auto-generates Apache configuration
+- Auto-generates Apache configuration on startup
 
-### 2️⃣ Custom HTML & Styling (NEW)
-- Use your own custom HTML for the dashboard
-- Live editing with volume mounts
-- Responsive design examples included
-- Easy CSS customization
+#### 2️⃣ Multiple Authentication Methods
+- **None** - Public access (default)
+- **Basic Auth** - Simple username/password
+- **Entra ID** - Microsoft Azure AD / Office 365 OAuth
+- **Google OAuth** - Google account login
 
-### 3️⃣ Office 365 / Azure AD Authentication (NEW)
-- Protect all services with Microsoft login
-- Single Sign-On (SSO) with Office 365
-- Domain-based access control
-- No password management needed
-
----
-
-## 📋 Quick Reference
-
-### Enable/Disable Each Feature
-
-```yaml
-# Feature 1: Services (choose which to proxy)
-ENABLE_SONARR: "true"
-ENABLE_RADARR: "true"
-ENABLE_WHISPARR: "true"      # Comics/Manga ⭐
-ENABLE_JELLYFIN: "true"
-ENABLE_QBITTORRENT: "true"
-
-# Feature 2: Custom HTML (optional)
-# Just edit files in html/ directory
-# Or use volume mount for live editing
-
-# Feature 3: Office 365 Auth (optional)
-ENABLE_AUTH_OFFICE365: "true"
-OAUTH2_CLIENT_ID: "YOUR_APP_ID"
-OAUTH2_CLIENT_SECRET: "YOUR_SECRET"
-OAUTH2_REDIRECT_URI: "https://yourdomain.com/oauth2callback"
-OAUTH2_ALLOWED_DOMAINS: "company.com"
-```
+#### 3️⃣ Flexible Dashboard Styling
+- **4 dashboard themes** - modern, classic, sleek, minimal
+- **Custom service ordering** - Reorder categories via DASHBOARD_ORDER
+- **Landing page customization** - Set default service on startup
+- **Dynamic menu generation** - Built-in, no volume mounts needed
 
 ---
 
-## 🎯 Usage Scenarios
+## 📋 Supported Services (17 Total)
 
-### Scenario 1: Open Media Server (No Auth)
+### CONTENT Category (Media Automation)
+- **Sonarr** - TV show automation
+- **Radarr** - Movie automation
+- **Lidarr** - Music automation
+- **Whisparr** - Adult content automation
+
+### SEARCH Category (Discovery & Subtitles)
+- **Prowlarr** - Indexer manager
+- **Seerr** - Request management
+- **Bazarr** - Subtitle management ⭐ NEW
+
+### USENET Category (Usenet Downloads)
+- **SABnzbd** - Usenet client
+- **NZBGet** - Usenet client with auth support
+- **NZBHydra** - NZB indexer
+
+### TORRENTS Category (Torrent Downloads)
+- **Transmission** - Lightweight torrent client
+- **qBittorrent** - Advanced torrent client
+- **Deluge** - Torrent client
+
+### MEDIA Category (Streaming Servers)
+- **Jellyfin** - Open-source media server
+- **Emby** - Premium media server
+- **Plex** - Commercial media server
+- **Tautulli** - Plex analytics
+
+---
+
+## 🎛️ Configuration Examples
+
+### Example 1: Basic Media Server (No Auth)
 ```yaml
-ENABLE_AUTH_OFFICE365: "false"
-
-# Anyone can access services
-https://yourdomain.com/sonarr
-https://yourdomain.com/radarr
-https://yourdomain.com/jellyfin
+environment:
+  DOMAIN: media.example.com
+  EMAIL: admin@example.com
+  ACCESS_MODE: public
+  STYLE: modern
+  
+  # Enable services
+  ENABLE_SONARR: "true"
+  ENABLE_RADARR: "true"
+  ENABLE_JELLYFIN: "true"
+  ENABLE_QBITTORRENT: "true"
+  ENABLE_BAZARR: "true"
+  
+  # Service URLs
+  SONARR_URL: http://sonarr:8989
+  RADARR_URL: http://radarr:7878
+  JELLYFIN_URL: http://jellyfin:8096
+  QBITTORRENT_URL: http://qbittorrent:8080
+  BAZARR_URL: http://bazarr:6767
 ```
 
-### Scenario 2: Company Internal Media Server (With Auth)
+### Example 2: With Basic Authentication
 ```yaml
-ENABLE_AUTH_OFFICE365: "true"
-OAUTH2_CLIENT_ID: "company-app-id"
-OAUTH2_CLIENT_SECRET: "company-secret"
-OAUTH2_ALLOWED_DOMAINS: "company.com"
-
-# Only employees can access
-# Login with company email
+environment:
+  AUTHTYPE: basic
+  BASIC_AUTH_CREDENTIALS: "user1:password1|user2:password2"
+  
+  # Services same as above...
 ```
 
-### Scenario 3: Family/Friends Access
+### Example 3: With Entra ID (Azure AD)
 ```yaml
-ENABLE_AUTH_OFFICE365: "true"
-OAUTH2_ALLOWED_DOMAINS: "gmail.com,outlook.com,family.com"
-
-# Anyone with these email domains can access
+environment:
+  AUTHTYPE: entra
+  ENTRA_CLIENT_ID: "your-client-id"
+  ENTRA_CLIENT_SECRET: "your-client-secret"
+  ENTRA_REDIRECT_URI: "https://media.example.com/auth/oauth2/callback"
+  ENTRA_PROVIDER_METADATA_URL: "https://login.microsoftonline.com/your-tenant-id/v2.0/.well-known/openid-configuration"
+  ENTRA_CRYPTO_PASSPHRASE: "auto-generated-if-empty"
+  
+  # Services same as above...
 ```
 
-### Scenario 4: Custom Dashboard + Auth
+### Example 4: Custom Dashboard Order
 ```yaml
-# 1. Create custom html/index.html
-# 2. Enable auth
-# 3. Deploy
+environment:
+  STYLE: modern
+  DASHBOARD_NAME: My Homelab
+  DASHBOARD_ICON: /icons/apache-reverse-proxy.png
+  DASHBOARD_LANDING: sonarr/calendar
+  DASHBOARD_ORDER: MEDIA,CONTENT,SEARCH,USENET,TORRENTS
+  
+  # Now displays in custom order!
+```
 
-# Users login → see custom dashboard → access services
+### Example 5: Complete Setup with NZBGet Auth
+```yaml
+environment:
+  DOMAIN: transfers.example.com
+  ACCESS_MODE: public
+  STYLE: modern
+  
+  ENABLE_NZBGET: "true"
+  ENABLE_BAZARR: "true"
+  ENABLE_SONARR: "true"
+  
+  NZBGET_URL: http://nzbget:6789
+  NZBGET_USER: "nzbget_username"
+  NZBGET_PASS: "nzbget_password"
+  BAZARR_URL: http://bazarr:6767
+  SONARR_URL: http://sonarr:8989
+  
+  AUTHTYPE: entra
+  # ... auth config ...
 ```
 
 ---
 
-## 📁 Complete File Structure
+## 🔄 How It Works
 
 ```
-outputs/
+User Request → https://yourdomain.com/sonarr
+    ↓
+Check Authentication (based on AUTHTYPE)
+    ├─ none → Skip auth, proceed
+    ├─ basic → Validate username/password
+    ├─ entra → Redirect to Azure AD login
+    └─ google → Redirect to Google login
+    ↓
+Route to Service (if enabled)
+    ├─ /sonarr (ENABLE_SONARR=true)
+    ├─ /radarr (ENABLE_RADARR=true)
+    ├─ /jellyfin (ENABLE_JELLYFIN=true)
+    └─ /bazarr (ENABLE_BAZARR=true)
+    ↓
+Pass through Apache Proxy
+    ├─ Add authentication headers
+    ├─ Handle WebSockets
+    ├─ Rewrite paths as needed
+    └─ Maintain HTTPS
+    ↓
+Service Processes Request
+```
+
+---
+
+## 📁 File Structure
+
+```
+apache-reverse-proxy/
 ├── 📚 Documentation
-│   ├── OFFICE365-SUMMARY.md        ← START HERE for auth
-│   ├── OFFICE365-AUTH.md           ← Complete setup guide
-│   ├── CUSTOM-HTML.md              ← HTML customization
-│   ├── QUICKSTART-SERVICES.md      ← Service deployment
-│   ├── UPDATES.md                  ← Feature updates
-│   ├── SERVICES.md                 ← 14 services explained
-│   ├── README.md                   ← Full reference
-│   ├── INDEX.md                    ← System overview
-│   └── TROUBLESHOOTING.md          ← Problem solving
+│   ├── ENVIRONMENT-VARIABLES.md     ← All variables explained
+│   ├── SERVICES.md                  ← 17 services explained
+│   ├── SERVICE-URLS.md              ← Backend URL configuration
+│   ├── AUTHENTICATION-SETUP.md      ← Auth methods explained
+│   ├── QUICKSTART.md                ← Quick start guide
+│   ├── TROUBLESHOOTING.md           ← Problem solving
+│   └── ICONS.md                     ← Custom icon setup
 │
-├── 🐳 Docker & Config
-│   ├── Dockerfile                  ← Apache + OpenID Connect
-│   ├── docker-compose.yml          ← All services + auth vars
-│   ├── docker-entrypoint.sh        ← Auth setup logic
-│   ├── generate-config.sh          ← Dynamic config generator
-│   ├── cert-renewal-cron           ← HTTPS auto-renewal
-│   └── .env.example                ← All env variables
+├── 🐳 Docker
+│   ├── Dockerfile
+│   ├── docker-compose.yml
+│   ├── docker-entrypoint.sh
+│   ├── generate-config.sh
+│   ├── generate-html-menu.sh
+│   └── .env.example
 │
 ├── 🔧 Apache Configuration
 │   ├── apache-conf/
 │   │   ├── reverse-proxy.conf.template
-│   │   ├── oauth2-office365.conf       ← NEW! OpenID config
-│   │   ├── auth-office365-protect.conf ← NEW! Auth rules
-│   │   ├── ssl-config.conf
-│   │   └── services/
-│   │       ├── sonarr.conf
-│   │       ├── radarr.conf
-│   │       ├── whisparr.conf           ← NEW! Comics/Manga
-│   │       └── ... (11 others)
+│   │   ├── services/
+│   │   │   ├── sonarr.conf
+│   │   │   ├── radarr.conf
+│   │   │   ├── bazarr.conf          ← NEW!
+│   │   │   ├── nzbget.conf
+│   │   │   ├── jellyfin.conf
+│   │   │   └── ... (11 more services)
+│   │   ├── auth-basic.conf
+│   │   ├── auth-entra-protect.conf
+│   │   └── auth-google-protect.conf
 │
-└── 🎨 Web Assets
+└── 🎨 Web Assets (Generated)
     └── html/
-        ├── index.html              ← Updated with Whisparr
-        └── error-pages/
-            ├── 502.html
-            └── 503.html
+        ├── dashboard.html           (Modern)
+        ├── classic.template
+        ├── sleek.template
+        ├── minimal.template
+        └── icons/
+            └── (service icons auto-generated)
 ```
 
 ---
 
-## 🔄 How Features Work Together
+## ✨ Key Improvements in v2.1
 
+### New Services
+- ✅ Bazarr - Automatic subtitle downloads
+- ✅ NZBGet - Usenet client with authentication
+- ✅ NZBHydra - NZB indexer
+
+### Better Organization
+- ✅ Service categories (CONTENT, SEARCH, USENET, TORRENTS, MEDIA)
+- ✅ Customizable category ordering
+- ✅ Clear naming conventions (DASHBOARD_LANDING, DASHBOARD_ORDER)
+
+### Enhanced Authentication
+- ✅ Multiple auth methods available
+- ✅ Basic Auth for simple deployments
+- ✅ Entra ID for enterprise environments
+- ✅ Google OAuth for personal use
+
+### Dashboard Flexibility
+- ✅ 4 theme options (modern, classic, sleek, minimal)
+- ✅ Custom landing pages
+- ✅ Reorderable service categories
+- ✅ Dynamic menu generation (no volume mounts needed)
+
+---
+
+## 🚀 Deployment Checklist
+
+### Minimal Setup
+- [ ] Set DOMAIN and EMAIL
+- [ ] Enable desired services
+- [ ] Set service URLs (or use defaults)
+- [ ] `docker-compose up -d`
+
+### With Authentication
+- [ ] Choose auth type (basic, entra, or google)
+- [ ] Configure auth variables
+- [ ] Set AUTHTYPE in environment
+- [ ] `docker-compose up -d`
+
+### With Custom Dashboard
+- [ ] Set STYLE (modern, classic, sleek, or minimal)
+- [ ] Set DASHBOARD_NAME and DASHBOARD_ICON
+- [ ] Set DASHBOARD_LANDING (optional)
+- [ ] Set DASHBOARD_ORDER (optional)
+- [ ] `docker-compose up -d`
+
+### Production Ready
+- [ ] HTTPS via Let's Encrypt (automatic)
+- [ ] Service ports not exposed (internal Docker network)
+- [ ] Certificates auto-renew daily
+- [ ] Only ports 80/443 open to internet
+- [ ] Authentication enabled (choose method)
+
+---
+
+## 🔐 Security Features
+
+✅ **HTTPS/TLS** - Automatic via Let's Encrypt  
+✅ **Certificate Renewal** - Daily automatic renewal  
+✅ **Authentication** - 4 methods available  
+✅ **Path Protection** - Services only accessible through proxy  
+✅ **Header Injection** - X-Forwarded-* headers properly set  
+✅ **WebSocket Support** - Secure WebSocket proxying  
+✅ **Session Management** - Secure session handling for OAuth  
+
+---
+
+## 📊 Feature Comparison
+
+| Feature | Available | Required | Configurable |
+|---------|-----------|----------|--------------|
+| Services (17) | ✅ | No | ENABLE_* variables |
+| HTTPS | ✅ | No | Automatic |
+| Authentication | ✅ | No | AUTHTYPE variable |
+| Dashboard themes | ✅ | No | STYLE variable |
+| Custom ordering | ✅ | No | DASHBOARD_ORDER |
+| Custom landing | ✅ | No | DASHBOARD_LANDING |
+| Service URLs | ✅ | No | *_URL variables |
+| Custom icons | ✅ | No | ICON_URL_* variables |
+| WebSocket | ✅ | No | Automatic |
+
+---
+
+## 📚 Documentation Guides
+
+### Quick Start
+- Start: `QUICKSTART.md` (5 minutes)
+- Services: `QUICKSTART-SERVICES.md` (10 minutes)
+
+### Configuration
+- All variables: `ENVIRONMENT-VARIABLES.md`
+- Service URLs: `SERVICE-URLS.md`
+- All services: `SERVICES.md`
+
+### Authentication Setup
+- Overview: `AUTHENTICATION-SETUP.md`
+- Entra ID: Section in AUTHENTICATION-SETUP.md
+- Google OAuth: Section in AUTHENTICATION-SETUP.md
+- Basic Auth: Section in AUTHENTICATION-SETUP.md
+
+### Troubleshooting
+- Common issues: `TROUBLESHOOTING.md`
+- Docker logs: `docker-compose logs apache-reverse-proxy`
+
+---
+
+## 🎯 Next Steps
+
+### 1️⃣ Edit Configuration
+```bash
+cp .env.example .env
+nano .env  # Edit your settings
 ```
-User Request
-    ↓
-Is auth enabled? (ENABLE_AUTH_OFFICE365)
-    ├─ YES → Check session/redirect to Office 365 login
-    │         ↓
-    │         User logs in with Microsoft account
-    │         ↓
-    │         Apache validates token
-    │         ↓
-    │         Create session
-    │
-    └─ NO → Skip auth, go directly to service
-    
-↓
-Route to requested service
-    ├ /sonarr (if ENABLE_SONARR=true)
-    ├ /radarr (if ENABLE_RADARR=true)
-    ├ /whisparr (if ENABLE_WHISPARR=true)
-    └ /jellyfin (if ENABLE_JELLYFIN=true)
-    
-↓
-Pass user info in headers (if authenticated)
-    ├ X-Remote-User: user@company.com
-    ├ X-Remote-Name: John Doe
-    ├ X-Remote-ID: azure-ad-id
-    └ X-Auth-Method: Office365
-    
-↓
-Service displays/processes request
+
+### 2️⃣ Choose Services
+Set `ENABLE_*=true` for services you want to proxy.
+
+### 3️⃣ Choose Authentication
+Pick one: `AUTHTYPE=none|basic|entra|google`
+
+### 4️⃣ Deploy
+```bash
+docker-compose up -d
+```
+
+### 5️⃣ Access
+```
+https://yourdomain.com  # Dashboard
+https://yourdomain.com/sonarr  # Services
 ```
 
 ---
 
 ## 💡 Pro Tips
 
-### Tip 1: Live HTML Editing
-```yaml
-volumes:
-  - ./html:/var/www/html
-```
-Changes apply instantly without rebuild!
-
-### Tip 2: Secure Passphrase Generation
+**Tip 1: Test Config Without Rebuild**
 ```bash
-openssl rand -base64 24
-# Use the output as OAUTH2_CRYPTO_PASSPHRASE
-```
-
-### Tip 3: Test Auth Without Rebuilding
-```bash
-# Enable auth in docker-compose.yml
-# Restart (no rebuild needed)
 docker-compose restart apache-reverse-proxy
-
-# Logs will show auth status
-docker-compose logs -f apache-reverse-proxy | grep -i oauth
 ```
 
-### Tip 4: Multiple Domains
-```yaml
-OAUTH2_ALLOWED_DOMAINS: "company.com,partner.com,user@example.com"
+**Tip 2: View Generated Config**
+```bash
+docker-compose exec apache-reverse-proxy cat /etc/apache2/sites-available/reverse-proxy.conf
 ```
 
-### Tip 5: Custom Service Links
-Edit `html/index.html` and add:
-```html
-<a href="/whisparr" class="service-card">
-    <h2>💭 Whisparr</h2>
-    <p>Comic & Manga Automation</p>
-</a>
+**Tip 3: Check Service Connectivity**
+```bash
+docker-compose exec apache-reverse-proxy curl -I http://sonarr:8989
+```
+
+**Tip 4: Safe Configuration Updates**
+```bash
+# Edit .env or docker-compose.yml
+docker-compose restart apache-reverse-proxy  # No rebuild needed
+docker-compose logs -f apache-reverse-proxy
+```
+
+**Tip 5: Generate Secure Passphrase**
+```bash
+openssl rand -base64 24  # For ENTRA_CRYPTO_PASSPHRASE
 ```
 
 ---
 
-## 🚀 Deployment Checklist
+## 🆘 Getting Help
 
-### Basic Setup (No Auth)
-- [ ] Set `DOMAIN` and `EMAIL`
-- [ ] Enable services you want
-- [ ] `docker-compose build`
-- [ ] `docker-compose up -d`
-- [ ] Test at `https://yourdomain.com`
+**Configuration questions?**
+→ See `ENVIRONMENT-VARIABLES.md`
 
-### With Custom HTML
-- [ ] Create custom `html/index.html`
-- [ ] Add volume mount (optional, for live editing)
-- [ ] Deploy normally
-- [ ] Custom dashboard is live!
-
-### With Office 365 Auth (Full Setup)
-- [ ] Create app in Azure AD
-- [ ] Get Client ID and Secret
-- [ ] Set all OAUTH2 variables
-- [ ] Run `docker-compose build`
-- [ ] Run `docker-compose up -d`
-- [ ] Test login at `https://yourdomain.com`
-- [ ] Verify users are authenticated
-
----
-
-## 🔐 Security Checklist
-
-- [ ] HTTPS enabled (automatic via Let's Encrypt)
-- [ ] Only ports 80/443 exposed to internet
-- [ ] Service ports stay internal
-- [ ] Certificates auto-renew daily
-- [ ] OAUTH2_CRYPTO_PASSPHRASE is random and secure
-- [ ] OAUTH2_CLIENT_SECRET stored securely (not in git!)
-- [ ] OAUTH2_ALLOWED_DOMAINS restricted appropriately
-- [ ] Azure AD MFA enabled (optional but recommended)
-
----
-
-## 📊 Feature Comparison Matrix
-
-| Feature | Included | Required | Configurable |
-|---------|----------|----------|--------------|
-| Service proxying (14) | ✅ | No | ENABLE_* vars |
-| Custom HTML | ✅ | No | Edit files |
-| Office 365 auth | ✅ | No | ENABLE_AUTH_OFFICE365 |
-| HTTPS/Let's Encrypt | ✅ | No | Auto |
-| Auto cert renewal | ✅ | No | Daily |
-| WebSocket support | ✅ | No | Auto |
-| Error pages | ✅ | No | Customizable |
-
----
-
-## 📈 What's New Since Start
-
-### Original
-- Modular service support
-- Let's Encrypt HTTPS
-- Custom error pages
-
-### Update 1 (This Release)
-- **Whisparr** (Comic/Manga automation) ⭐
-- **Custom HTML support** with live editing ⭐
-- **Office 365 / Azure AD authentication** ⭐
-- Enhanced documentation
-
----
-
-## 🎓 Learning Path
-
-**Beginner** (Just want it running)
-1. Read: `OFFICE365-SUMMARY.md` (5 min)
-2. Follow: `OFFICE365-AUTH.md` Step 1-5 (10 min)
-3. Deploy: `docker-compose up -d` (2 min)
-
-**Intermediate** (Want to customize)
-1. Read: `CUSTOM-HTML.md` (10 min)
-2. Edit: `html/index.html` (10 min)
-3. Add volume mount to `docker-compose.yml`
-4. Restart: `docker-compose up -d`
-
-**Advanced** (Full control)
-1. Read all documentation
-2. Customize Apache configs
-3. Add more services
-4. Configure Azure AD policies
-5. Set up conditional access
-
----
-
-## 🆘 Quick Help
-
-**Something broken?**
-→ Check `TROUBLESHOOTING.md`
+**Service not proxying?**
+→ Check `SERVICE-URLS.md` and `TROUBLESHOOTING.md`
 
 **Auth not working?**
-→ Read `OFFICE365-AUTH.md` - Troubleshooting section
+→ Read `AUTHENTICATION-SETUP.md`
 
-**Want custom design?**
-→ See `CUSTOM-HTML.md` - Examples section
-
-**Service won't proxy?**
-→ Check `SERVICES.md` for that service
-
-**General questions?**
-→ Start with `INDEX.md` - complete overview
+**Docker issues?**
+→ Check logs: `docker-compose logs apache-reverse-proxy`
 
 ---
 
-## 🎯 Next Steps
+**You now have a production-ready reverse proxy with 17 services, flexible authentication, and customizable dashboards!** 🎉
 
-### To Deploy Now:
-```bash
-# 1. Edit docker-compose.yml (domain, services, auth)
-nano docker-compose.yml
-
-# 2. Build and start
-docker-compose build
-docker-compose up -d
-
-# 3. Test
-curl -I https://yourdomain.com
-```
-
-### To Add Authentication:
-1. Register app in Azure AD (5 min)
-2. Get Client ID and Secret
-3. Set 6 environment variables in docker-compose.yml
-4. Restart: `docker-compose up -d`
-5. Login at https://yourdomain.com
-
-### To Customize HTML:
-1. Edit `html/index.html`
-2. Add volume mount (or rebuild)
-3. Restart and visit https://yourdomain.com
-
----
-
-## 📞 Support
-
-**Complete Guides:**
-- `OFFICE365-AUTH.md` - Step-by-step auth setup
-- `CUSTOM-HTML.md` - HTML customization examples
-- `SERVICES.md` - Each service explained
-- `README.md` - Full technical reference
-
-**For Issues:**
-- `TROUBLESHOOTING.md` - Common problems & solutions
-- Docker logs: `docker-compose logs -f apache-reverse-proxy`
-- Azure AD logs: Check portal.azure.com
-
----
-
-**You now have a complete, production-ready media server reverse proxy with authentication!** 🎉
-
-**Key Points:**
-✅ 14 services available  
-✅ Enterprise authentication  
-✅ Custom branding  
+**Key Capabilities:**
+✅ 17 services available  
+✅ 4 authentication methods  
+✅ 4 dashboard themes  
+✅ Custom service ordering  
 ✅ Automatic HTTPS  
-✅ Zero manual config  
-✅ Easy to extend  
+✅ Easy configuration  
+✅ Zero manual Apache editing  
 
-**Let's deploy!** 🚀
+**Ready to deploy!** 🚀
