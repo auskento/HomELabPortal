@@ -8,7 +8,7 @@ Complete guide for installing and configuring HomELabPortal via Unraid web UI.
 
 1. **Copy template to Unraid:**
    ```bash
-   cp unraid/apache-reverse-proxy.xml \
+   cp unraid/homelabportal.xml \
       /boot/config/plugins/dockerManagement/templates-user/
    ```
 
@@ -29,7 +29,7 @@ Complete guide for installing and configuring HomELabPortal via Unraid web UI.
 
 ### Step 1: Copy Template to Unraid
 
-You need to get the `apache-reverse-proxy.xml` file to your Unraid server.
+You need to get the `homelabportal.xml` file to your Unraid server.
 
 #### Option A: Using SSH/Terminal
 
@@ -38,7 +38,7 @@ You need to get the `apache-reverse-proxy.xml` file to your Unraid server.
 mkdir -p /boot/config/plugins/dockerManagement/templates-user
 
 # Copy template from extracted zip
-cp /path/to/apache-reverse-proxy/unraid/apache-reverse-proxy.xml \
+cp /path/to/apache-reverse-proxy/unraid/homelabportal.xml \
    /boot/config/plugins/dockerManagement/templates-user/
 ```
 
@@ -49,7 +49,7 @@ cp /path/to/apache-reverse-proxy/unraid/apache-reverse-proxy.xml \
 3. Share → Boot
 4. Navigate to: `boot/config/plugins/dockerManagement/templates-user/`
 5. Create folder if doesn't exist
-6. Upload `apache-reverse-proxy.xml`
+6. Upload `homelabportal.xml`
 
 ---
 

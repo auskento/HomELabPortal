@@ -157,7 +157,7 @@ STYLE: minimal     # Single-column design
 
 ```yaml
 DASHBOARD_NAME: "My Homelab"
-DASHBOARD_ICON: "/icons/apache-reverse-proxy.png"
+DASHBOARD_ICON: "/icons/homelabportal.png"
 ```
 
 ### Custom Landing Page

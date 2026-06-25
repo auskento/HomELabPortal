@@ -72,7 +72,7 @@ STYLE: modern
 #### Custom Dashboard Names
 ```yaml
 DASHBOARD_NAME: "My Homelab"
-DASHBOARD_ICON: "/icons/apache-reverse-proxy.png"
+DASHBOARD_ICON: "/icons/homelabportal.png"
 ```
 
 #### Custom Landing Pages
@@ -109,7 +109,7 @@ Update your `.env` file to use new names.
 - ✅ Updated all service configs with proper Location blocks
 
 ### Unraid Template
-- ✅ `apache-reverse-proxy.xml` - Updated service list, new variables
+- ✅ `homelabportal.xml` - Updated service list, new variables
 
 ### Documentation
 - ✅ `ENVIRONMENT-VARIABLES.md` - Reorganized by category

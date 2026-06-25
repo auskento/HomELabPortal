@@ -1,21 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Container version="2">
-  <Name>Apache-Reverse-Proxy</Name>
-  <Repository>auskento/apache-reverse-proxy:latest</Repository>
+  <Name>HomELabPortal</Name>
+  <Repository>auskento/homelabportal:latest</Repository>
   <Registry>https://hub.docker.com/</Registry>
   <Network>bridge</Network>
   <MyIP/>
   <Shell>bash</Shell>
   <Privileged>false</Privileged>
-  <Support>https://github.com/auskento/apache-reverse-proxy</Support>
-  <Project>https://github.com/auskento/apache-reverse-proxy</Project>
+  <Support>https://github.com/auskento/HomELabPortal</Support>
+  <Project>https://github.com/auskento/HomELabPortal</Project>
   <Category>Network:Web</Category>
-  <TemplateURL>https://raw.githubusercontent.com/auskento/apache-reverse-proxy/main/apache-reverse-proxy.xml</TemplateURL>
-  <Icon>https://raw.githubusercontent.com/auskento/apache-reverse-proxy/main/apache-reverse-proxy-150.png</Icon>
+  <TemplateURL>https://raw.githubusercontent.com/auskento/HomELabPortal/main/apache-reverse-proxy.xml</TemplateURL>
+  <Icon>https://raw.githubusercontent.com/auskento/HomELabPortal/main/apache-reverse-proxy-150.png</Icon>
   <PostArgs/>
   <CloudSync>false</CloudSync>
-  <Description>Apache Reverse Proxy with flexible deployment modes, 14 media services, customizable dashboards (4 styles), and authentication options (None, Basic, Entra ID, Google OAuth).</Description>
-  <Overview>Apache Reverse Proxy for Media Services&#13;&#13;This container provides:&#13;- Public mode: Automatic HTTPS with Let's Encrypt SSL certificates&#13;- Private mode: Internal-only deployment without certificate generation&#13;- Reverse proxy for up to 16 different services&#13;- Responsive web dashboard with 4 customizable styles: classic, modern, sleek, minimal&#13;- Dashboard customization: custom title, icon, and default landing page&#13;- Four authentication options: None, Basic Auth, Entra ID (Microsoft), or Google OAuth2&#13;- Custom service icons and smart icon management&#13;- Service health monitoring&#13;&#13;Quick Start (Public Deployment - ACCESS_MODE=public):&#13;1. Set DOMAIN and EMAIL (required for Let's Encrypt)&#13;2. Choose AUTHTYPE (none, basic, entra, or google)&#13;3. Enable services and configure backend URLs&#13;4. (Optional) Customize dashboard STYLE, DASHBOARD_NAME, DASHBOARD_ICON, LANDING&#13;&#13;Quick Start (Private Deployment - ACCESS_MODE=private):&#13;1. Set ACCESS_MODE=private&#13;2. Choose AUTHTYPE (none or basic only - Entra/Google not available)&#13;3. Enable services and configure backend URLs&#13;4. DOMAIN and EMAIL still required in config but not used for certificates&#13;&#13;Supported Services (16):&#13;SABnzbd, NZBGet, NZBHydra, Deluge, Transmission, qBittorrent, Radarr, Sonarr, Whisparr, Prowlarr, Seerr, Lidarr, Emby, Plex, Jellyfin, Tautulli&#13;&#13;Dashboard Styles:&#13;- Classic: Traditional sidebar menu&#13;- Modern: React-based with full features (recommended)&#13;- Sleek: Compact sidebar with gradient styling&#13;- Minimal: Single-column minimal design&#13;&#13;Documentation:&#13;https://github.com/auskento/apache-reverse-proxy</Overview>
+  <Description>HomELabPortal with flexible deployment modes, 17 media services, customizable dashboards (4 styles), light/dark theme toggle, and authentication options (None, Basic, Entra ID, Google OAuth).</Description>
+  <Overview>HomELabPortal - Unified Media Server Dashboard&#13;&#13;This container provides:&#13;- Public mode: Automatic HTTPS with Let's Encrypt SSL certificates&#13;- Private mode: Internal-only deployment without certificate generation&#13;- Reverse proxy for 17 different services&#13;- Responsive web dashboard with 4 customizable styles: classic, modern, sleek, minimal&#13;- Light/dark theme toggle with auto-switching based on preference&#13;- Dashboard customization: custom title, icon, and default landing page&#13;- Four authentication options: None, Basic Auth, Entra ID (Microsoft), or Google OAuth2&#13;- Custom service icons with smart light/dark mode adaptation&#13;- Service health monitoring&#13;- Configurable service category ordering&#13;&#13;Quick Start (Public Deployment - ACCESS_MODE=public):&#13;1. Set DOMAIN and EMAIL (required for Let's Encrypt)&#13;2. Choose AUTHTYPE (none, basic, entra, or google)&#13;3. Enable services and configure backend URLs&#13;4. (Optional) Customize dashboard STYLE, DASHBOARD_THEME, DASHBOARD_NAME, DASHBOARD_ICON, DASHBOARD_LANDING&#13;&#13;Quick Start (Private Deployment - ACCESS_MODE=private):&#13;1. Set ACCESS_MODE=private&#13;2. Choose AUTHTYPE (none or basic only - Entra/Google not available)&#13;3. Enable services and configure backend URLs&#13;4. DOMAIN and EMAIL still required in config but not used for certificates&#13;&#13;Supported Services (17):&#13;SABnzbd, NZBGet, NZBHydra, Deluge, Transmission, qBittorrent, Radarr, Sonarr, Whisparr, Lidarr, Prowlarr, Seerr, Bazarr, Emby, Plex, Jellyfin, Tautulli&#13;&#13;Dashboard Styles:&#13;- Classic: Traditional sidebar menu&#13;- Modern: React-based with full features (recommended)&#13;- Sleek: Compact sidebar with gradient styling&#13;- Minimal: Single-column minimal design&#13;&#13;Documentation:&#13;https://github.com/auskento/HomELabPortal</Overview>
   <Networking>
     <Mode>br0</Mode>
     <Publish>
