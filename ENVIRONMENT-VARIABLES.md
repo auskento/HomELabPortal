@@ -74,7 +74,7 @@ For `ACCESS_MODE=public`, these **must** be set:
 
 - **Variable:** `DASHBOARD_ICON`
 - **Type:** URL path
-- **Default:** `/icons/apache-reverse-proxy.png`
+- **Default:** `/icons/homelabportal.png`
 - **Description:** Icon displayed in dashboard header (relative path or full URL)
 - **Examples:** `/icons/my-logo.png`, `https://example.com/logo.png`
 - **Note:** Place custom icon files in the `html/icons/` directory
@@ -342,7 +342,7 @@ environment:
   TZ: Australia/Melbourne
   STYLE: modern
   DASHBOARD_NAME: My Homelab
-  DASHBOARD_ICON: /icons/apache-reverse-proxy.png
+  DASHBOARD_ICON: /icons/homelabportal.png
   DASHBOARD_LANDING: sonarr/calendar
   
   # Authentication
@@ -380,7 +380,7 @@ environment:
   TZ: Australia/Melbourne
   STYLE: modern
   DASHBOARD_NAME: Family Media
-  DASHBOARD_ICON: /icons/apache-reverse-proxy.png
+  DASHBOARD_ICON: /icons/homelabportal.png
   DASHBOARD_LANDING: ""
   
   # Authentication - only none or basic allowed in private mode
@@ -409,7 +409,7 @@ TZ=Australia/Melbourne
 # Dashboard customization
 STYLE=modern
 DASHBOARD_NAME=My Homelab
-DASHBOARD_ICON=/icons/apache-reverse-proxy.png
+DASHBOARD_ICON=/icons/homelabportal.png
 DASHBOARD_LANDING=sonarr/calendar
 
 # Authentication

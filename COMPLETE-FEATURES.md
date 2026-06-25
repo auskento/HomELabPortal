@@ -109,7 +109,7 @@ environment:
 environment:
   STYLE: modern
   DASHBOARD_NAME: My Homelab
-  DASHBOARD_ICON: /icons/apache-reverse-proxy.png
+  DASHBOARD_ICON: /icons/homelabportal.png
   DASHBOARD_LANDING: sonarr/calendar
   DASHBOARD_ORDER: MEDIA,CONTENT,SEARCH,USENET,TORRENTS
   

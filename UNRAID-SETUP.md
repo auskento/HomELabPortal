@@ -50,7 +50,7 @@ This is **HomELabPortal (HeLP)** - a unified media server dashboard Docker conta
    ```
 
 2. **Download Template**
-   - Download `apache-reverse-proxy.xml` from the repository
+   - Download `homelabportal.xml` from the repository
    - Copy to `/boot/config/plugins/dockerManagement/templates-user/` directory
 
 3. **Add Container**
