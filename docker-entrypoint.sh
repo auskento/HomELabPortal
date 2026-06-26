@@ -642,10 +642,10 @@ if [ "${ENABLE_EMBY}" = "true" ] && [ ! -z "$EMBY_DOMAIN" ] && [ ! -z "$EMBY_RED
 </VirtualHost>
 EMBYEOF
 
-    sed -i "s|@@EMBY_DOMAIN_NAME@@|$EMBY_DOMAIN_NAME|g" /etc/apache2/sites-available/emby-vhost.conf
-    sed -i "s|@@EMBY_CERT_PATH@@|$EMBY_CERT_PATH|g" /etc/apache2/sites-available/emby-vhost.conf
-    sed -i "s|@@SSL_PROTOCOLS@@|$SSL_PROTOCOLS|g" /etc/apache2/sites-available/emby-vhost.conf
-    sed -i "s|@@SSL_CIPHERS@@|$SSL_CIPHERS|g" /etc/apache2/sites-available/emby-vhost.conf
+    sed -i "s#@@EMBY_DOMAIN_NAME@@#$EMBY_DOMAIN_NAME#g" /etc/apache2/sites-available/emby-vhost.conf
+    sed -i "s#@@EMBY_CERT_PATH@@#$EMBY_CERT_PATH#g" /etc/apache2/sites-available/emby-vhost.conf
+    sed -i "s#@@SSL_PROTOCOLS@@#$SSL_PROTOCOLS#g" /etc/apache2/sites-available/emby-vhost.conf
+    sed -i "s#@@SSL_CIPHERS@@#$SSL_CIPHERS#g" /etc/apache2/sites-available/emby-vhost.conf
 
     # Generate auth protection config for Emby based on AUTHTYPE
     case "$AUTHTYPE" in
@@ -773,10 +773,10 @@ if [ "${ENABLE_PLEX}" = "true" ] && [ ! -z "$PLEX_DOMAIN" ] && [ ! -z "$PLEX_RED
 </VirtualHost>
 PLEXEOF
 
-    sed -i "s|@@PLEX_DOMAIN_NAME@@|$PLEX_DOMAIN_NAME|g" /etc/apache2/sites-available/plex-vhost.conf
-    sed -i "s|@@PLEX_CERT_PATH@@|$PLEX_CERT_PATH|g" /etc/apache2/sites-available/plex-vhost.conf
-    sed -i "s|@@SSL_PROTOCOLS@@|$SSL_PROTOCOLS|g" /etc/apache2/sites-available/plex-vhost.conf
-    sed -i "s|@@SSL_CIPHERS@@|$SSL_CIPHERS|g" /etc/apache2/sites-available/plex-vhost.conf
+    sed -i "s#@@PLEX_DOMAIN_NAME@@#$PLEX_DOMAIN_NAME#g" /etc/apache2/sites-available/plex-vhost.conf
+    sed -i "s#@@PLEX_CERT_PATH@@#$PLEX_CERT_PATH#g" /etc/apache2/sites-available/plex-vhost.conf
+    sed -i "s#@@SSL_PROTOCOLS@@#$SSL_PROTOCOLS#g" /etc/apache2/sites-available/plex-vhost.conf
+    sed -i "s#@@SSL_CIPHERS@@#$SSL_CIPHERS#g" /etc/apache2/sites-available/plex-vhost.conf
 
     # Generate auth protection config for Plex based on AUTHTYPE
     case "$AUTHTYPE" in
