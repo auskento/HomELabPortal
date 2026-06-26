@@ -1,4 +1,4 @@
-FROM debian:12
+FROM debian:12-slim
 
 # Set timezone to Melbourne
 ENV TZ=Australia/Melbourne
