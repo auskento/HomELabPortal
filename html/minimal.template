@@ -60,7 +60,7 @@
     <div style="font-size:9px;text-align:center;padding:8px 0;border-top:1px solid rgba(255,255,255,.1);display:flex;gap:4px;justify-content:center;flex-wrap:wrap;width:100%;align-items:center">
       <a href="/classic.html" style="color:#4a9eff;text-decoration:none;transition:color 0.2s">Classic</a>
       <span style="color:#5d6575">|</span>
-      <a href="/" style="color:#4a9eff;text-decoration:none;transition:color 0.2s">Modern</a>
+      <a href="/modern.html" style="color:#4a9eff;text-decoration:none;transition:color 0.2s">Modern</a>
       <span style="color:#5d6575">|</span>
       <a href="/sleek.html" style="color:#4a9eff;text-decoration:none;transition:color 0.2s">Sleek</a>
       <span style="color:#5d6575">|</span>
