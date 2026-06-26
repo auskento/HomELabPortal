@@ -878,24 +878,15 @@ generate_html() {
         fi
     done
 
-    # Generate primary dashboard based on STYLE
+    # Generate ONLY index.html based on STYLE (default: classic)
+    # This eliminates repeated auth prompts from navigating between multiple HTML files
     generate_style_dashboard
 
-    # Generate all alternate styles for switching between any style
-    generate_all_styles
-
-    # Generate basic standalone dashboard (not referenced elsewhere)
-    generate_basic
-
     echo ""
-    echo "✓ Dashboards generated with $count enabled service(s)"
+    echo "✓ Dashboard generated with $count enabled service(s)"
     echo ""
-    echo "Available dashboards:"
-    echo "  /index.html (primary: $STYLE)"
-    echo "  /classic.html"
-    echo "  /modern.html"
-    echo "  /sleek.html"
-    echo "  /minimal.html"
+    echo "Dashboard:"
+    echo "  /index.html (style: $STYLE, default: classic)"
 }
 
 # Run generation
