@@ -878,15 +878,29 @@ generate_html() {
         fi
     done
 
-    # Generate ONLY index.html based on STYLE (default: classic)
-    # This eliminates repeated auth prompts from navigating between multiple HTML files
-    generate_style_dashboard
-
-    echo ""
-    echo "✓ Dashboard generated with $count enabled service(s)"
-    echo ""
-    echo "Dashboard:"
-    echo "  /index.html (style: $STYLE, default: classic)"
+    # For basic auth, only generate index.html to avoid repeated auth prompts
+    # For OAuth (public, google, entra), generate all styles since OAuth tokens don't trigger re-auth
+    if [ "$AUTHTYPE" = "basic" ]; then
+        # Basic auth: only generate index.html
+        generate_style_dashboard
+        echo ""
+        echo "✓ Dashboard generated (basic auth: single menu) with $count enabled service(s)"
+        echo ""
+        echo "  /index.html"
+    else
+        # OAuth modes: generate all style variants for menu switching
+        generate_style_dashboard
+        generate_all_styles
+        echo ""
+        echo "✓ Dashboards generated with $count enabled service(s)"
+        echo ""
+        echo "Available dashboards:"
+        echo "  /index.html (primary: $STYLE)"
+        echo "  /classic.html"
+        echo "  /modern.html"
+        echo "  /sleek.html"
+        echo "  /minimal.html"
+    fi
 }
 
 # Run generation
