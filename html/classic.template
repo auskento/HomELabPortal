@@ -291,17 +291,7 @@
         <div class="datetime-box">
             <div class="time" id="currentTime">--:--</div>
             <div class="date" id="currentDate">Loading...</div>
-            <div class="style-switcher" style="display:flex;gap:6px;justify-content:center;align-items:center">
-                <a href="/" style="text-decoration:none;color:#4a9eff">Classic</a>
-                <span style="color:#5d6575">|</span>
-                <a href="/modern.html" style="text-decoration:none;color:#4a9eff">Modern</a>
-                <span style="color:#5d6575">|</span>
-                <a href="/sleek.html" style="text-decoration:none;color:#4a9eff">Sleek</a>
-                <span style="color:#5d6575">|</span>
-                <a href="/minimal.html" style="text-decoration:none;color:#4a9eff">Minimal</a>
-                <span style="color:#5d6575">|</span>
-                <button id="theme-toggle-classic" style="background:none;border:none;cursor:pointer;font-size:14px;padding:0;color:var(--text-accent)" title="Toggle theme">☀️</button>
-            </div>
+            @@STYLE_SWITCHER@@
         </div>
     </div>
     <div class="menu-container">

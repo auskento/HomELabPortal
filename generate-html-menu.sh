@@ -346,6 +346,90 @@ generate_services_array() {
     echo "$array"
 }
 
+# Generate style switcher HTML for classic template
+generate_style_switcher_classic() {
+    if [ "$SHOW_STYLE_SWITCHER" = "true" ]; then
+        echo '<div class="style-switcher" style="display:flex;gap:6px;justify-content:center;align-items:center">
+                <a href="/" style="text-decoration:none;color:#4a9eff">Classic</a>
+                <span style="color:#5d6575">|</span>
+                <a href="/modern.html" style="text-decoration:none;color:#4a9eff">Modern</a>
+                <span style="color:#5d6575">|</span>
+                <a href="/sleek.html" style="text-decoration:none;color:#4a9eff">Sleek</a>
+                <span style="color:#5d6575">|</span>
+                <a href="/minimal.html" style="text-decoration:none;color:#4a9eff">Minimal</a>
+                <span style="color:#5d6575">|</span>
+                <button id="theme-toggle-classic" style="background:none;border:none;cursor:pointer;font-size:14px;padding:0;color:var(--text-accent)" title="Toggle theme">☀️</button>
+            </div>'
+    else
+        echo '<div style="display:flex;gap:6px;justify-content:center;align-items:center">
+                <button id="theme-toggle-classic" style="background:none;border:none;cursor:pointer;font-size:14px;padding:0;color:var(--text-accent)" title="Toggle theme">☀️</button>
+            </div>'
+    fi
+}
+
+# Generate style switcher HTML for modern template
+generate_style_switcher_modern() {
+    if [ "$SHOW_STYLE_SWITCHER" = "true" ]; then
+        echo '<div style="font-size:11px;text-align:center;padding:8px 0;border-top:1px solid var(--border-color);display:flex;gap:6px;justify-content:center;flex-wrap:wrap;align-items:center">
+        <a href="/classic.html" style="color:var(--text-link);text-decoration:none;transition:color 0.2s">Classic</a>
+        <span style="color:var(--text-tertiary)">|</span>
+        <a href="/modern.html" style="color:var(--text-link);text-decoration:none;transition:color 0.2s">Modern</a>
+        <span style="color:var(--text-tertiary)">|</span>
+        <a href="/sleek.html" style="color:var(--text-link);text-decoration:none;transition:color 0.2s">Sleek</a>
+        <span style="color:var(--text-tertiary)">|</span>
+        <a href="/minimal.html" style="color:var(--text-link);text-decoration:none;transition:color 0.2s">Minimal</a>
+        <span style="color:var(--text-tertiary)">|</span>
+        <button id="theme-toggle-modern" style="background:none;border:none;cursor:pointer;font-size:11px;padding:0;color:var(--text-link);transition:color 0.2s" title="Toggle theme">☀️</button>
+      </div>'
+    else
+        echo '<div style="font-size:11px;text-align:center;padding:8px 0;border-top:1px solid var(--border-color);display:flex;gap:6px;justify-content:center;flex-wrap:wrap;align-items:center">
+        <button id="theme-toggle-modern" style="background:none;border:none;cursor:pointer;font-size:11px;padding:0;color:var(--text-link);transition:color 0.2s" title="Toggle theme">☀️</button>
+      </div>'
+    fi
+}
+
+# Generate style switcher HTML for sleek template
+generate_style_switcher_sleek() {
+    if [ "$SHOW_STYLE_SWITCHER" = "true" ]; then
+        echo '<div style="font-size:9px;text-align:center;padding:8px 0;border-top:1px solid rgba(255,255,255,.1);display:flex;gap:4px;justify-content:center;flex-wrap:wrap;width:100%;align-items:center">
+      <a href="/classic.html" style="color:#4a9eff;text-decoration:none;transition:color 0.2s">Classic</a>
+      <span style="color:#5d6575">|</span>
+      <a href="/modern.html" style="color:#4a9eff;text-decoration:none;transition:color 0.2s">Modern</a>
+      <span style="color:#5d6575">|</span>
+      <a href="/sleek.html" style="color:#4a9eff;text-decoration:none;transition:color 0.2s">Sleek</a>
+      <span style="color:#5d6575">|</span>
+      <a href="/minimal.html" style="color:#4a9eff;text-decoration:none;transition:color 0.2s">Minimal</a>
+      <span style="color:#5d6575">|</span>
+      <button id="theme-toggle-sleek" style="background:none;border:none;cursor:pointer;font-size:12px;padding:0;color:#4a9eff;transition:color 0.2s" title="Toggle theme">☀️</button>
+    </div>'
+    else
+        echo '<div style="font-size:9px;text-align:center;padding:8px 0;border-top:1px solid rgba(255,255,255,.1);display:flex;gap:4px;justify-content:center;flex-wrap:wrap;width:100%;align-items:center">
+      <button id="theme-toggle-sleek" style="background:none;border:none;cursor:pointer;font-size:12px;padding:0;color:#4a9eff;transition:color 0.2s" title="Toggle theme">☀️</button>
+    </div>'
+    fi
+}
+
+# Generate style switcher HTML for minimal template
+generate_style_switcher_minimal() {
+    if [ "$SHOW_STYLE_SWITCHER" = "true" ]; then
+        echo '<div style="font-size:9px;text-align:center;padding:8px 0;border-top:1px solid rgba(255,255,255,.1);display:flex;gap:4px;justify-content:center;flex-wrap:wrap;width:100%;align-items:center">
+      <a href="/classic.html" style="color:#4a9eff;text-decoration:none;transition:color 0.2s">Classic</a>
+      <span style="color:#5d6575">|</span>
+      <a href="/modern.html" style="color:#4a9eff;text-decoration:none;transition:color 0.2s">Modern</a>
+      <span style="color:#5d6575">|</span>
+      <a href="/sleek.html" style="color:#4a9eff;text-decoration:none;transition:color 0.2s">Sleek</a>
+      <span style="color:#5d6575">|</span>
+      <a href="/minimal.html" style="color:#4a9eff;text-decoration:none;transition:color 0.2s">Minimal</a>
+      <span style="color:#5d6575">|</span>
+      <button id="theme-toggle-minimal" style="background:none;border:none;cursor:pointer;font-size:12px;padding:0;color:#4a9eff;transition:color 0.2s" title="Toggle theme">☀️</button>
+    </div>'
+    else
+        echo '<div style="font-size:9px;text-align:center;padding:8px 0;border-top:1px solid rgba(255,255,255,.1);display:flex;gap:4px;justify-content:center;flex-wrap:wrap;width:100%;align-items:center">
+      <button id="theme-toggle-minimal" style="background:none;border:none;cursor:pointer;font-size:12px;padding:0;color:#4a9eff;transition:color 0.2s" title="Toggle theme">☀️</button>
+    </div>'
+    fi
+}
+
 # Generate dashboard based on STYLE
 generate_style_dashboard() {
     local STYLE="${STYLE:-classic}"
@@ -381,10 +465,12 @@ generate_style_dashboard() {
     if [ "$STYLE" = "classic" ]; then
         local menu_items=$(generate_menu_items)
         local services_list=$(generate_services_list)
+        local style_switcher=$(generate_style_switcher_classic)
 
         local html_content=$(cat "$TEMPLATE_FILE")
         html_content="${html_content//@@MENU_ITEMS@@/$menu_items}"
         html_content="${html_content//@@ENABLED_SERVICES_LIST@@/$services_list}"
+        html_content="${html_content//@@STYLE_SWITCHER@@/$style_switcher}"
         html_content="${html_content//@@DASHBOARD_NAME@@/${DASHBOARD_NAME:-Media Server}}"
         html_content="${html_content//@@DASHBOARD_ICON@@/${DASHBOARD_ICON:-/icons/homelabportal.png}}"
         html_content="${html_content//@@DASHBOARD_THEME@@/${DASHBOARD_THEME:-dark}}"
@@ -400,8 +486,10 @@ generate_style_dashboard() {
         # Modern dashboard uses React with full services array (with categories)
         local services_array=$(generate_services_array)
         local dash_order=$(generate_group_order)
+        local style_switcher=$(generate_style_switcher_modern)
         local html_content=$(cat "$TEMPLATE_FILE")
         html_content="${html_content//@@SERVICES_ARRAY@@/$services_array}"
+        html_content="${html_content//@@STYLE_SWITCHER@@/$style_switcher}"
         html_content="${html_content//@@DASHBOARD_NAME@@/${DASHBOARD_NAME:-Media Server}}"
         html_content="${html_content//@@DASHBOARD_ICON@@/${DASHBOARD_ICON:-/icons/homelabportal.png}}"
         html_content="${html_content//@@DASHBOARD_ORDER@@/$dash_order}"
@@ -430,8 +518,17 @@ generate_style_dashboard() {
         local ICON_GAP=$(echo "$sizes" | cut -d'|' -f2)
         local LOGO_SIZE=$(echo "$sizes" | cut -d'|' -f3)
 
+        # Determine which style switcher to use
+        local style_switcher
+        if [ "$STYLE" = "sleek" ]; then
+            style_switcher=$(generate_style_switcher_sleek)
+        else
+            style_switcher=$(generate_style_switcher_minimal)
+        fi
+
         local html_content=$(cat "$TEMPLATE_FILE")
         html_content="${html_content//@@SERVICES_ARRAY@@/$services_array}"
+        html_content="${html_content//@@STYLE_SWITCHER@@/$style_switcher}"
         html_content="${html_content//@@DASHBOARD_NAME@@/${DASHBOARD_NAME:-Media Server}}"
         html_content="${html_content//@@DASHBOARD_ICON@@/${DASHBOARD_ICON:-/icons/homelabportal.png}}"
         html_content="${html_content//@@DASHBOARD_THEME@@/${DASHBOARD_THEME:-dark}}"
@@ -472,9 +569,11 @@ generate_all_styles() {
     if [ -f "$CLASSIC_TEMPLATE" ]; then
         local menu_items=$(generate_menu_items)
         local services_list=$(generate_services_list)
+        local style_switcher=$(generate_style_switcher_classic)
         local html_content=$(cat "$CLASSIC_TEMPLATE")
         html_content="${html_content//@@MENU_ITEMS@@/$menu_items}"
         html_content="${html_content//@@ENABLED_SERVICES_LIST@@/$services_list}"
+        html_content="${html_content//@@STYLE_SWITCHER@@/$style_switcher}"
         html_content="${html_content//@@DASHBOARD_NAME@@/${DASHBOARD_NAME:-Media Server}}"
         html_content="${html_content//@@DASHBOARD_ICON@@/${DASHBOARD_ICON:-/icons/homelabportal.png}}"
         if [ -z "$DASHBOARD_LANDING" ]; then
@@ -489,8 +588,10 @@ generate_all_styles() {
     if [ -f "$MODERN_TEMPLATE" ]; then
         local services_array=$(generate_services_array)
         local dash_order=$(generate_group_order)
+        local style_switcher=$(generate_style_switcher_modern)
         local html_content=$(cat "$MODERN_TEMPLATE")
         html_content="${html_content//@@SERVICES_ARRAY@@/$services_array}"
+        html_content="${html_content//@@STYLE_SWITCHER@@/$style_switcher}"
         html_content="${html_content//@@DASHBOARD_NAME@@/${DASHBOARD_NAME:-Media Server}}"
         html_content="${html_content//@@DASHBOARD_ICON@@/${DASHBOARD_ICON:-/icons/homelabportal.png}}"
         html_content="${html_content//@@DASHBOARD_ORDER@@/$dash_order}"
@@ -505,8 +606,10 @@ generate_all_styles() {
     # Generate Sleek (always)
     if [ -f "$SLEEK_TEMPLATE" ]; then
         local services_array=$(generate_dashboard2_services_array)
+        local style_switcher=$(generate_style_switcher_sleek)
         local html_content=$(cat "$SLEEK_TEMPLATE")
         html_content="${html_content//@@SERVICES_ARRAY@@/$services_array}"
+        html_content="${html_content//@@STYLE_SWITCHER@@/$style_switcher}"
         html_content="${html_content//@@DASHBOARD_NAME@@/${DASHBOARD_NAME:-Media Server}}"
         html_content="${html_content//@@DASHBOARD_ICON@@/${DASHBOARD_ICON:-/icons/homelabportal.png}}"
         if [ -z "$DASHBOARD_LANDING" ]; then
@@ -523,8 +626,10 @@ generate_all_styles() {
     # Generate Minimal (always)
     if [ -f "$MINIMAL_TEMPLATE" ]; then
         local services_array=$(generate_dashboard2_services_array)
+        local style_switcher=$(generate_style_switcher_minimal)
         local html_content=$(cat "$MINIMAL_TEMPLATE")
         html_content="${html_content//@@SERVICES_ARRAY@@/$services_array}"
+        html_content="${html_content//@@STYLE_SWITCHER@@/$style_switcher}"
         html_content="${html_content//@@DASHBOARD_NAME@@/${DASHBOARD_NAME:-Media Server}}"
         html_content="${html_content//@@DASHBOARD_ICON@@/${DASHBOARD_ICON:-/icons/homelabportal.png}}"
         if [ -z "$DASHBOARD_LANDING" ]; then
@@ -882,6 +987,7 @@ generate_html() {
     # For private mode or OAuth (google, entra), generate all styles since they don't have re-auth issues
     if [ "$ACCESS_MODE" = "public" ] && [ "$AUTHTYPE" = "basic" ]; then
         # Public + basic auth: only generate index.html to prevent repeated auth prompts
+        SHOW_STYLE_SWITCHER="false"
         generate_style_dashboard
         echo ""
         echo "✓ Dashboard generated (basic auth: single menu) with $count enabled service(s)"
@@ -889,6 +995,7 @@ generate_html() {
         echo "  /index.html"
     else
         # Private mode or OAuth modes: generate all style variants for menu switching
+        SHOW_STYLE_SWITCHER="true"
         generate_style_dashboard
         generate_all_styles
         echo ""
