@@ -567,8 +567,8 @@ if [ "$SKIP_CERT_GENERATION" = "false" ] && [ "${ENABLE_PLEX}" = "true" ] && [ !
     esac
 fi
 
-# Generate Emby VirtualHost if enabled
-if [ "${ENABLE_EMBY}" = "true" ] && [ ! -z "$EMBY_DOMAIN" ]; then
+# Generate Emby VirtualHost if enabled (public mode only)
+if [ "$ACCESS_MODE" = "public" ] && [ "${ENABLE_EMBY}" = "true" ] && [ ! -z "$EMBY_DOMAIN" ]; then
     echo ""
     echo "=== Generating Emby VirtualHost ==="
 
@@ -717,8 +717,8 @@ EMBYAUTHEOF
     echo "✓ Emby VirtualHost enabled"
 fi
 
-# Generate Plex VirtualHost if enabled
-if [ "${ENABLE_PLEX}" = "true" ] && [ ! -z "$PLEX_DOMAIN" ]; then
+# Generate Plex VirtualHost if enabled (public mode only)
+if [ "$ACCESS_MODE" = "public" ] && [ "${ENABLE_PLEX}" = "true" ] && [ ! -z "$PLEX_DOMAIN" ]; then
     echo ""
     echo "=== Generating Plex VirtualHost ==="
 
