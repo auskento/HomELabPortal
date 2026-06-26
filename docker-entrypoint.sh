@@ -872,7 +872,7 @@ if [ "$ACCESS_MODE" = "private" ]; then
     echo "DEBUG: Using IP: '$IP'"
 
     # Use a temporary file to carefully modify the config
-    # Change 443 to 80 and remove SSL directives
+    # Change 443 to 80, remove SSL directives, and remove HTTP->HTTPS redirect
     sed \
         -e 's/<VirtualHost \*:443>/<VirtualHost *:80>/g' \
         -e '/SSLEngine on/d' \
@@ -885,6 +885,11 @@ if [ "$ACCESS_MODE" = "private" ]; then
         -e '/Header always set X-Content-Type-Options/d' \
         -e '/Header always set X-Frame-Options/d' \
         -e '/Header always set X-XSS-Protection/d' \
+        -e '/# Redirect HTTP to HTTPS/d' \
+        -e '/RewriteEngine On/d' \
+        -e '/RewriteCond %{HTTPS}/d' \
+        -e '/RewriteRule.*https/d' \
+        -e '/ServerAlias www\./d' \
         -e "s|ServerName @@DOMAIN@@|ServerName $IP|g" \
         -e "s|ServerName example.com|ServerName $IP|g" \
         /etc/apache2/sites-available/reverse-proxy.conf > /tmp/reverse-proxy.tmp
