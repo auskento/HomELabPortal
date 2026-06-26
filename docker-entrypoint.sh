@@ -949,7 +949,14 @@ PRIVEOF
 
     # Replace IP placeholder - normalize IP variable
     IP=$(echo "$IP" | xargs)  # Trim whitespace
-    sed -i "s|@@IP@@|$IP|g" /etc/apache2/sites-available/reverse-proxy.conf
+    echo "DEBUG: Using IP: '$IP'"
+    # Use temporary file for safe substitution
+    sed "s#@@IP@@#${IP}#g" /etc/apache2/sites-available/reverse-proxy.conf > /tmp/reverse-proxy.conf.tmp
+    mv /tmp/reverse-proxy.conf.tmp /etc/apache2/sites-available/reverse-proxy.conf
+
+    # Show the ServerName line for debugging
+    echo "DEBUG: Generated ServerName line:"
+    grep -n "ServerName" /etc/apache2/sites-available/reverse-proxy.conf | head -1
 else
     echo "Configuring for public mode (HTTPS)"
     sed -i "s|@@DOMAIN@@|$DOMAIN|g" /etc/apache2/sites-available/reverse-proxy.conf
