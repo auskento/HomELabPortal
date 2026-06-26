@@ -431,6 +431,29 @@ else
     fi
 fi
 
+# Request certificates for Emby and Plex subdomains
+if [ "$SKIP_CERT_GENERATION" = "false" ]; then
+    if [ ! -z "$EMBY_DOMAIN" ] && [ "${ENABLE_EMBY}" = "true" ]; then
+        EMBY_CERT_DOMAIN=$(echo "$EMBY_DOMAIN" | sed -E 's|^https?://[^.]+\.(.+)$|\1|')
+        if [ ! -f "/etc/letsencrypt/live/$EMBY_CERT_DOMAIN/fullchain.pem" ] || [ ! -f "/etc/letsencrypt/live/$EMBY_DOMAIN/fullchain.pem" ]; then
+            echo "Requesting certificate for Emby subdomain: $EMBY_DOMAIN"
+            certbot certonly --standalone --preferred-challenges http --email "$EMAIL" --agree-tos --no-eff-email --non-interactive -d "$EMBY_DOMAIN" 2>/dev/null || {
+                echo "Certbot failed for Emby subdomain, using main domain certificate"
+            }
+        fi
+    fi
+
+    if [ ! -z "$PLEX_DOMAIN" ] && [ "${ENABLE_PLEX}" = "true" ]; then
+        PLEX_CERT_DOMAIN=$(echo "$PLEX_DOMAIN" | sed -E 's|^https?://[^.]+\.(.+)$|\1|')
+        if [ ! -f "/etc/letsencrypt/live/$PLEX_CERT_DOMAIN/fullchain.pem" ] || [ ! -f "/etc/letsencrypt/live/$PLEX_DOMAIN/fullchain.pem" ]; then
+            echo "Requesting certificate for Plex subdomain: $PLEX_DOMAIN"
+            certbot certonly --standalone --preferred-challenges http --email "$EMAIL" --agree-tos --no-eff-email --non-interactive -d "$PLEX_DOMAIN" 2>/dev/null || {
+                echo "Certbot failed for Plex subdomain, using main domain certificate"
+            }
+        fi
+    fi
+fi
+
 # Handle Emby subdomain with separate OAuth if enabled (only in public mode with OAuth)
 if [ "$SKIP_CERT_GENERATION" = "false" ] && [ "${ENABLE_EMBY}" = "true" ] && [ ! -z "$EMBY_DOMAIN" ] && [ ! -z "$EMBY_REDIRECT_URI" ] && [ "$AUTHTYPE" != "none" ]; then
     echo ""
@@ -553,24 +576,42 @@ if [ "${ENABLE_EMBY}" = "true" ] && [ ! -z "$EMBY_DOMAIN" ] && [ ! -z "$EMBY_RED
     echo "=== Generating Emby VirtualHost ==="
 
     EMBY_SUBDOMAIN=$(echo "$EMBY_DOMAIN" | sed -E 's|^https?://([^.]+)\..*|\1|')
+    EMBY_CERT_DOMAIN=$(echo "$EMBY_DOMAIN" | sed -E 's|^https?://[^.]+\.(.+)$|\1|')
+
+    # Use subdomain cert if it exists, otherwise use main domain cert
+    if [ -f "/etc/letsencrypt/live/$EMBY_DOMAIN/fullchain.pem" ]; then
+        EMBY_CERT_PATH="$EMBY_DOMAIN"
+    elif [ -f "/etc/letsencrypt/live/$EMBY_CERT_DOMAIN/fullchain.pem" ]; then
+        EMBY_CERT_PATH="$EMBY_CERT_DOMAIN"
+    else
+        EMBY_CERT_PATH="$DOMAIN"
+    fi
 
     # Generate Emby VirtualHost config
     cat /etc/apache2/conf-available/emby-vhost.conf.template 2>/dev/null || echo "" \
         | sed "s|@@EMBY_SUBDOMAIN@@|$EMBY_SUBDOMAIN|g" \
-        | sed "s|@@DOMAIN@@|$DOMAIN|g" \
+        | sed "s|@@DOMAIN@@|$EMBY_CERT_PATH|g" \
         | sed "s|@@SSL_PROTOCOLS@@|$SSL_PROTOCOLS|g" \
         | sed "s|@@SSL_CIPHERS@@|$SSL_CIPHERS|g" \
         > /etc/apache2/sites-available/emby-vhost.conf
 
-    # Include appropriate OAuth and auth protection based on AUTHTYPE
+    # Generate auth protection config for Emby based on AUTHTYPE
     case "$AUTHTYPE" in
         google)
+            # Generate auth protection config
+            cat /etc/apache2/conf-available/auth-google-protect-emby.conf.template 2>/dev/null || cat /etc/apache2/conf-available/auth-google-protect.conf \
+                > /etc/apache2/conf-available/auth-google-protect-emby.conf
+
             # Add includes for Google OAuth
-            sed -i "s|@@INCLUDE_EMBY_OAUTH@@|Include /etc/apache2/conf-available/oauth2-google-emby.conf\nInclude /etc/apache2/conf-available/auth-google-protect-emby.conf.template|g" /etc/apache2/sites-available/emby-vhost.conf
+            sed -i "s|@@INCLUDE_EMBY_OAUTH@@|Include /etc/apache2/conf-available/oauth2-google-emby.conf\nInclude /etc/apache2/conf-available/auth-google-protect-emby.conf|g" /etc/apache2/sites-available/emby-vhost.conf
             ;;
         entra)
+            # Generate auth protection config
+            cat /etc/apache2/conf-available/auth-entra-protect-emby.conf.template 2>/dev/null || cat /etc/apache2/conf-available/auth-entra-protect.conf \
+                > /etc/apache2/conf-available/auth-entra-protect-emby.conf
+
             # Add includes for Entra OAuth
-            sed -i "s|@@INCLUDE_EMBY_OAUTH@@|Include /etc/apache2/conf-available/oauth2-entra-emby.conf\nInclude /etc/apache2/conf-available/auth-entra-protect-emby.conf.template|g" /etc/apache2/sites-available/emby-vhost.conf
+            sed -i "s|@@INCLUDE_EMBY_OAUTH@@|Include /etc/apache2/conf-available/oauth2-entra-emby.conf\nInclude /etc/apache2/conf-available/auth-entra-protect-emby.conf|g" /etc/apache2/sites-available/emby-vhost.conf
             ;;
     esac
 
@@ -584,24 +625,42 @@ if [ "${ENABLE_PLEX}" = "true" ] && [ ! -z "$PLEX_DOMAIN" ] && [ ! -z "$PLEX_RED
     echo "=== Generating Plex VirtualHost ==="
 
     PLEX_SUBDOMAIN=$(echo "$PLEX_DOMAIN" | sed -E 's|^https?://([^.]+)\..*|\1|')
+    PLEX_CERT_DOMAIN=$(echo "$PLEX_DOMAIN" | sed -E 's|^https?://[^.]+\.(.+)$|\1|')
+
+    # Use subdomain cert if it exists, otherwise use main domain cert
+    if [ -f "/etc/letsencrypt/live/$PLEX_DOMAIN/fullchain.pem" ]; then
+        PLEX_CERT_PATH="$PLEX_DOMAIN"
+    elif [ -f "/etc/letsencrypt/live/$PLEX_CERT_DOMAIN/fullchain.pem" ]; then
+        PLEX_CERT_PATH="$PLEX_CERT_DOMAIN"
+    else
+        PLEX_CERT_PATH="$DOMAIN"
+    fi
 
     # Generate Plex VirtualHost config
     cat /etc/apache2/conf-available/plex-vhost.conf.template 2>/dev/null || echo "" \
         | sed "s|@@PLEX_SUBDOMAIN@@|$PLEX_SUBDOMAIN|g" \
-        | sed "s|@@DOMAIN@@|$DOMAIN|g" \
+        | sed "s|@@DOMAIN@@|$PLEX_CERT_PATH|g" \
         | sed "s|@@SSL_PROTOCOLS@@|$SSL_PROTOCOLS|g" \
         | sed "s|@@SSL_CIPHERS@@|$SSL_CIPHERS|g" \
         > /etc/apache2/sites-available/plex-vhost.conf
 
-    # Include appropriate OAuth and auth protection based on AUTHTYPE
+    # Generate auth protection config for Plex based on AUTHTYPE
     case "$AUTHTYPE" in
         google)
+            # Generate auth protection config
+            cat /etc/apache2/conf-available/auth-google-protect-plex.conf.template 2>/dev/null || cat /etc/apache2/conf-available/auth-google-protect.conf \
+                > /etc/apache2/conf-available/auth-google-protect-plex.conf
+
             # Add includes for Google OAuth
-            sed -i "s|@@INCLUDE_PLEX_OAUTH@@|Include /etc/apache2/conf-available/oauth2-google-plex.conf\nInclude /etc/apache2/conf-available/auth-google-protect-plex.conf.template|g" /etc/apache2/sites-available/plex-vhost.conf
+            sed -i "s|@@INCLUDE_PLEX_OAUTH@@|Include /etc/apache2/conf-available/oauth2-google-plex.conf\nInclude /etc/apache2/conf-available/auth-google-protect-plex.conf|g" /etc/apache2/sites-available/plex-vhost.conf
             ;;
         entra)
+            # Generate auth protection config
+            cat /etc/apache2/conf-available/auth-entra-protect-plex.conf.template 2>/dev/null || cat /etc/apache2/conf-available/auth-entra-protect.conf \
+                > /etc/apache2/conf-available/auth-entra-protect-plex.conf
+
             # Add includes for Entra OAuth
-            sed -i "s|@@INCLUDE_PLEX_OAUTH@@|Include /etc/apache2/conf-available/oauth2-entra-plex.conf\nInclude /etc/apache2/conf-available/auth-entra-protect-plex.conf.template|g" /etc/apache2/sites-available/plex-vhost.conf
+            sed -i "s|@@INCLUDE_PLEX_OAUTH@@|Include /etc/apache2/conf-available/oauth2-entra-plex.conf\nInclude /etc/apache2/conf-available/auth-entra-protect-plex.conf|g" /etc/apache2/sites-available/plex-vhost.conf
             ;;
     esac
 
