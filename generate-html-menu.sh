@@ -43,7 +43,7 @@ declare -A SERVICES=(
     # MEDIA category
     [EMBY]="MEDIA|Emby|Streaming|/icons/emby.png|SUBDOMAIN|#9146FF"
     [PLEX]="MEDIA|Plex|Streaming|/icons/plex.png|SUBDOMAIN|#e5a00d"
-    [JELLYFIN]="MEDIA|Jellyfin|Streaming|/icons/jellyfin.png|/jellyfin/|#00a4dc"
+    [JELLYFIN]="MEDIA|Jellyfin|Streaming|/icons/jellyfin.png|SUBDOMAIN|#00a4dc"
     [TAUTULLI]="MEDIA|Tautulli|Analytics|/icons/tautulli.png|/tautulli/|#4a9eff"
 )
 
@@ -169,7 +169,7 @@ generate_menu_items() {
             # Parse service metadata
             IFS='|' read -r category service_name service_desc icon_path href accent <<< "${SERVICES[$service_key]}"
 
-            # Handle subdomain services (Emby, Plex)
+            # Handle subdomain services (Emby, Plex, Jellyfin)
             if [ "$href" = "SUBDOMAIN" ]; then
                 if [ "$service_key" = "EMBY" ]; then
                     # Use subdomain in public mode if defined, otherwise use internal URL
@@ -190,6 +190,16 @@ generate_menu_items() {
                             continue
                         fi
                         href="$PLEX_URL"
+                    fi
+                elif [ "$service_key" = "JELLYFIN" ]; then
+                    # Use subdomain in public mode if defined, otherwise use internal URL
+                    if [ "$ACCESS_MODE" = "public" ] && [ ! -z "$JELLYFIN_DOMAIN" ]; then
+                        href="https://$JELLYFIN_DOMAIN/"
+                    else
+                        if [ -z "$JELLYFIN_URL" ]; then
+                            continue
+                        fi
+                        href="$JELLYFIN_URL"
                     fi
                 fi
             fi
@@ -242,6 +252,13 @@ generate_services_list() {
                 else
                     [ -z "$PLEX_URL" ] && continue
                     href="$PLEX_URL"
+                fi
+            elif [ "$service_key" = "JELLYFIN" ]; then
+                if [ "$ACCESS_MODE" = "public" ] && [ ! -z "$JELLYFIN_DOMAIN" ]; then
+                    href="https://$JELLYFIN_DOMAIN/"
+                else
+                    [ -z "$JELLYFIN_URL" ] && continue
+                    href="$JELLYFIN_URL"
                 fi
             fi
         fi
@@ -299,8 +316,12 @@ generate_services_array() {
                         fi
                         ;;
                     JELLYFIN)
-                        [ -z "$JELLYFIN_URL" ] && continue
-                        href="$JELLYFIN_URL"
+                        if [ ! -z "$JELLYFIN_DOMAIN" ]; then
+                            href="https://$JELLYFIN_DOMAIN/"
+                        else
+                            [ -z "$JELLYFIN_URL" ] && continue
+                            href="$JELLYFIN_URL"
+                        fi
                         ;;
                     TAUTULLI)
                         [ -z "$TAUTULLI_URL" ] && continue
@@ -343,6 +364,13 @@ generate_services_array() {
                 else
                     [ -z "$PLEX_URL" ] && continue
                     href="$PLEX_URL"
+                fi
+            elif [ "$service_key" = "JELLYFIN" ]; then
+                if [ "$ACCESS_MODE" = "public" ] && [ ! -z "$JELLYFIN_DOMAIN" ]; then
+                    href="https://$JELLYFIN_DOMAIN/"
+                else
+                    [ -z "$JELLYFIN_URL" ] && continue
+                    href="$JELLYFIN_URL"
                 fi
             fi
         fi
@@ -787,8 +815,12 @@ generate_dashboard2_services_array() {
                             href="https://$PLEX_DOMAIN/"
                             ;;
                         JELLYFIN)
-                            [ -z "$JELLYFIN_DOMAIN" ] && continue
-                            href="https://$JELLYFIN_DOMAIN/"
+                            if [ ! -z "$JELLYFIN_DOMAIN" ]; then
+                                href="https://$JELLYFIN_DOMAIN/"
+                            else
+                                [ -z "$JELLYFIN_URL" ] && continue
+                                href="$JELLYFIN_URL"
+                            fi
                             ;;
                         TAUTULLI)
                             [ -z "$TAUTULLI_URL" ] && continue
@@ -819,11 +851,26 @@ generate_dashboard2_services_array() {
             elif [ "$href" = "SUBDOMAIN" ]; then
                 # Handle other subdomain services
                 if [ "$service_key" = "EMBY" ]; then
-                    [ -z "$EMBY_DOMAIN" ] && continue
-                    href="https://$EMBY_DOMAIN/"
+                    if [ ! -z "$EMBY_DOMAIN" ]; then
+                        href="https://$EMBY_DOMAIN/"
+                    else
+                        [ -z "$EMBY_URL" ] && continue
+                        href="$EMBY_URL"
+                    fi
                 elif [ "$service_key" = "PLEX" ]; then
-                    [ -z "$PLEX_DOMAIN" ] && continue
-                    href="https://$PLEX_DOMAIN/"
+                    if [ ! -z "$PLEX_DOMAIN" ]; then
+                        href="https://$PLEX_DOMAIN/"
+                    else
+                        [ -z "$PLEX_URL" ] && continue
+                        href="$PLEX_URL"
+                    fi
+                elif [ "$service_key" = "JELLYFIN" ]; then
+                    if [ ! -z "$JELLYFIN_DOMAIN" ]; then
+                        href="https://$JELLYFIN_DOMAIN/"
+                    else
+                        [ -z "$JELLYFIN_URL" ] && continue
+                        href="$JELLYFIN_URL"
+                    fi
                 fi
             fi
 
