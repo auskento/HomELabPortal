@@ -295,11 +295,20 @@ case "${AUTHTYPE}" in
         # Generate random encryption passphrase for sessions (internal use only)
         GOOGLE_CRYPTO_PASSPHRASE=$(openssl rand -base64 24)
 
+        # Extract domain from GOOGLE_REDIRECT_URI for wildcard cookie domain
+        # Example: https://transfers.limosani.net.au/oauth2callback → .limosani.net.au
+        COOKIE_DOMAIN=$(echo "$GOOGLE_REDIRECT_URI" | sed -E 's|^https?://[^/]+\.([^/]+).*$|.\1|')
+        if [ -z "$COOKIE_DOMAIN" ] || [ "$COOKIE_DOMAIN" = "$GOOGLE_REDIRECT_URI" ]; then
+            # Fallback: extract just the domain part and add leading dot
+            COOKIE_DOMAIN=$(echo "$GOOGLE_REDIRECT_URI" | sed -E 's|^https?://([^/]+).*$|.\1|')
+        fi
+
         cat /etc/apache2/conf-available/oauth2-google.conf \
             | sed "s|@@GOOGLE_CLIENT_ID@@|$GOOGLE_CLIENT_ID|g" \
             | sed "s|@@GOOGLE_CLIENT_SECRET@@|$GOOGLE_CLIENT_SECRET|g" \
             | sed "s|@@GOOGLE_REDIRECT_URI@@|$GOOGLE_REDIRECT_URI|g" \
             | sed "s|@@GOOGLE_CRYPTO_PASSPHRASE@@|$GOOGLE_CRYPTO_PASSPHRASE|g" \
+            | sed "s|@@COOKIE_DOMAIN@@|$COOKIE_DOMAIN|g" \
             > /etc/apache2/conf-enabled/oauth2-google.conf
 
         cp /etc/apache2/conf-available/auth-google-protect.conf /etc/apache2/conf-enabled/
