@@ -130,6 +130,13 @@ if [ "$ACCESS_MODE" = "private" ]; then
     echo "✓ Private mode - Internal dashboard only"
     SKIP_CERT_GENERATION=true
 
+    # Validate that IP is provided in private mode
+    if [ -z "$IP" ]; then
+        echo "ERROR: IP environment variable is required for private mode"
+        echo "Please provide: -e IP='192.168.9.244'"
+        exit 1
+    fi
+
     # Validate that only none or basic auth are used in private mode
     if [ "$AUTHTYPE" != "none" ] && [ "$AUTHTYPE" != "basic" ]; then
         echo "ERROR: Private mode only supports 'none' or 'basic' authentication"
@@ -137,7 +144,7 @@ if [ "$ACCESS_MODE" = "private" ]; then
         exit 1
     fi
 
-    echo "Domain: $DOMAIN (not used for certificates)"
+    echo "Domain: $IP (private mode)"
 elif [ "$ACCESS_MODE" = "public" ]; then
     echo "✓ Public mode - Full features enabled"
     SKIP_CERT_GENERATION=false
