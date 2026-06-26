@@ -952,8 +952,6 @@ PRIVEOF
 else
     echo "Configuring for public mode (HTTPS)"
     sed -i "s|@@DOMAIN@@|$DOMAIN|g" /etc/apache2/sites-available/reverse-proxy.conf
-    # Remove the 80 VirtualHost (no longer needed in public mode, redirect to 443)
-    sed -i '/<VirtualHost \*:80>/,/<\/VirtualHost>/d' /etc/apache2/sites-available/reverse-proxy.conf
 fi
 
 # Setup cron for certificate renewal
