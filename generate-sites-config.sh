@@ -155,8 +155,9 @@ if [ ! -z "$SITES_ENABLED" ]; then
     for code in "${CODES[@]}"; do
         code=$(echo "$code" | xargs)  # Trim whitespace
 
-        # Skip if favicon already exists
+        # Skip if favicon already exists (pre-cached in image)
         if [ -f "$SITES_DIR/${code,,}.favicon.ico" ]; then
+            echo "  ✓ Using cached favicon for $code"
             continue
         fi
 

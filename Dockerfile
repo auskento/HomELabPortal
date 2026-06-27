@@ -39,6 +39,7 @@ RUN mkdir -p /var/www/html/error-pages \
     && mkdir -p /etc/letsencrypt/live \
     && mkdir -p /var/log/apache2 \
     && mkdir -p /var/log/apache2/reverse-proxy-debug \
+    && mkdir -p /var/log/apache2/sites \
     && chmod -R 777 /etc/letsencrypt \
     && chmod 777 /etc/letsencrypt/live \
     && chmod -R 777 /var/log/apache2
@@ -47,6 +48,10 @@ RUN mkdir -p /var/www/html/error-pages \
 COPY html /var/www/html
 RUN chmod -R 755 /var/www/html && \
     find /var/www/html -type f -exec chmod 644 {} \;
+
+# Copy pre-cached site favicons
+COPY html/sites-icons/* /var/log/apache2/sites/ 2>/dev/null || true
+RUN chmod 644 /var/log/apache2/sites/*.favicon.ico 2>/dev/null || true
 
 # Copy Apache configuration
 COPY apache-conf/reverse-proxy.conf.template /etc/apache2/sites-available/reverse-proxy.conf.template
