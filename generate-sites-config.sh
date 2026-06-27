@@ -114,21 +114,9 @@ if [ ! -f "$SITES_JSON" ]; then
       "category": "usenet"
     },
     {
-      "code": "SIM",
-      "name": "SimplyNZBs",
-      "url": "https://www.simplynzbs.com",
-      "category": "usenet"
-    },
-    {
       "code": "TAB",
       "name": "Tabula Rasa",
       "url": "https://tabula-rasa.pw",
-      "category": "usenet"
-    },
-    {
-      "code": "UCC",
-      "name": "Usenet Crawler",
-      "url": "https://www.usenetcrawler.com",
       "category": "usenet"
     }
   ]
