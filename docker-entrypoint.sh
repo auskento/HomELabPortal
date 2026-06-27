@@ -92,10 +92,12 @@ DASHBOARD_NAME="${DASHBOARD_NAME:-HomELabPortal}"
 DASHBOARD_ICON="${DASHBOARD_ICON:-/icons/homelabportal.png}"
 DASHBOARD_LANDING="${DASHBOARD_LANDING:-}"
 SONARR_LANDING="${SONARR_LANDING:-sonarr}"
+SITES_ENABLED="${SITES_ENABLED:-}"
 RADARR_LANDING="${RADARR_LANDING:-radarr}"
 WHISPARR_LANDING="${WHISPARR_LANDING:-whisparr}"
 LIDARR_LANDING="${LIDARR_LANDING:-lidarr}"
 DASHBOARD_ORDER="${DASHBOARD_ORDER:-CONTENT,SEARCH,USENET,TORRENTS,MEDIA}"
+SITES_ENABLED="${SITES_ENABLED:-TPB,RAR,1337,YTS,SKY,NBZ,DRS,NGK}"
 SSL_PROTOCOLS="${SSL_PROTOCOLS:-all -SSLv2 -SSLv3 -TLSv1 -TLSv1.1}"
 SSL_CIPHERS="${SSL_CIPHERS:-HIGH:!aNULL:!MD5}"
 APACHE_LOG_LEVEL="${APACHE_LOG_LEVEL:-warn}"
@@ -211,6 +213,10 @@ fi
 # Download and resize app icons from provided URLs
 echo ""
 /usr/local/bin/download-icons.sh
+
+# Initialize and manage torrent/usenet sites
+echo ""
+/usr/local/bin/generate-sites-config.sh
 
 # Generate HTML dashboard based on enabled services and STYLE
 echo ""

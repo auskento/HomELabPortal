@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <title>@@DASHBOARD_NAME@@</title>
+    <style>
+        :root {
+            --bg-primary: #000;
+            --bg-secondary: #1a1a1a;
+            --text-primary: #fff;
+            --text-secondary: #888;
+            --text-accent: #4a9eff;
+            --border-color: #444;
+        }
+
+        [data-theme="light"] {
+            --bg-primary: #f5f5f7;
+            --bg-secondary: #ffffff;
+            --text-primary: #1a1a1a;
+            --text-secondary: #666;
+            --text-accent: #0066cc;
+            --border-color: #d0d0d0;
+        }
+
+        [data-theme="light"] img {
+            filter: invert(0.85) hue-rotate(180deg) brightness(0.95);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            padding-bottom: 60px;
+        }
+
+        .header {
+            background-color: var(--bg-secondary);
+            padding: 12px 16px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex: 1;
+            min-width: 0;
+        }
+
+        .header-left img {
+            width: 28px;
+            height: 28px;
+            object-fit: contain;
+        }
+
+        .header-left span {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-primary);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .header-right {
+            display: flex;
+            gap: 8px;
+        }
+
+        button {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 18px;
+            padding: 4px;
+            color: var(--text-accent);
+        }
+
+        .services-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            padding: 16px;
+        }
+
+        .service-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+            color: inherit;
+            padding: 12px;
+            border-radius: 8px;
+            border: 0.5px solid var(--border-color);
+            background: var(--bg-secondary);
+            transition: all 0.2s;
+        }
+
+        .service-item:active {
+            transform: scale(0.95);
+            background: var(--bg-secondary);
+            border-color: var(--text-accent);
+        }
+
+        .service-icon {
+            width: 48px;
+            height: 48px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .service-icon img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+        }
+
+        .service-name {
+            font-size: 11px;
+            text-align: center;
+            color: var(--text-secondary);
+            line-height: 1.2;
+            word-break: break-word;
+        }
+
+        .section-title {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            padding: 12px 16px 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .sites-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 8px;
+            padding: 0 16px 16px;
+        }
+
+        .site-link {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            text-decoration: none;
+            padding: 8px;
+            border-radius: 6px;
+            border: 0.5px solid var(--border-color);
+            background: var(--bg-secondary);
+            transition: all 0.2s;
+        }
+
+        .site-link:active {
+            transform: scale(0.95);
+            border-color: var(--text-accent);
+        }
+
+        .site-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--bg-primary);
+            overflow: hidden;
+        }
+
+        .site-icon img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            padding: 2px;
+        }
+
+        .site-code {
+            font-size: 9px;
+            color: var(--text-muted);
+        }
+
+        iframe {
+            display: none;
+        }
+
+        .controls {
+            display: flex;
+            gap: 8px;
+            padding: 8px 16px;
+            border-top: 0.5px solid var(--border-color);
+        }
+
+        .controls a {
+            font-size: 11px;
+            color: var(--text-accent);
+            text-decoration: none;
+            padding: 6px 12px;
+            border-radius: 4px;
+            border: 0.5px solid var(--border-color);
+            flex: 1;
+            text-align: center;
+            transition: all 0.2s;
+        }
+
+        .controls a:active {
+            background: var(--bg-secondary);
+        }
+
+        @supports (padding: max(0px)) {
+            body {
+                padding-bottom: max(60px, env(safe-area-inset-bottom));
+            }
+
+            .header {
+                padding-left: max(16px, env(safe-area-inset-left));
+                padding-right: max(16px, env(safe-area-inset-right));
+                padding-top: max(12px, env(safe-area-inset-top));
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="header">
+    <div class="header-left">
+        <img src="@@DASHBOARD_ICON@@" alt="Dashboard">
+        <span>@@DASHBOARD_NAME@@</span>
+    </div>
+    <div class="header-right">
+        <button id="theme-toggle" title="Toggle theme">☀️</button>
+    </div>
+</div>
+
+<div class="section-title">Services</div>
+<div class="services-grid">
+    @@MENU_ITEMS@@
+</div>
+
+<div class="section-title">Sites</div>
+<div class="sites-grid">
+    @@SITES_ITEMS@@
+</div>
+
+<div class="controls">
+    <a href="/classic.html">Classic</a>
+    <a href="/modern.html">Modern</a>
+    <a href="/sleek.html">Sleek</a>
+</div>
+
+<script>
+    function updateTheme() {
+        const themeButton = document.getElementById('theme-toggle');
+        const savedTheme = localStorage.getItem('theme') || 'dark';
+        document.documentElement.setAttribute('data-theme', savedTheme);
+        themeButton.textContent = savedTheme === 'dark' ? '☀️' : '🌙';
+    }
+
+    updateTheme();
+
+    document.getElementById('theme-toggle').addEventListener('click', function() {
+        const current = document.documentElement.getAttribute('data-theme');
+        const next = current === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        localStorage.setItem('theme', next);
+        updateTheme();
+    });
+
+    // Service popup handling
+    document.querySelectorAll('.service-item').forEach(link => {
+        link.addEventListener('click', function(e) {
+            if (this.href.startsWith('http')) {
+                e.preventDefault();
+                window.open(this.href, 'popup_' + Date.now(), 'width=1200,height=800,resizable=yes');
+            }
+        });
+    });
+
+    // Site link handling
+    document.querySelectorAll('.site-link').forEach(link => {
+        link.addEventListener('click', function(e) {
+            e.preventDefault();
+            window.open(this.href, '_blank');
+        });
+    });
+</script>
+
+</body>
+</html>

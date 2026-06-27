@@ -13,7 +13,50 @@ CLASSIC_TEMPLATE="/var/www/html/classic.template"
 MODERN_TEMPLATE="/var/www/html/modern.template"
 SLEEK_TEMPLATE="/var/www/html/sleek.template"
 MINIMAL_TEMPLATE="/var/www/html/minimal.template"
+MOBILE_TEMPLATE="/var/www/html/mobile.template"
 DASHBOARD_OAUTH_TEMPLATE="/var/www/html/dashboard-oauth.html.template"
+SITES_JSON="/var/log/apache2/sites/sites.json"
+SITES_DIR="/var/log/apache2/sites"
+
+# Function to generate sites HTML
+generate_sites_html() {
+    local sites_html=""
+
+    if [ ! -f "$SITES_JSON" ]; then
+        echo ""
+        return
+    fi
+
+    if [ -z "$SITES_ENABLED" ]; then
+        echo ""
+        return
+    fi
+
+    # Parse SITES_ENABLED and generate HTML for each enabled site
+    IFS=',' read -ra CODES <<< "$SITES_ENABLED"
+    for code in "${CODES[@]}"; do
+        code=$(echo "$code" | xargs)  # Trim whitespace
+
+        # Extract site URL from sites.json using grep/sed
+        url=$(grep -A 3 "\"code\": \"$code\"" "$SITES_JSON" | grep "\"url\"" | sed 's/.*"url": "\(.*\)".*/\1/')
+        name=$(grep -A 2 "\"code\": \"$code\"" "$SITES_JSON" | grep "\"name\"" | sed 's/.*"name": "\(.*\)".*/\1/')
+
+        if [ ! -z "$url" ]; then
+            # Check if favicon exists
+            favicon_file="$SITES_DIR/${code,,}.favicon.ico"
+            if [ -f "$favicon_file" ]; then
+                favicon_url="/sites/${code,,}.favicon.ico"
+            else
+                # Fallback to generic icon
+                favicon_url="/icons/site.png"
+            fi
+
+            sites_html+="<a href='$url' class='site-link' title='$name' target='_blank'><div class='site-icon'><img src='$favicon_url' alt='$code' /></div><div class='site-code'>$code</div></a>"
+        fi
+    done
+
+    echo "$sites_html"
+}
 
 # Define all available services with metadata
 # Format: SERVICE_KEY="Category|Name|Description|Icon|Href|Accent"
