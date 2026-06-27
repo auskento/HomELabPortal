@@ -219,9 +219,9 @@
       const timeoutId = setTimeout(() => controller.abort(), 10000);
 
       fetch(app.href, { method: 'HEAD', signal: controller.signal })
-        .then(() => {
+        .then(response => {
           clearTimeout(timeoutId);
-          health[app.id] = 'online';
+          health[app.id] = response.ok ? 'online' : 'offline';
         })
         .catch(() => {
           clearTimeout(timeoutId);
