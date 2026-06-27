@@ -871,6 +871,11 @@ generate_dashboard2_services_array() {
             IFS='|' read -r category name desc icon href accent <<< "${SERVICES[$service_key]}"
             local id=$(echo "$service_key" | tr '[:upper:]' '[:lower:]')
 
+            # Get internal URL for health checks
+            local internal_url=""
+            local url_var="${service_key}_URL"
+            internal_url="${!url_var}"
+
             # MEDIA services: use DOMAIN in public mode, URL in private mode
             if [ "$category" = "MEDIA" ]; then
                 if [ "$ACCESS_MODE" = "public" ]; then
@@ -945,7 +950,7 @@ generate_dashboard2_services_array() {
                 array+=","
             fi
 
-            array+="{ id: '${id}', name: '${name}', icon: '${icon}', href: '${href}', accent: '${accent}', popup: ${popup} }"
+            array+="{ id: '${id}', name: '${name}', icon: '${icon}', href: '${href}', accent: '${accent}', popup: ${popup}, internalUrl: '${internal_url}' }"
         done
     done
 
