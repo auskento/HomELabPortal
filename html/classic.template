@@ -423,8 +423,17 @@
             const controller = new AbortController();
             const timeoutId = setTimeout(() => controller.abort(), 30000);
 
+            // Build fetch options with optional auth
+            const fetchOptions = { method: 'HEAD', signal: controller.signal };
+            const healthCheckUser = '@@HEALTH_CHECK_USER@@';
+            const healthCheckPass = '@@HEALTH_CHECK_PASS@@';
+            if (healthCheckUser && healthCheckUser !== '@@HEALTH_CHECK_USER@@' && healthCheckPass && healthCheckPass !== '@@HEALTH_CHECK_PASS@@') {
+                const auth = btoa(healthCheckUser + ':' + healthCheckPass);
+                fetchOptions.headers = { 'Authorization': 'Basic ' + auth };
+            }
+
             // Try HEAD first, then GET if HEAD fails
-            fetch(service.href, { method: 'HEAD', signal: controller.signal })
+            fetch(service.href, fetchOptions)
                 .then(response => {
                     clearTimeout(timeoutId);
                     // Mark online if status is 2xx, 3xx, or auth errors (401, 403)
@@ -440,7 +449,13 @@
                     const getController = new AbortController();
                     const getTimeoutId = setTimeout(() => getController.abort(), 30000);
 
-                    fetch(service.href, { method: 'GET', signal: getController.signal })
+                    const getOptions = { method: 'GET', signal: getController.signal };
+                    if (healthCheckUser && healthCheckUser !== '@@HEALTH_CHECK_USER@@' && healthCheckPass && healthCheckPass !== '@@HEALTH_CHECK_PASS@@') {
+                        const auth = btoa(healthCheckUser + ':' + healthCheckPass);
+                        getOptions.headers = { 'Authorization': 'Basic ' + auth };
+                    }
+
+                    fetch(service.href, getOptions)
                         .then(response => {
                             clearTimeout(getTimeoutId);
                             // Mark online if status is 2xx, 3xx, or auth errors (401, 403)
