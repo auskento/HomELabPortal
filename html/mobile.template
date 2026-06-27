@@ -342,10 +342,10 @@
             const controller = new AbortController();
             const timeoutId = setTimeout(() => controller.abort(), 10000);
 
-            fetch(service.href, { method: 'HEAD', signal: controller.signal })
+            fetch(service.href, { method: 'GET', signal: controller.signal })
                 .then(response => {
                     clearTimeout(timeoutId);
-                    health[service.href] = response.ok ? 'online' : 'offline';
+                    health[service.href] = (response.status >= 200 && response.status < 400) ? 'online' : 'offline';
                 })
                 .catch(() => {
                     clearTimeout(timeoutId);
