@@ -573,8 +573,6 @@ generate_style_dashboard() {
         html_content="${html_content//@@DASHBOARD_NAME@@/${DASHBOARD_NAME:-Media Server}}"
         html_content="${html_content//@@DASHBOARD_ICON@@/${DASHBOARD_ICON:-/icons/homelabportal.png}}"
         html_content="${html_content//@@DASHBOARD_THEME@@/${DASHBOARD_THEME:-dark}}"
-        html_content="${html_content//@@HEALTH_CHECK_USER@@/${HEALTH_CHECK_USER:-}}"
-        html_content="${html_content//@@HEALTH_CHECK_PASS@@/${HEALTH_CHECK_PASS:-}}"
 
         if [ -z "$DASHBOARD_LANDING" ]; then
             html_content=$(echo "$html_content" | sed 's|src="/@@DASHBOARD_LANDING@@"|src="about:blank"|')

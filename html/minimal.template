@@ -218,13 +218,15 @@
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 30000);
 
-      // Build fetch options with optional auth
+      // Build fetch options with auth if needed (e.g., nzbget)
       const fetchOptions = { method: 'HEAD', signal: controller.signal };
-      const healthCheckUser = '@@HEALTH_CHECK_USER@@';
-      const healthCheckPass = '@@HEALTH_CHECK_PASS@@';
-      if (healthCheckUser && healthCheckUser !== '@@HEALTH_CHECK_USER@@' && healthCheckPass && healthCheckPass !== '@@HEALTH_CHECK_PASS@@') {
-        const auth = btoa(healthCheckUser + ':' + healthCheckPass);
-        fetchOptions.headers = { 'Authorization': 'Basic ' + auth };
+      if (app.href.includes('/nzbget')) {
+        const nzbgetUser = '@@NZBGET_USER@@';
+        const nzbgetPass = '@@NZBGET_PASS@@';
+        if (nzbgetUser && nzbgetUser !== '@@NZBGET_USER@@' && nzbgetPass && nzbgetPass !== '@@NZBGET_PASS@@') {
+          const auth = btoa(nzbgetUser + ':' + nzbgetPass);
+          fetchOptions.headers = { 'Authorization': 'Basic ' + auth };
+        }
       }
 
       // Try HEAD first, then GET if HEAD fails
@@ -249,9 +251,13 @@
           const getTimeoutId = setTimeout(() => getController.abort(), 30000);
 
           const getOptions = { method: 'GET', signal: getController.signal };
-          if (healthCheckUser && healthCheckUser !== '@@HEALTH_CHECK_USER@@' && healthCheckPass && healthCheckPass !== '@@HEALTH_CHECK_PASS@@') {
-            const auth = btoa(healthCheckUser + ':' + healthCheckPass);
-            getOptions.headers = { 'Authorization': 'Basic ' + auth };
+          if (app.href.includes('/nzbget')) {
+            const nzbgetUser = '@@NZBGET_USER@@';
+            const nzbgetPass = '@@NZBGET_PASS@@';
+            if (nzbgetUser && nzbgetUser !== '@@NZBGET_USER@@' && nzbgetPass && nzbgetPass !== '@@NZBGET_PASS@@') {
+              const auth = btoa(nzbgetUser + ':' + nzbgetPass);
+              getOptions.headers = { 'Authorization': 'Basic ' + auth };
+            }
           }
 
           fetch(app.href, getOptions)
