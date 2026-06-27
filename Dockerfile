@@ -49,9 +49,11 @@ COPY html /var/www/html
 RUN chmod -R 755 /var/www/html && \
     find /var/www/html -type f -exec chmod 644 {} \;
 
-# Copy pre-cached site favicons
-COPY html/sites-icons/* /var/log/apache2/sites/ 2>/dev/null || true
-RUN chmod 644 /var/log/apache2/sites/*.favicon.ico 2>/dev/null || true
+# Copy pre-cached site favicons if they exist
+RUN if [ -d /var/www/html/sites-icons ] && [ "$(ls -A /var/www/html/sites-icons 2>/dev/null)" ]; then \
+      cp /var/www/html/sites-icons/* /var/log/apache2/sites/ 2>/dev/null || true; \
+      chmod 644 /var/log/apache2/sites/*.favicon.ico 2>/dev/null || true; \
+    fi
 
 # Copy Apache configuration
 COPY apache-conf/reverse-proxy.conf.template /etc/apache2/sites-available/reverse-proxy.conf.template
