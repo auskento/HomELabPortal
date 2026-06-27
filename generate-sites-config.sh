@@ -66,9 +66,9 @@ if [ ! -f "$SITES_JSON" ]; then
       "category": "usenet"
     },
     {
-      "code": "NZB",
-      "name": "Nzb.su",
-      "url": "https://nzb.su",
+      "code": "NLF",
+      "name": "nzb.life",
+      "url": "https://nzb.life",
       "category": "usenet"
     },
     {
