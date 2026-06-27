@@ -346,7 +346,8 @@
             fetch(service.href, { method: 'HEAD', signal: controller.signal })
                 .then(response => {
                     clearTimeout(timeoutId);
-                    health[service.href] = (response.status >= 200 && response.status < 400) ? 'online' : 'offline';
+                    // Any response (even 401, 403, 502) means service is running
+                    health[service.href] = 'online';
                     checkCount++;
                     if (checkCount === serviceLinks.length) {
                         updateHealthDisplay(health, serviceLinks);
@@ -360,10 +361,12 @@
                     fetch(service.href, { method: 'GET', signal: getController.signal })
                         .then(response => {
                             clearTimeout(getTimeoutId);
-                            health[service.href] = (response.status >= 200 && response.status < 400) ? 'online' : 'offline';
+                            // Any response means service is running
+                            health[service.href] = 'online';
                         })
                         .catch(() => {
                             clearTimeout(getTimeoutId);
+                            // Both requests failed - service is offline
                             health[service.href] = 'offline';
                         })
                         .finally(() => {
