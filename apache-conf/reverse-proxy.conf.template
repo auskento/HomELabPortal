@@ -60,11 +60,16 @@
     DocumentRoot /var/www/html
     DirectoryIndex index.html dashboard.html
     
-    # Rewrite rules for STYLE preference
+    # Rewrite rules for mobile detection and STYLE preference
     RewriteEngine On
+
+    # Detect mobile User-Agents and serve mobile.html for root requests
+    RewriteCond %{REQUEST_URI} ^/?$
+    RewriteCond %{HTTP_USER_AGENT} (android|iphone|ipod|blackberry|iemobile|opera.mini|webos|windows.phone|mobile.safari|mobi) [NC]
+    RewriteRule ^.*$ /mobile.html [L]
+
     # If STYLE is modern and requesting root, serve dashboard.html
-    RewriteCond %{REQUEST_URI} ^/$ [OR]
-    RewriteCond %{REQUEST_URI} ^$
+    RewriteCond %{REQUEST_URI} ^/?$
     RewriteCond %{ENV:STYLE} modern
     RewriteRule ^.*$ /dashboard.html [L]
     
