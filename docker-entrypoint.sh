@@ -18,6 +18,16 @@ chmod 777 /var/log/apache2/reverse-proxy-debug || {
     exit 1
 }
 
+# Ensure sites directory exists and has proper permissions
+mkdir -p /var/log/apache2/sites || {
+    echo "ERROR: Failed to create /var/log/apache2/sites directory"
+    exit 1
+}
+chmod 777 /var/log/apache2/sites || {
+    echo "ERROR: Failed to set permissions on /var/log/apache2/sites"
+    exit 1
+}
+
 # Load persistent dashboard configuration if it exists
 # This allows changing UI style and landing page without rebuilding the image
 if [ -f /etc/apache2/dashboard.conf ]; then
