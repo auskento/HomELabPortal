@@ -23,12 +23,10 @@ generate_sites_html() {
     local sites_html=""
 
     if [ ! -f "$SITES_JSON" ]; then
-        echo ""
         return
     fi
 
     if [ -z "$SITES_ENABLED" ]; then
-        echo ""
         return
     fi
 
@@ -46,13 +44,14 @@ generate_sites_html() {
             favicon_file="$SITES_DIR/${code,,}.favicon.ico"
             if [ -f "$favicon_file" ]; then
                 favicon_url="/sites/${code,,}.favicon.ico"
-                # Include site if favicon exists
+                # Include site if favicon exists (all on one line to avoid bash parameter expansion issues)
                 sites_html+="<a href='$url' class='site-link' title='$name' target='_blank'><div class='site-icon'><img src='$favicon_url' alt='$name' /></div></a>"
             fi
         fi
     done
 
-    echo "$sites_html"
+    # Output on single line to prevent bash parameter expansion issues
+    printf '%s' "$sites_html"
 }
 
 # Define all available services with metadata
