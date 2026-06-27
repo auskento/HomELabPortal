@@ -54,9 +54,9 @@ if [ ! -f "$SITES_JSON" ]; then
       "category": "torrent"
     },
     {
-      "code": "NBZ",
-      "name": "NZBFinder",
-      "url": "https://nzbfinder.nl",
+      "code": "DOG",
+      "name": "DOGnzb",
+      "url": "https://dognzb.cr",
       "category": "usenet"
     },
     {
@@ -66,21 +66,51 @@ if [ ! -f "$SITES_JSON" ]; then
       "category": "usenet"
     },
     {
-      "code": "NGK",
-      "name": "NZBGeek",
-      "url": "https://nzbgeek.info",
-      "category": "usenet"
-    },
-    {
       "code": "NZB",
-      "name": "NZB.su",
+      "name": "Nzb.su",
       "url": "https://nzb.su",
       "category": "usenet"
     },
     {
-      "code": "RCK",
-      "name": "RuCKET",
-      "url": "https://rucket.ru",
+      "code": "CAT",
+      "name": "NZBCat",
+      "url": "https://nzbcat.com",
+      "category": "usenet"
+    },
+    {
+      "code": "NFW",
+      "name": "NZBFinder.ws",
+      "url": "https://nzbfinder.ws",
+      "category": "usenet"
+    },
+    {
+      "code": "NGK",
+      "name": "NZBgeek",
+      "url": "https://nzbgeek.info",
+      "category": "usenet"
+    },
+    {
+      "code": "PLA",
+      "name": "nzbplanet.net",
+      "url": "https://nzbplanet.net",
+      "category": "usenet"
+    },
+    {
+      "code": "SIM",
+      "name": "SimplyNZBs",
+      "url": "https://www.simplynzbs.com",
+      "category": "usenet"
+    },
+    {
+      "code": "TAB",
+      "name": "Tabula Rasa",
+      "url": "https://www.tabulanzbz.com",
+      "category": "usenet"
+    },
+    {
+      "code": "UCC",
+      "name": "Usenet Crawler",
+      "url": "https://www.usenetcrawler.com",
       "category": "usenet"
     }
   ]
