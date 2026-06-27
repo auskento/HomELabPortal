@@ -213,6 +213,16 @@ fi
 echo ""
 /usr/local/bin/download-icons.sh
 
+# Copy pre-cached favicons from html/sites-icons/ if they exist
+echo "Copying pre-cached site favicons..."
+if [ -d /var/www/html/sites-icons ] && [ "$(ls -A /var/www/html/sites-icons 2>/dev/null)" ]; then
+    cp /var/www/html/sites-icons/* /var/log/apache2/sites/ 2>/dev/null || true
+    chmod 644 /var/log/apache2/sites/* 2>/dev/null || true
+    echo "✓ Pre-cached favicons copied"
+else
+    echo "✓ No pre-cached favicons found (will fetch on demand)"
+fi
+
 # Initialize and manage torrent/usenet sites
 echo ""
 /usr/local/bin/generate-sites-config.sh
