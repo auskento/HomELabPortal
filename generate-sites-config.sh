@@ -72,12 +72,6 @@ if [ ! -f "$SITES_JSON" ]; then
       "category": "torrent"
     },
     {
-      "code": "RSS",
-      "name": "Torrent RSS Feed",
-      "url": "https://torrentrss.org",
-      "category": "torrent"
-    },
-    {
       "code": "DOG",
       "name": "DOGnzb",
       "url": "https://dognzb.cr",
