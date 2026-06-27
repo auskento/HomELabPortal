@@ -68,6 +68,8 @@ WHISPARR_URL="${WHISPARR_URL:-}"
 LIDARR_URL="${LIDARR_URL:-}"
 PROWLARR_URL="${PROWLARR_URL:-}"
 SEERR_URL="${SEERR_URL:-}"
+SEERR_DOMAIN="${SEERR_DOMAIN:-}"
+SEERR_REDIRECT_URI="${SEERR_REDIRECT_URI:-}"
 JELLYFIN_URL="${JELLYFIN_URL:-}"
 EMBY_URL="${EMBY_URL:-}"
 EMBY_DOMAIN="${EMBY_DOMAIN:-}"
@@ -880,6 +882,69 @@ PLEXAUTHEOF
 
     a2ensite plex-vhost.conf 2>/dev/null || true
     echo "✓ Plex VirtualHost enabled"
+fi
+
+# Configure Seerr subdomain VirtualHost (if SEERR_DOMAIN is set)
+if [ ! -z "$SEERR_DOMAIN" ]; then
+    SEERR_DOMAIN_NAME=$(echo "$SEERR_DOMAIN" | cut -d'.' -f1)
+    SEERR_CERT_PATH=$(echo "$SEERR_DOMAIN" | sed 's/\./-/g')
+    echo "Configuring Seerr VirtualHost for $SEERR_DOMAIN..."
+
+    cat > /etc/apache2/sites-available/seerr-vhost.conf <<'SEERRCEOF'
+<VirtualHost *:80>
+    ServerName @@SEERR_DOMAIN_NAME@@
+    RewriteEngine On
+    RewriteCond %{HTTPS} off
+    RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+</VirtualHost>
+
+<VirtualHost *:443>
+    ServerName @@SEERR_DOMAIN_NAME@@
+    SSLEngine on
+    SSLCertificateFile /etc/letsencrypt/live/@@SEERR_CERT_PATH@@/fullchain.pem
+    SSLCertificateKeyFile /etc/letsencrypt/live/@@SEERR_CERT_PATH@@/privkey.pem
+    SSLProtocol @@SSL_PROTOCOLS@@
+    SSLCipherSuite @@SSL_CIPHERS@@
+    SSLHonorCipherOrder on
+
+    Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
+    Header always set X-Content-Type-Options nosniff
+    Header always set X-Frame-Options SAMEORIGIN
+    Header always set X-XSS-Protection "1; mode=block"
+
+    # Proxy settings
+    ProxyPreserveHost On
+    ProxyPass / http://seerr:5055/
+    ProxyPassReverse / http://seerr:5055/
+
+    Timeout 300
+
+    @@INCLUDE_SEERR_OAUTH@@
+</VirtualHost>
+SEERRCEOF
+
+    sed -i "s#@@SEERR_DOMAIN_NAME@@#$SEERR_DOMAIN#g" /etc/apache2/sites-available/seerr-vhost.conf
+    sed -i "s#@@SEERR_CERT_PATH@@#$SEERR_CERT_PATH#g" /etc/apache2/sites-available/seerr-vhost.conf
+    sed -i "s#@@SSL_PROTOCOLS@@#$SSL_PROTOCOLS#g" /etc/apache2/sites-available/seerr-vhost.conf
+    sed -i "s#@@SSL_CIPHERS@@#$SSL_CIPHERS#g" /etc/apache2/sites-available/seerr-vhost.conf
+
+    case "${AUTHTYPE}" in
+        google)
+            sed -i "/@@INCLUDE_SEERR_OAUTH@@/c\\    Include /etc/apache2/conf-available/oauth2-google-seerr.conf\n    Include /etc/apache2/conf-available/auth-google-protect-seerr.conf" /etc/apache2/sites-available/seerr-vhost.conf
+            ;;
+        entra)
+            sed -i "/@@INCLUDE_SEERR_OAUTH@@/c\\    Include /etc/apache2/conf-available/oauth2-entra-seerr.conf\n    Include /etc/apache2/conf-available/auth-entra-protect-seerr.conf" /etc/apache2/sites-available/seerr-vhost.conf
+            ;;
+        basic)
+            sed -i "/@@INCLUDE_SEERR_OAUTH@@/d" /etc/apache2/sites-available/seerr-vhost.conf
+            ;;
+        none|*)
+            sed -i "/@@INCLUDE_SEERR_OAUTH@@/d" /etc/apache2/sites-available/seerr-vhost.conf
+            ;;
+    esac
+
+    a2ensite seerr-vhost.conf 2>/dev/null || true
+    echo "✓ Seerr VirtualHost enabled"
 fi
 
 

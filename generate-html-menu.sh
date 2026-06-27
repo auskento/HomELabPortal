@@ -36,7 +36,7 @@ declare -A SERVICES=(
     [WHISPARR]="CONTENT|Whisparr|Adult content|/icons/whisparr.png|@@WHISPARR_LANDING@@|#ef7e30"
 
     # SEARCH category
-    [SEERR]="SEARCH|Seerr|Requests|/icons/seerr.png|/seerr/|#00a4dc"
+    [SEERR]="SEARCH|Seerr|Requests|/icons/seerr.png|SUBDOMAIN|#00a4dc"
     [PROWLARR]="SEARCH|Prowlarr|Indexer manager|/icons/prowlarr.png|/prowlarr/|#e8810e"
     [BAZARR]="SEARCH|Bazarr|Subtitles|/icons/bazarr.png|/bazarr/|#e91e63"
 
@@ -169,7 +169,7 @@ generate_menu_items() {
             # Parse service metadata
             IFS='|' read -r category service_name service_desc icon_path href accent <<< "${SERVICES[$service_key]}"
 
-            # Handle subdomain services (Emby, Plex)
+            # Handle subdomain services (Emby, Plex, Seerr)
             if [ "$href" = "SUBDOMAIN" ]; then
                 if [ "$service_key" = "EMBY" ]; then
                     # Use subdomain in public mode if defined, otherwise use internal URL
@@ -190,6 +190,16 @@ generate_menu_items() {
                             continue
                         fi
                         href="$PLEX_URL"
+                    fi
+                elif [ "$service_key" = "SEERR" ]; then
+                    # Use subdomain in public mode if defined, otherwise use internal URL
+                    if [ "$ACCESS_MODE" = "public" ] && [ ! -z "$SEERR_DOMAIN" ]; then
+                        href="https://$SEERR_DOMAIN/"
+                    else
+                        if [ -z "$SEERR_URL" ]; then
+                            continue
+                        fi
+                        href="$SEERR_URL"
                     fi
                 fi
             fi
@@ -242,6 +252,13 @@ generate_services_list() {
                 else
                     [ -z "$PLEX_URL" ] && continue
                     href="$PLEX_URL"
+                fi
+            elif [ "$service_key" = "SEERR" ]; then
+                if [ "$ACCESS_MODE" = "public" ] && [ ! -z "$SEERR_DOMAIN" ]; then
+                    href="https://$SEERR_DOMAIN/"
+                else
+                    [ -z "$SEERR_URL" ] && continue
+                    href="$SEERR_URL"
                 fi
             fi
         fi
@@ -335,6 +352,13 @@ generate_services_array() {
                 else
                     [ -z "$PLEX_URL" ] && continue
                     href="$PLEX_URL"
+                fi
+            elif [ "$service_key" = "SEERR" ]; then
+                if [ "$ACCESS_MODE" = "public" ] && [ ! -z "$SEERR_DOMAIN" ]; then
+                    href="https://$SEERR_DOMAIN/"
+                else
+                    [ -z "$SEERR_URL" ] && continue
+                    href="$SEERR_URL"
                 fi
             fi
         fi
@@ -816,14 +840,22 @@ generate_dashboard2_services_array() {
                         [ -z "$PLEX_URL" ] && continue
                         href="$PLEX_URL"
                     fi
+                elif [ "$service_key" = "SEERR" ]; then
+                    if [ ! -z "$SEERR_DOMAIN" ]; then
+                        href="https://$SEERR_DOMAIN/"
+                    else
+                        [ -z "$SEERR_URL" ] && continue
+                        href="$SEERR_URL"
+                    fi
                 fi
             fi
 
-            # Determine if popup (external link, qBittorrent, or MEDIA services)
+            # Determine if popup (external link, qBittorrent, MEDIA services, or Seerr)
             local popup="false"
             [[ "$href" == http* ]] && popup="true"
             [[ "$service_key" == "QBITTORRENT" ]] && popup="true"
             [ "$category" = "MEDIA" ] && popup="true"
+            [ "$service_key" = "SEERR" ] && popup="true"
 
             if [ "$first" = true ]; then
                 first=false
