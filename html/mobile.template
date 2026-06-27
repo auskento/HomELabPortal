@@ -199,29 +199,6 @@
             display: none;
         }
 
-        .controls {
-            display: flex;
-            gap: 8px;
-            padding: 8px 16px;
-            border-top: 0.5px solid var(--border-color);
-        }
-
-        .controls a {
-            font-size: 11px;
-            color: var(--text-accent);
-            text-decoration: none;
-            padding: 6px 12px;
-            border-radius: 4px;
-            border: 0.5px solid var(--border-color);
-            flex: 1;
-            text-align: center;
-            transition: all 0.2s;
-        }
-
-        .controls a:active {
-            background: var(--bg-secondary);
-        }
-
         @supports (padding: max(0px)) {
             body {
                 padding-bottom: max(60px, env(safe-area-inset-bottom));
@@ -257,12 +234,6 @@
     <div class="sites-grid">
         @@SITES_ITEMS@@
     </div>
-</div>
-
-<div class="controls">
-    <a href="/classic.html">Classic</a>
-    <a href="/modern.html">Modern</a>
-    <a href="/sleek.html">Sleek</a>
 </div>
 
 <script>
