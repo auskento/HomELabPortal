@@ -253,9 +253,11 @@
     @@MENU_ITEMS@@
 </div>
 
-<div class="section-title">Sites</div>
-<div class="sites-grid">
-    @@SITES_ITEMS@@
+<div class="sites-section" style="display: none;">
+    <div class="section-title">Sites</div>
+    <div class="sites-grid">
+        @@SITES_ITEMS@@
+    </div>
 </div>
 
 <div class="controls">
@@ -291,6 +293,15 @@
             }
         });
     });
+
+    // Show sites section only if there are sites
+    const sitesSection = document.querySelector('.sites-section');
+    const sitesGrid = document.querySelector('.sites-grid');
+    if (sitesGrid && sitesGrid.textContent.trim() !== '') {
+        if (sitesSection) {
+            sitesSection.style.display = 'block';
+        }
+    }
 
     // Site link handling
     document.querySelectorAll('.site-link').forEach(link => {

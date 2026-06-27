@@ -459,6 +459,12 @@
     checkServices();
     setInterval(checkServices, 30000);
 
+    // Hide sites bar if empty
+    const sitesBar = document.querySelector('.sites-bar');
+    if (sitesBar && sitesBar.textContent.trim() === '') {
+        sitesBar.style.display = 'none';
+    }
+
     // Site link handling - open in new window
     document.querySelectorAll('.site-link').forEach(link => {
         link.addEventListener('click', function(e) {

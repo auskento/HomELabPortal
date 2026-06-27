@@ -345,6 +345,12 @@ class Component extends DCLogic {
     }
   });
 
+  // Hide sites sidebar if empty
+  const sitesSidebar = document.querySelector('aside:last-of-type');
+  if (sitesSidebar && sitesSidebar.textContent.trim() === '') {
+    sitesSidebar.style.display = 'none';
+  }
+
   // Site link handling - open in new window
   document.querySelectorAll('.site-link').forEach(link => {
     link.addEventListener('click', function(e) {

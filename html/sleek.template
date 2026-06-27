@@ -277,6 +277,12 @@
   checkServices();
   setInterval(checkServices, 30000);
 
+  // Hide sites sidebar if empty
+  const rightSidebar = document.querySelector('aside:nth-of-type(2)');
+  if (rightSidebar && rightSidebar.textContent.trim() === '') {
+    rightSidebar.style.display = 'none';
+  }
+
   // Site link handling - open in new window
   document.querySelectorAll('.site-link').forEach(link => {
     link.addEventListener('click', function(e) {
